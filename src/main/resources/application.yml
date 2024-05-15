@@ -15,10 +15,9 @@ spring:
   # datasource
   datasource:
 #    url: jdbc:mysql://localhost:3306/gr
-    url: jdbc:mysql://roundhouse.proxy.rlwy.net:58822/railway
-
+    url: jdbc:mysql://roundhouse.proxy.rlwy.net:58538/railway
     username: root
-    password: xkSwwIhbaaiAVOOEiEmQBIQarDjVWFng
+    password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   main:
