@@ -13,13 +13,19 @@ spring:
     cache: false
 
   # datasource
+#  datasource:
+##    url: jdbc:mysql://localhost:3306/gr
+#    url: jdbc:mysql://roundhouse.proxy.rlwy.net:58538/railway
+#    username: root
+#    password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
+##    password: root
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
   datasource:
-#    url: jdbc:mysql://localhost:3306/gr
-    url: jdbc:mysql://roundhouse.proxy.rlwy.net:58538/railway
+    url: jdbc:mysql://viaduct.proxy.rlwy.net:58538/railway
     username: root
     password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   main:
     allow-bean-definition-overriding: true
 
