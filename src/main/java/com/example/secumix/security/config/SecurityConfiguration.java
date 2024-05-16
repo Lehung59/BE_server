@@ -56,10 +56,10 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
-    private final CustomOAuth2UserService oauth2UserService;
+//    private final CustomOAuth2UserService oauth2UserService;
     @Autowired
     @Lazy
-    private final OAuthLoginSuccessHandler oauthLoginSuccessHandler;
+//    private final OAuthLoginSuccessHandler oauthLoginSuccessHandler;
 
 
 
@@ -83,12 +83,12 @@ public class SecurityConfiguration {
 //                        .antMatchers(PUT, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_UPDATE.name())
 //                        .antMatchers(DELETE, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_DELETE.name())
                         .anyRequest().authenticated())
-                .oauth2Login()
-                .userInfoEndpoint()
-                .userService(oauth2UserService)
-                .and()
-                .successHandler(oauthLoginSuccessHandler)
-                .and()
+//                .oauth2Login()
+//                .userInfoEndpoint()
+//                .userService(oauth2UserService)
+//                .and()
+//                .successHandler(oauthLoginSuccessHandler)
+//                .and()
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
