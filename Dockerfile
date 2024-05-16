@@ -3,7 +3,7 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
-COPY --from=build /target/Secumix-0.0.1-SNAPSHOT.jar secumix/security.jar
+COPY --from=build /target/Secumix-0.0.1-SNAPSHOT.jar security.jar
 EXPOSE 9000
 ENTRYPOINT ["java","-jar","secumix/security.jar"]
 
