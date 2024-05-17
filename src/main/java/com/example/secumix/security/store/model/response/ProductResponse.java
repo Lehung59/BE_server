@@ -10,7 +10,7 @@ public class ProductResponse {
     private int productId;
     private String avatarProduct;
     private int discount;
-    private int price;
+    private long price;
     private String productName;
     private int quantity;
     private int status;

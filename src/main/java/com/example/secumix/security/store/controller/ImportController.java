@@ -176,8 +176,8 @@ public class ImportController {
 
     @PostMapping(value = "/management/{storeid}/import/insert")
     ResponseEntity<ResponseObject> importInsert(@RequestParam String productname,
-                                                @RequestParam int priceIn,
-                                                @RequestParam(required = false) Integer priceOut,
+                                                @RequestParam long priceIn,
+                                                @RequestParam(required = false) Long priceOut,
                                                 @RequestParam(required = false) String producttypename,
                                                 @RequestParam int quantity,
                                                 @PathVariable int storeid) {

@@ -129,19 +129,19 @@ public class ManagerStoreController {
             products = pageTuts.getContent();
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Cac san pham torng cua hang cua ban.",products)
+                new ResponseObject("OK","Cac san pham trong cua hang cua ban.",products)
         );
     }
 
-    @GetMapping(value = "/store/{storeid}/revenue")
-    ResponseEntity<ResponseObject> RevenueByStore(@PathVariable int storeid){
-       long  revenue = orderDetailRepo.RevenueByStore(storeid);
-       return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
-               "OK","Doanh thu ",revenue
-       ));
+    @GetMapping(value = "/store/revenue")
+    ResponseEntity<ResponseObject> RevenueByStore(@RequestParam int storeid){
+        long revenue = orderDetailRepo.RevenueByStore(storeid);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
+                "OK","Doanh thu ",revenue
+        ));
     }
 
-    @PostMapping(value = "info/{storetypeid}/insert")
+    @PostMapping(value = "/info/{storetypeid}/insert")
     public ResponseEntity<ResponseObject> insertStore(@RequestParam String address,
                                                       @RequestParam MultipartFile image,
                                                       @RequestParam String phonenumber,

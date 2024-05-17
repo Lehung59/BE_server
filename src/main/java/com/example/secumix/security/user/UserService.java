@@ -24,6 +24,7 @@ public class UserService {
     private final UserRepository repository;
 
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
 
     /* Đổi mật khẩu*/
@@ -76,5 +77,8 @@ public class UserService {
         return repository.findById(userID).get();
     }
 
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 }
 

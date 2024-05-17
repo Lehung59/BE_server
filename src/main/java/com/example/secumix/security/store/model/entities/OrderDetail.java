@@ -44,7 +44,7 @@ public class OrderDetail {
     private int storeId;
 
     @Column(name = "procetotal")
-    private int priceTotal;
+    private long priceTotal;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

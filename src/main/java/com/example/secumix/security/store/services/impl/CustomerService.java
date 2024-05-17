@@ -56,7 +56,7 @@ public class CustomerService implements ICustomerService{
         StoreCustomerRespone response = new StoreCustomerRespone();
         response.setCustomerId(customer.getUser().getId());  // Chuyển ID từ Integer sang String
         response.setCustomerName(customer.getFirstname() + " " + customer.getLastname());
-        response.setCustomerPhoneNumber(customer.getEmail());  // Giả sử bạn lưu số điện thoại trong trường email
+        response.setCustomerPhoneNumber(customer.getPhoneNumber());  // Giả sử bạn lưu số điện thoại trong trường email
         response.setTotalPayment(calculateTotalPayment(customer.getUser().getId(),storeId));  // Giả sử bạn có phương thức để tính tổng thanh toán
         response.setTotalOrder(calculateTotalOrder(customer.getUser().getId(),storeId));  // Giả sử bạn có phương thức để tính tổng số đơn hàng
         response.setOrderDetails(fetchOrderDetails(customer.getUser().getId(),storeId));  // Giả sử bạn có phương thức để lấy chi tiết đơn hàng
@@ -64,7 +64,9 @@ public class CustomerService implements ICustomerService{
     }
     private long calculateTotalPayment(int userId, int storeId) {
         // Giả sử phương thức này cần ID của User và ID của Store
-        return orderDetailRepo.RevenueByStoreAndUser(userId, storeId);  // Thay đổi phù hợp với phương thức bạn cần
+        Long totalPayment = orderDetailRepo.RevenueByStoreAndUser(userId, storeId);
+        if(totalPayment == null) return 0;
+        return totalPayment;// Thay đổi phù hợp với phương thức bạn cần
     }
 
     private int calculateTotalOrder(int userId, int storeId) {

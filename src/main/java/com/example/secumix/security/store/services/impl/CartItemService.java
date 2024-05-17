@@ -12,6 +12,7 @@ import com.example.secumix.security.store.services.ICartItemService;
 import com.example.secumix.security.store.repository.CartItemRepo;
 import com.example.secumix.security.store.repository.CartRepo;
 import com.example.secumix.security.store.repository.ProductRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,15 +23,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CartItemService implements ICartItemService {
-    @Autowired
-    private ProductRepo productRepo;
-    @Autowired
-    private CartItemRepo cartItemRepo;
-    @Autowired
-    private CartRepo cartRepo;
-    @Autowired
-    private NotifyRepository notifyRepository;
+    private final ProductRepo productRepo;
+    private final CartItemRepo cartItemRepo;
+    private final CartRepo cartRepo;
+    private final NotifyRepository notifyRepository;
 
     @Override
     public List<CartItemResponse> findByProduct(int productid) {
@@ -38,6 +36,7 @@ public class CartItemService implements ICartItemService {
                 cartItem -> {
                     Product product= cartItem.getProduct();
                     CartItemResponse cartItemResponse= new CartItemResponse();
+                    cartItemResponse.setCartItemId(cartItem.getCartItemId());
                     cartItemResponse.setProductName(product.getProductName());
                     cartItemResponse.setProductImg(product.getAvatarProduct());
                     cartItemResponse.setQuantity(cartItem.getQuantity());
@@ -56,6 +55,7 @@ public class CartItemService implements ICartItemService {
                 cartItem -> {
                     Product product= cartItem.getProduct();
                     CartItemResponse cartItemResponse= new CartItemResponse();
+                    cartItemResponse.setCartItemId(cartItem.getCartItemId());
                     cartItemResponse.setProductName(product.getProductName());
                     cartItemResponse.setProductImg(product.getAvatarProduct());
                     cartItemResponse.setQuantity(cartItem.getQuantity());
@@ -74,6 +74,7 @@ public class CartItemService implements ICartItemService {
                 cartItem -> {
                     Product product= cartItem.getProduct();
                     CartItemResponse cartItemResponse= new CartItemResponse();
+                    cartItemResponse.setCartItemId(cartItem.getCartItemId());
                     cartItemResponse.setProductName(product.getProductName());
                     cartItemResponse.setProductImg(product.getAvatarProduct());
                     cartItemResponse.setQuantity(cartItem.getQuantity());
@@ -100,18 +101,18 @@ public class CartItemService implements ICartItemService {
                     .product(product)
                     .build();
             cartItemRepo.save(cartItem);
-            product.setQuantity(product.getQuantity()- cartItemRequest.getQuantity());
-            productRepo.save(product);
+//            product.setQuantity(product.getQuantity()- cartItemRequest.getQuantity());
+//            productRepo.save(product);
         } else {
             rscartItem.get().setQuantity(rscartItem.get().getQuantity()+ cartItemRequest.getQuantity());
             rscartItem.get().setPricetotal(product.getPrice()*rscartItem.get().getQuantity());
             cartItemRepo.save(rscartItem.get());
-            product.setQuantity(product.getQuantity()- cartItemRequest.getQuantity());
-            productRepo.save(product);
+//            product.setQuantity(product.getQuantity()- cartItemRequest.getQuantity());
+//            productRepo.save(product);
         }
         Notify notify= Notify.builder()
                 .user(cart.getUser())
-                .description("Dat hang thanh cong !")
+                .description("Them vao gio hang thanh cong !")
                 .build();
         notifyRepository.save(notify);
     }
@@ -120,11 +121,13 @@ public class CartItemService implements ICartItemService {
     public void Save(CartItem cartItem) {
         cartItemRepo.save(cartItem);
     }
+
     @Override
     public Optional<CartItem> findByIdandUser(int cartitemid) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
-        return cartItemRepo.findByitemidandUser(cartitemid,email);
+        Optional<CartItem> cartItem = cartItemRepo.findByitemidandUser(cartitemid,email);
+        return cartItem;
     }
 
     @Override
@@ -139,6 +142,15 @@ public class CartItemService implements ICartItemService {
             return false;
         }
 
+    }
+
+    @Override
+    public void updateCartItem(int cartItemId, int quantity) {
+        CartItem cartItem = cartItemRepo.findById(cartItemId).get();
+        cartItem.setQuantity(quantity);
+        cartItem.setPricetotal(cartItem.getProduct().getPrice()*quantity);
+        cartItem.setUpdatedAt(UserUtils.getCurrentDay());
+        cartItemRepo.save(cartItem);
     }
 
 }

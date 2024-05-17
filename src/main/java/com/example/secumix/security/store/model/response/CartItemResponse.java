@@ -8,7 +8,7 @@ public class CartItemResponse {
 
     private int quantity;
     private String productName;
-    private int priceTotal;
+    private long priceTotal;
     private String productImg;
     private String storeName;
 

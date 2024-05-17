@@ -34,7 +34,7 @@ public class Product {
     private int discount;
 
     @Column(name = "price")
-    private int price;
+    private long price;
 
     @Column(name = "productname")
     private String productName;

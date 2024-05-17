@@ -28,7 +28,7 @@ public class Pay {
     private Date createdAt;
 
     @Column(name = "originalprice")
-    private int originalPrice;
+    private long originalPrice;
 
     @Column(name = "userid")
     private int userId;

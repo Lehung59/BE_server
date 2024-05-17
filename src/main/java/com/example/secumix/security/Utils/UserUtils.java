@@ -1,12 +1,15 @@
 package com.example.secumix.security.Utils;
 
 import com.example.secumix.security.user.User;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Random;
-
+@Component
 public class UserUtils {
     public static String calculateTimeSinceLastLogout(long lastLogoutTime) {
         // Lấy thời gian hiện tại
@@ -41,6 +44,16 @@ public class UserUtils {
         }
         return optCode;
     }
+//    public static Date getCurrentDay() {
+//        Date currentDate = new Date();
+//        return new Date(currentDate.getTime());
+//    }
+
+    public String getUserEmail() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName();
+    }
+
     public static Date getCurrentDay() {
         Date currentDate = new Date();
         return new Date(currentDate.getTime());

@@ -37,13 +37,13 @@ public class OrderController {
     @Autowired
     private OrderDetailRepo orderDetailRepo;
 
-    @GetMapping(value = "/customer/order/getall")
+    @GetMapping(value = "/customer/orderdetail/view")
     ResponseEntity<ResponseObject> getAllByUSer(){
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Lay ra thanh cong",orderService.GetAllByUser())
         );
     }
-    @GetMapping(value = "/order/detail/{orderdetailid}")
+    @GetMapping(value = "/customer/orderdetail/view/{orderdetailid}")
     ResponseEntity<ResponseObject> getInfoOrder(@PathVariable int orderdetailid){
         if(IsPermisson(orderdetailid)){
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -84,8 +84,8 @@ public class OrderController {
     }
 
 
-    @PostMapping(value = "/customer/order/insert/{cartitemid}")
-    ResponseEntity<ResponseObject> InsertIDR(@PathVariable int cartitemid){
+    @PostMapping(value = "/customer/order/insert/cartitem")
+    ResponseEntity<ResponseObject> InsertIDR(@RequestParam int cartitemid){
         Optional<CartItem> cartItem = cartItemService.findByIdandUser(cartitemid);
         if (cartItem.isEmpty()){
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -93,7 +93,7 @@ public class OrderController {
             );
         }
         OrderDetailRequest orderDetailRequest= new OrderDetailRequest(cartItem.get().getQuantity(),cartItem.get().getProduct().getProductId());
-        orderService.InsertIDR(orderDetailRequest);
+        orderService.InsertIDR(orderDetailRequest,cartItem.get());
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Đặt hàng thành công","")
         );

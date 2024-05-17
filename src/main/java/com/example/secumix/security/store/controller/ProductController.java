@@ -145,7 +145,7 @@ public class ProductController {
                                                  @RequestParam String description,
                                                  @PathVariable int storeid,
                                                  @RequestParam String producttypename,
-                                                 @RequestParam int price
+                                                 @RequestParam long price
     ) {
         try {
             storeService.checkStoreAuthen(storeid);

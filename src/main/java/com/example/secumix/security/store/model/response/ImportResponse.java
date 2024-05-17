@@ -8,8 +8,8 @@ import java.util.Date;
 public class ImportResponse {
     private int importDetailId;
     private Date createdAt;
-    private int price;
-    private int priceTotal;
+    private long price;
+    private long priceTotal;
     private int quantity;
     private Date updatedAt;
     private String productName;

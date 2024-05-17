@@ -2,6 +2,7 @@ package com.example.secumix.security.store.services;
 
 
 
+import com.example.secumix.security.store.model.entities.CartItem;
 import com.example.secumix.security.store.model.entities.OrderDetail;
 import com.example.secumix.security.store.model.request.OrderDetailRequest;
 import com.example.secumix.security.store.model.response.OrderDetailResponse;
@@ -27,7 +28,7 @@ public interface IOrderDetailService {
 
     void ChangeStatus3(int orderdetailid);
 
-    void InsertIDR(OrderDetailRequest orderDetailRequest);
+    void InsertIDR(OrderDetailRequest orderDetailRequest, CartItem cartItem);
 
     Optional<OrderDetailResponse> GetInfoOrder(int orderdetailid);
 

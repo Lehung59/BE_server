@@ -226,9 +226,9 @@ public class OrderDetailDetailService implements IOrderDetailService {
      * PreAuthoz = USER
      */
     @Override
-    public void InsertIDR(OrderDetailRequest orderDetailRequest) {
+    public void InsertIDR(OrderDetailRequest orderDetailRequest, CartItem cartItem) {
         Product product= productRepo.findById(orderDetailRequest.getProductid()).get();
-        Store store= product.getStore();
+        String storeName = product.getStore().getStoreName();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         Cart cart= cartRepo.findByEmail(email);
@@ -241,10 +241,9 @@ public class OrderDetailDetailService implements IOrderDetailService {
                 .productName(product.getProductName())
                 .createdAt(UserUtils.getCurrentDay())
                 .updatedAt(UserUtils.getCurrentDay())
-                .storeName(store.getStoreName())
+                .storeName(storeName)
                 .build();
         orderDetailRepo.save(orderDetail);
-        CartItem cartItem= cartItemService.findByIdandUser(orderDetailRequest.getProductid()).get();
         cartItemRepo.delete(cartItem);
         Notify notify= Notify.builder()
                 .user(cart.getUser())

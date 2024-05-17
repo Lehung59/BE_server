@@ -32,7 +32,7 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
     long RevenueByStore(int storeId);
 
     @Query("select sum(o.priceTotal) from orderdetail o where o.orderStatus.orderStatusId=3 and o.user.id=:userId and o.storeId=:storeId")
-    long RevenueByStoreAndUser(int userId, int storeId);
+    Long RevenueByStoreAndUser(int userId, int storeId);
 
 
     @Query("select count(o) from orderdetail o where o.orderStatus.orderStatusId=3 and o.user.id=:userId and o.storeId=:storeId")

@@ -7,28 +7,33 @@ import com.example.secumix.security.store.model.request.CartItemRequest;
 
 import com.example.secumix.security.store.services.ICartItemService;
 import com.example.secumix.security.store.repository.ProductRepo;
+import com.example.secumix.security.user.User;
+import com.example.secumix.security.user.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import reactor.netty.udp.UdpServer;
 
 import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1/customer")
+@RequiredArgsConstructor
 public class CartItemController {
-    @Autowired
-    private ICartItemService cartItemService;
-    @Autowired
-    private ProductRepo productRepo;
-    @GetMapping("/getallitem")
+    private final ICartItemService cartItemService;
+    private final ProductRepo productRepo;
+    private final UserService userService;
+    @GetMapping("/cartitem/view")
     ResponseEntity<ResponseObject> getAllItemByUser(){
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Get All" , cartItemService.findByUser())
         );
     }
+
     @PostMapping(value = "/cartitem/insert")
     ResponseEntity<ResponseObject> InsertCartItem(@RequestParam int quantity,
                                                   @RequestParam int productid
@@ -45,23 +50,17 @@ public class CartItemController {
                     new ResponseObject("FAILED","So luong la mot so duong","")
             );
         }
-        if (quantity>= product.get().getQuantity() ){
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-                    new ResponseObject("FAILED","Luong hang khong du dap ung","")
-            );
-        }
         CartItemRequest cartItemRequest= new CartItemRequest(quantity,productid);
         cartItemService.Insert(cartItemRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Dat hang thanh cong","")
+                new ResponseObject("OK","Them vao gio hang thanh cong","")
         );
     }
-    @PutMapping (value = "/ordertail/update/{cartitemid}")
+
+    @PutMapping (value = "/cartitem/update")
     ResponseEntity<ResponseObject> UpdateCartItem(@RequestParam int quantity,
-                                                  @PathVariable int cartitemid
+                                                  @RequestParam int cartitemid
     ){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
         Optional<CartItem> cartItem= cartItemService.findByIdandUser(cartitemid);
         if (cartItem.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -74,22 +73,16 @@ public class CartItemController {
                     new ResponseObject("FAILED","So luong la mot so duong","")
             );
         }
-        if (cartItem.get().getQuantity()+cartItem.get().getProduct().getQuantity()<quantity){
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-                    new ResponseObject("FAILED","Luong hang khong du dap ung","")
-            );
-        }
-        cartItem.get().getProduct().setQuantity(cartItem.get().getQuantity()+cartItem.get().getProduct().getQuantity()-quantity);
-        productRepo.save(cartItem.get().getProduct());
-        cartItem.get().setQuantity(quantity);
-        cartItem.get().setPricetotal(cartItem.get().getProduct().getPrice()*quantity);
-        cartItemService.Save(cartItem.get());
+//        cartItem.get().setQuantity(quantity);
+//        cartItem.get().setPricetotal(cartItem.get().getProduct().getPrice()*quantity);
+        cartItemService.updateCartItem(cartitemid, quantity);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Cập nhật thành công","")
+                new ResponseObject("OK","Cập nhật giỏ hàng thành công","")
         );
     }
-    @GetMapping(value = "/ordertail/delete/{cartitemid}")
-    ResponseEntity<ResponseObject> DeleteCartItem(@PathVariable int cartitemid){
+
+    @GetMapping(value = "/cartitem/delete")
+    ResponseEntity<ResponseObject> DeleteCartItem(@RequestParam int cartitemid){
         boolean RS = cartItemService.Delete(cartitemid);
         if (RS){
             return ResponseEntity.status(HttpStatus.OK).body(

@@ -26,10 +26,10 @@ public class ImportDetail {
     private Date createdAt;
 
     @Column(name = "price")
-    private int price;
+    private long price;
 
     @Column(name = "pricetotal")
-    private int priceTotal;
+    private long priceTotal;
 
     @Column(name = "quantity")
     private int quantity;

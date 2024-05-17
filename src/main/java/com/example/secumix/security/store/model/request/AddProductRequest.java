@@ -10,6 +10,6 @@ public class AddProductRequest {
     private int storeId;
     private String producttypename;
     private String avatar;
-    private int price;
+    private long price;
 
 }

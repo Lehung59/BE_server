@@ -32,7 +32,7 @@ public class CartItem {
     @Column(name = "quantity")
     private int quantity;
     @Column(name = "pricetotal")
-    private int pricetotal;
+    private long pricetotal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore

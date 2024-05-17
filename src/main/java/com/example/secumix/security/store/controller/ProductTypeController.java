@@ -59,7 +59,7 @@ public class ProductTypeController {
         }
     }
 
-    @GetMapping(value = "/management/{storeid}/producttype/getall")
+    @GetMapping(value = "/management/{storeid}/producttype/view")
     ResponseEntity<ResponseObject> getAllProductType(@PathVariable int storeid) {
         try {
             storeService.checkStoreAuthen(storeid);

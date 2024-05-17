@@ -33,7 +33,6 @@ public class SecurityConfiguration {
     private static final String[] WHITE_LIST_URL =
 
             {       "/api-docs",
-                    "/**",
                     "/api/v1/auth/**",
                     "/v2/api-docs",
                     "/v3/api-docs",
@@ -52,7 +51,8 @@ public class SecurityConfiguration {
                     "/api/v1/auth/bank/{Represent}",
                      "/category/getall",
                     "/swagger-ui-custom",
-                    "/api/v1/customer/**"
+                    "/api/v1/customer/**",
+                    "/api/v1/product/**"
             };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -84,7 +84,7 @@ public class SecurityConfiguration {
 //                        .antMatchers(POST, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_CREATE.name())
 //                        .antMatchers(PUT, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_UPDATE.name())
 //                        .antMatchers(DELETE, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_DELETE.name())
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
 //                .oauth2Login()
 //                .userInfoEndpoint()
 //                .userService(oauth2UserService)

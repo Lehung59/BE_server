@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductRequest {
     private String productName;
     private String description;
-    private int price;
+    private long price;
     private int discount;
     private int quantity;
     private int status; // Optional, depending on whether you want the client to set this
