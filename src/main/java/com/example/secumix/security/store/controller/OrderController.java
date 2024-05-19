@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 
-
 @RestController
 @RequestMapping(value = "/api/v1")
 public class OrderController {
@@ -38,20 +37,21 @@ public class OrderController {
     private OrderDetailRepo orderDetailRepo;
 
     @GetMapping(value = "/customer/orderdetail/view")
-    ResponseEntity<ResponseObject> getAllByUSer(){
+    ResponseEntity<ResponseObject> getAllByUSer() {
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Lay ra thanh cong",orderService.GetAllByUser())
+                new ResponseObject("OK", "Lay ra thanh cong", orderService.GetAllByUser())
         );
     }
+
     @GetMapping(value = "/customer/orderdetail/view/{orderdetailid}")
-    ResponseEntity<ResponseObject> getInfoOrder(@PathVariable int orderdetailid){
-        if(IsPermisson(orderdetailid)){
+    ResponseEntity<ResponseObject> getInfoOrder(@PathVariable int orderdetailid) {
+        if (IsPermisson(orderdetailid)) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK","Lay ra thanh cong",orderService.GetInfoOrder(orderdetailid))
+                    new ResponseObject("OK", "Lay ra thanh cong", orderService.GetInfoOrder(orderdetailid))
             );
         }
         return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-                new ResponseObject("OK","Không có quyền truy cập","")
+                new ResponseObject("OK", "Không có quyền truy cập", "")
         );
     }
 
@@ -59,51 +59,52 @@ public class OrderController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         User user = userRepository.findByEmail(email).get();
-        OrderDetail orderDetail= orderDetailRepo.findById(orderdetailid).get();
-        if (orderDetail.getCart().getUser().getEmail().equals(email) || user.getRole().getPermissions().contains(Permission.SHIPPER_READ)){
+        OrderDetail orderDetail = orderDetailRepo.findById(orderdetailid).get();
+        if (orderDetail.getCart().getUser().getEmail().equals(email) || user.getRole().getPermissions().contains(Permission.SHIPPER_READ)) {
             return true;
         }
         return false;
     }
 
+    //đặt hàng tực tiếp
     @PostMapping(value = "/customer/order/insert")
     ResponseEntity<ResponseObject> InsertDR(@RequestParam int quantity,
-                                            @RequestParam int productid){
-        Optional<Product> product=productRepo.findById(productid);
-        if(quantity> product.get().getQuantity()){
+                                            @RequestParam int productid) {
+        Optional<Product> product = productRepo.findById(productid);
+        if (quantity > product.get().getQuantity()) {
             return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-                    new ResponseObject("OK","Không đủ hàng trong kho","")
+                    new ResponseObject("OK", "Không đủ hàng trong kho", "")
             );
         }
 
-        OrderDetailRequest orderDetailRequest= new OrderDetailRequest(quantity, productid);
+        OrderDetailRequest orderDetailRequest = new OrderDetailRequest(quantity, productid);
         orderService.Insert(orderDetailRequest);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Đặt hàng thành công","")
+                new ResponseObject("OK", "Đặt hàng thành công", "")
         );
     }
 
-
+    //Đặt hàng qua gio hàng
     @PostMapping(value = "/customer/order/insert/cartitem")
-    ResponseEntity<ResponseObject> InsertIDR(@RequestParam int cartitemid){
+    ResponseEntity<ResponseObject> InsertIDR(@RequestParam int cartitemid) {
         Optional<CartItem> cartItem = cartItemService.findByIdandUser(cartitemid);
-        if (cartItem.isEmpty()){
+        if (cartItem.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK"," không tồn tại trong giỏ hàng","")
+                    new ResponseObject("OK", " không tồn tại trong giỏ hàng", "")
             );
         }
-        OrderDetailRequest orderDetailRequest= new OrderDetailRequest(cartItem.get().getQuantity(),cartItem.get().getProduct().getProductId());
-        orderService.InsertIDR(orderDetailRequest,cartItem.get());
+        OrderDetailRequest orderDetailRequest = new OrderDetailRequest(cartItem.get().getQuantity(), cartItem.get().getProduct().getProductId());
+        orderService.InsertIDR(orderDetailRequest, cartItem.get());
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Đặt hàng thành công","")
+                new ResponseObject("OK", "Đặt hàng thành công", "")
         );
     }
 
     @GetMapping(value = "/customer/order/delete/{orderdetailid}")
-    ResponseEntity<ResponseObject> ChangeStatus(@PathVariable int orderdetailid){
+    ResponseEntity<ResponseObject> ChangeStatus(@PathVariable int orderdetailid) {
         orderService.ChangeStatus3(orderdetailid);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Hoàn đơn thành công","")
+                new ResponseObject("OK", "Hoàn đơn thành công", "")
         );
     }
 

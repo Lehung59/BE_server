@@ -7,7 +7,6 @@ import com.example.secumix.security.notify.NotifyRepository;
 import com.example.secumix.security.store.model.entities.*;
 import com.example.secumix.security.store.model.request.OrderDetailRequest;
 import com.example.secumix.security.store.model.response.OrderDetailResponse;
-import com.example.secumix.security.store.model.response.StoreCustomerRespone;
 import com.example.secumix.security.store.services.ICartItemService;
 import com.example.secumix.security.store.services.IOrderDetailService;
 import com.example.secumix.security.store.repository.*;
@@ -16,7 +15,6 @@ import com.example.secumix.security.user.UserRepository;
 import com.example.secumix.security.userprofile.ProfileDetail;
 import com.example.secumix.security.userprofile.ProfileDetailRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,13 +22,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OrderDetailDetailService implements IOrderDetailService {
+public class OrderDetailService implements IOrderDetailService {
     private final OrderDetailRepo orderDetailRepo;
     private final ProductRepo productRepo;
     private final StoreRepo storeRepo;
@@ -116,8 +115,9 @@ public class OrderDetailDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public void Insert(OrderDetailRequest orderDetailRequest) {
-        Product product= productRepo.findById(orderDetailRequest.getProductid()).get();
+        Product product = productRepo.findProductForUpdate(orderDetailRequest.getProductid());
         Store store= product.getStore();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -135,13 +135,20 @@ public class OrderDetailDetailService implements IOrderDetailService {
                 .storeName(store.getStoreName())
                 .build();
         orderDetailRepo.save(orderDetail);
+
+
         product.setQuantity(product.getQuantity()- orderDetailRequest.getQuantity());
         productRepo.save(product);
+
+        // Thông báo cho người dùng
         Notify notifyuser= Notify.builder()
                 .user(cart.getUser())
                 .description("Đặt hàng thanh công. Vui lòng theo dõi thông tin đơn hàng.")
                 .build();
         notifyRepository.save(notifyuser);
+
+        // Thông báo cho quản lý
+
         User manager = userRepository.findByEmail(store.getEmailmanager()).get();
         Notify notifymanager= Notify.builder()
                 .user(manager)
@@ -226,8 +233,9 @@ public class OrderDetailDetailService implements IOrderDetailService {
      * PreAuthoz = USER
      */
     @Override
+    @Transactional
     public void InsertIDR(OrderDetailRequest orderDetailRequest, CartItem cartItem) {
-        Product product= productRepo.findById(orderDetailRequest.getProductid()).get();
+        Product product = productRepo.findProductForUpdate(orderDetailRequest.getProductid());
         String storeName = product.getStore().getStoreName();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
