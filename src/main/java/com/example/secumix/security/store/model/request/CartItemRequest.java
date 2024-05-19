@@ -1,9 +1,12 @@
 package com.example.secumix.security.store.model.request;
 
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class CartItemRequest {
     private int quantity;
     private int productid;

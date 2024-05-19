@@ -62,10 +62,7 @@ public class SecurityConfiguration {
     @Autowired
     @Lazy
 //    private final OAuthLoginSuccessHandler oauthLoginSuccessHandler;
-
-
-
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)

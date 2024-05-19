@@ -1,9 +1,13 @@
 package com.example.secumix.security.store.model.request;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AddProductRequest {
     private String name;
     private String description;

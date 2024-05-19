@@ -1,7 +1,10 @@
 package com.example.secumix.security.store.services.impl;
 
+import com.example.secumix.security.Exception.CustomException;
+import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.store.model.entities.ImportDetail;
 import com.example.secumix.security.store.model.entities.Product;
+import com.example.secumix.security.store.model.request.ImportEditRequest;
 import com.example.secumix.security.store.model.response.ImportResponse;
 import com.example.secumix.security.store.model.response.ProductResponse;
 import com.example.secumix.security.store.repository.ImportDetailRepo;
@@ -11,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +26,7 @@ import java.util.stream.Collectors;
 public class ImportDetailService implements IImportDetailService {
     private final ImportDetailRepo importDetailRepo;
     private final StoreRepo storeRepo;
+    private final UserUtils userUtils;
 
     @Override
     public Optional<ImportDetail> findByStore(int storeid) {
@@ -54,6 +59,31 @@ public class ImportDetailService implements IImportDetailService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(importResponses, pageable, importDetails.getTotalElements());
+    }
+
+    @Override
+    public ImportResponse updateImport(ImportEditRequest importEditRequest) throws CustomException {
+        ImportDetail importDetail = importDetailRepo.findById(importEditRequest.getImportDetailId())
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "ImportDetail not found"));
+
+        List<ImportDetail> importDetailList = importDetailRepo.findByStore( userUtils.getUserEmail());
+        boolean exists = importDetailList.stream()
+                .anyMatch(item -> item.getImportDetailId() == importEditRequest.getImportDetailId());
+        if (!exists) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Ban khong co quyen chinh sua cai nay");
+        }
+
+        if (importEditRequest.getPrice() >= 0) {
+            importDetail.setPrice(importEditRequest.getPrice());
+        }
+        if (importEditRequest.getQuantity() >= 0) {
+            importDetail.setQuantity(importEditRequest.getQuantity());
+        }
+        importDetail.setPriceTotal(importDetail.getQuantity() * importDetail.getPrice());
+        importDetail.setUpdatedAt(UserUtils.getCurrentDay());
+        String storeName = importDetail.getProduct().getStore().getStoreName();
+        return convertToImportResponse(importDetailRepo.save(importDetail),storeName);
+
     }
 
     public static ImportResponse convertToImportResponse(ImportDetail importDetail, String storeName) {

@@ -15,6 +15,12 @@ import java.util.List;
 public interface ImportDetailRepo extends JpaRepository<ImportDetail, Integer> {
     @Query("select o from importdt o where  o.product.store.storeId=:storeid")
     List<ImportDetail> findByStore(int storeid);
+
+    @Query("select o from importdt o where  o.product.store.emailmanager=:email")
+    List<ImportDetail> findByStore(String email);
+
+
+
     @Query("select o from importdt o where  o.product.store.storeId=:storeid and o.product.productName=:productname")
     List<ImportDetail> findByStoreandProduct(int storeid, String productname);
     @Query("SELECT i FROM importdt i WHERE i.product.store.storeId = :storeId")

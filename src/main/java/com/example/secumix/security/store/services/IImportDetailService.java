@@ -1,6 +1,8 @@
 package com.example.secumix.security.store.services;
 
+import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.store.model.entities.ImportDetail;
+import com.example.secumix.security.store.model.request.ImportEditRequest;
 import com.example.secumix.security.store.model.response.ImportResponse;
 import jdk.dynalink.linker.LinkerServices;
 import org.springframework.data.domain.Page;
@@ -17,4 +19,6 @@ public interface IImportDetailService {
     Page<ImportResponse> findAllImportPaginable(Pageable paging, int storeid);
 
     Page<ImportResponse> findImportByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid);
+
+    ImportResponse updateImport(ImportEditRequest importEditRequest) throws CustomException;
 }

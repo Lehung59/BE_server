@@ -1,6 +1,6 @@
-package com.example.secumix.security.store.controller;
+package com.example.secumix.security.store.controller.manager;
 
-import com.cloudinary.Cloudinary;
+
 import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.ResponseObject;
 import com.example.secumix.security.Utils.UserUtils;
@@ -8,10 +8,13 @@ import com.example.secumix.security.store.model.entities.ImportDetail;
 import com.example.secumix.security.store.model.entities.Product;
 import com.example.secumix.security.store.model.entities.ProductType;
 import com.example.secumix.security.store.model.entities.Store;
+import com.example.secumix.security.store.model.request.ImportEditRequest;
 import com.example.secumix.security.store.model.response.ImportResponse;
-import com.example.secumix.security.store.repository.*;
+import com.example.secumix.security.store.repository.ImportDetailRepo;
+import com.example.secumix.security.store.repository.ProductRepo;
+import com.example.secumix.security.store.repository.ProductTypeRepo;
 import com.example.secumix.security.store.services.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,55 +24,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 
 @RestController
-@RequestMapping(value = "/api/v1")
-public class ImportController {
-
+@RequestMapping(value = "/api/v1/management")
+@RequiredArgsConstructor
+public class ImportControllerManager {
     @Value("${default_avt}")
     private String defaultAvt;
 
-    @Autowired
-    private IProductTypeService productTypeService;
-    @Autowired
-    private Cloudinary cloudinary;
-    @Autowired
-    private ProductRepo productRepo;
-    @Autowired
-    private ProductImageRepo productImageRepo;
-    @Autowired
-    private IImportDetailService importDetailService;
-    @Autowired
-    private ImportDetailRepo importDetailRepo;
+    private final ProductRepo productRepo;
+    private final IImportDetailService importDetailService;
+    private final ImportDetailRepo importDetailRepo;
+    private final IStoreService storeService;
+    private final ProductTypeRepo productTypeRepo;
 
-    @Autowired
-    private IStoreService storeService;
-    @Autowired
-    private IStoreTypeService storeTypeService;
-    @Autowired
-    private ProductTypeRepo productTypeRepo;
-
-    @Autowired
-    IProductService productService;
-
-    public Map upload(MultipartFile file) {
-        try {
-            Map data = this.cloudinary.uploader().upload(file.getBytes(), Map.of());
-            return data;
-        } catch (IOException io) {
-            throw new RuntimeException("Image upload fail");
-        }
-    }
-    @GetMapping(value = "/management/{storeid}/import/view")
+    @GetMapping(value = "/{storeid}/import/view")
     ResponseEntity<ResponseObject> getAllImport(@PathVariable int storeid,
                                                 @RequestParam(required = false) String keyword,
                                                 @RequestParam(defaultValue = "1") int page,
@@ -98,83 +71,34 @@ public class ImportController {
         }
 
     }
-//
-//
-//    @GetMapping(value = "/import/{storeid}/getall")
-//    ResponseEntity<ResponseObject> GetAllImport(@PathVariable int storeid) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String email = auth.getName();
-//        Optional<Store> store = storeService.findStoreById(storeid);
-//        if (store.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-//                    new ResponseObject("OK", "Không có cửa hàng này.", "")
-//            );
-//        }
-//        if (!email.equals(store.get().getEmailmanager())) {
-//            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-//                    new ResponseObject("OK", "Không phải cửa hàng của bạn.", "")
-//            );
-//        }
-//        List<ImportResponse> importResponses = importDetailService.findByStore(storeid).stream().map(
-//                importDetail -> {
-//                    ImportResponse importResponse = new ImportResponse();
-//                    importResponse.setImportDetailId(importDetail.getImportDetailId());
-//                    importResponse.setQuantity(importDetail.getQuantity());
-//                    importResponse.setPrice(importDetail.getPrice());
-//                    importResponse.setProductName(importDetail.getProduct().getProductName());
-//                    importResponse.setStoreName(store.get().getStoreName());
-//                    importResponse.setCreatedAt(importDetail.getCreatedAt());
-//                    importResponse.setPriceTotal(importDetail.getPriceTotal());
-//                    return importResponse;
-//                }
-//        ).collect(Collectors.toList());
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                new ResponseObject("OK", "Thành công.", importResponses)
-//        );
-//    }
-//
-//    @GetMapping(value = "/import/{storeid}/{productname}")
-//    ResponseEntity<ResponseObject> GetAllImport(@PathVariable int storeid,
-//                                                @PathVariable String productname) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String email = auth.getName();
-//        Optional<Store> store = storeService.findStoreById(storeid);
-//        Optional<Product> product = productRepo.findByName(storeid, productname);
-//
-//        if (store.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-//                    new ResponseObject("OK", "Không có cửa hàng này.", "")
-//            );
-//        }
-//        if (!email.equals(store.get().getEmailmanager())) {
-//            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
-//                    new ResponseObject("OK", "Không phải cửa hàng của m.", "")
-//            );
-//        }
-//        if (product.isEmpty()) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-//                    new ResponseObject("OK", "Không có sản phẩm này.", "")
-//            );
-//        }
-//        List<ImportResponse> importResponses = importDetailService.findByStoreandProduct(storeid, productname).stream().map(
-//                importDetail -> {
-//                    ImportResponse importResponse = new ImportResponse();
-//                    importResponse.setImportDetailId(importDetail.getImportDetailId());
-//                    importResponse.setQuantity(importDetail.getQuantity());
-//                    importResponse.setPrice(importDetail.getPrice());
-//                    importResponse.setProductName(importDetail.getProduct().getProductName());
-//                    importResponse.setStoreName(store.get().getStoreName());
-//                    importResponse.setCreatedAt(importDetail.getCreatedAt());
-//                    importResponse.setPriceTotal(importDetail.getPriceTotal());
-//                    return importResponse;
-//                }
-//        ).collect(Collectors.toList());
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                new ResponseObject("OK", "Thành công.", importResponses)
-//        );
-//    }
 
-    @PostMapping(value = "/management/{storeid}/import/insert")
+    @PutMapping(value = "/{storeid}/import/edit/{importid}")
+    ResponseEntity<ResponseObject> importEdit(@PathVariable int importid,
+                                              @ModelAttribute ImportEditRequest importEditRequest){
+        try{
+            importEditRequest.setImportDetailId(importid);
+            if (importEditRequest.getQuantity() < 0)
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                        new ResponseObject("FAILED", "Quantity must >= 0", "")
+                );
+            if (importEditRequest.getPrice() < 0)
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                        new ResponseObject("FAILED", "Price must >= 0", "")
+                );
+
+
+            ImportResponse updatedImportDetail = importDetailService.updateImport(importEditRequest);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK", "Thành Công",updatedImportDetail)
+            );
+        }catch (CustomException ex) {
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
+
+    }
+
+    @PostMapping(value = "/{storeid}/import/insert")
     ResponseEntity<ResponseObject> importInsert(@RequestParam String productname,
                                                 @RequestParam long priceIn,
                                                 @RequestParam(required = false) Long priceOut,

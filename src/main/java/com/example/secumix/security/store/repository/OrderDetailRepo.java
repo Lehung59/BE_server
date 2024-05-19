@@ -28,7 +28,7 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
     @Query("select o from orderdetail  o where o.shipperid=:shipperid and o.orderStatus.orderStatusId=2")
     List<OrderDetail> getOrderDetailByShipperId(int shipperid);
 
-    @Query("select sum(o.priceTotal) from orderdetail o where o.orderStatus.orderStatusId=3 and o.storeName=:storeId")
+    @Query("select sum(o.priceTotal) from orderdetail o where o.orderStatus.orderStatusId=3 and o.storeId=:storeId")
     long RevenueByStore(int storeId);
 
     @Query("select sum(o.priceTotal) from orderdetail o where o.orderStatus.orderStatusId=3 and o.user.id=:userId and o.storeId=:storeId")
