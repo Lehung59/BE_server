@@ -43,7 +43,7 @@ public class Product {
     private int quantity;
 
     @Column(name = "status")
-    private int status;
+    private boolean status;
 
     @Column(name = "description")
     private String description;

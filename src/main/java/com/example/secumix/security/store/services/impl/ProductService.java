@@ -2,11 +2,13 @@ package com.example.secumix.security.store.services.impl;
 
 
 
+import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.store.model.entities.Product;
 import com.example.secumix.security.store.model.entities.ProductType;
 import com.example.secumix.security.store.model.entities.Store;
 import com.example.secumix.security.store.model.request.AddProductRequest;
+import com.example.secumix.security.store.model.request.ProductRequest;
 import com.example.secumix.security.store.model.response.ProductResponse;
 
 import com.example.secumix.security.store.model.response.StoreCustomerRespone;
@@ -21,11 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -50,7 +54,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.getStatus());
+                    productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     return productResponse;
@@ -72,7 +76,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.getStatus());
+                    productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     return productResponse;
@@ -94,7 +98,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.getStatus());
+                    productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     return productResponse;
@@ -114,7 +118,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.getStatus());
+                    productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     return productResponse;
@@ -134,7 +138,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.getStatus());
+                    productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     return productResponse;
@@ -155,14 +159,13 @@ public class ProductService implements IProductService {
     @Override
     public void saveProduct(AddProductRequest addProductRequest) {
         Store store = storeRepo.findStoreById(addProductRequest.getStoreId()).get();
-        System.out.println("here1");
         ProductType productType = productTypeRepo.findProductTypeByName(addProductRequest.getProducttypename(), addProductRequest.getStoreId()).get();
         Product newObj = Product.builder()
                 .avatarProduct(addProductRequest.getAvatar())
                 .discount(0)
                 .store(store)
                 .view(0)
-                .status(0)
+                .status(false)
                 .productType(productType)
                 .createdAt(UserUtils.getCurrentDay())
                 .updatedAt(UserUtils.getCurrentDay())
@@ -173,7 +176,6 @@ public class ProductService implements IProductService {
                 .build();
         System.out.println(newObj.getAvatarProduct()+newObj.getProductName());
         productRepo.save(newObj);
-        System.out.println("hihi");
     }
 
     @Override
@@ -198,6 +200,42 @@ public class ProductService implements IProductService {
         return new PageImpl<>(productResponseList, pageable, products.getTotalElements());
     }
 
+    @Override
+    public void updateProduct(ProductRequest productRequest) {
+        Optional<Product> checkName = productRepo.findByName(productRequest.getStoreId(), productRequest.getProductName());
+        if (checkName.isPresent() && !Objects.equals(checkName.get().getProductName(), productRequest.getProductName())) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Tên sản phẩm đã tồn tại");
+        }
+
+        Product product = checkName.get();
+
+        if(productRequest.isStatus() != product.isStatus())
+            product.setStatus(productRequest.isStatus());
+        if(productRequest.getDiscount() != product.getDiscount())
+            product.setDiscount(productRequest.getDiscount());
+        if(productRequest.getPrice() != product.getPrice())
+            product.setPrice(productRequest.getPrice());
+        if(product.getProductName() != productRequest.getProductName())
+            product.setProductName(productRequest.getProductName());
+        if(productRequest.getDescription() != productRequest.getDescription())
+            product.setDescription(productRequest.getDescription());
+        if(productRequest.getProductTypeId() != product.getProductType().getProductTypeId())
+            product.setProductId(productRequest.getProductTypeId());
+        if (productRequest.getAvatar() != product.getAvatarProduct())
+            product.setAvatarProduct(productRequest.getAvatar());
+        if(productRequest.getQuantity() != product.getQuantity())
+            product.setQuantity(productRequest.getQuantity());
+
+        product.setUpdatedAt(UserUtils.getCurrentDay());
+        productRepo.save(product);
+
+
+
+
+
+
+    }
+
 
     public static ProductResponse convertToProductResponse(Product product) {
         ProductResponse response = new ProductResponse();
@@ -207,7 +245,7 @@ public class ProductService implements IProductService {
         response.setPrice(product.getPrice());
         response.setProductName(product.getProductName());
         response.setQuantity(product.getQuantity());
-        response.setStatus(product.getStatus());
+        response.setStatus(product.isStatus());
         response.setDescription(product.getDescription());
         response.setView(product.getView());
         // Lấy tên của cửa hàng từ đối tượng Store

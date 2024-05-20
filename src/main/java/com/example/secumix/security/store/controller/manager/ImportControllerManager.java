@@ -140,7 +140,7 @@ public class ImportControllerManager {
                     .productType(productType)
                     .store(store.get())
                     .view(0)
-                    .status(0)
+                    .status(false)
                     .price(priceOut)
                     .createdAt(UserUtils.getCurrentDay())
                     .updatedAt(UserUtils.getCurrentDay())
