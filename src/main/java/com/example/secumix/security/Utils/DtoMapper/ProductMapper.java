@@ -4,6 +4,7 @@ import com.example.secumix.security.store.model.dtos.ProductDto;
 import com.example.secumix.security.store.model.entities.Product;
 import com.example.secumix.security.store.model.entities.ProductType;
 import com.example.secumix.security.store.model.entities.Store;
+import com.example.secumix.security.store.model.request.ProductRequest;
 import com.example.secumix.security.store.repository.ProductRepo;
 import com.example.secumix.security.store.repository.ProductTypeRepo;
 import com.example.secumix.security.store.repository.StoreRepo;
@@ -36,7 +37,7 @@ public class ProductMapper {
         productDto.setPrice(product.getPrice());
         productDto.setProductName(product.getProductName());
         productDto.setQuantity(product.getQuantity());
-        productDto.setStatus(product.getStatus());
+        productDto.setStatus(product.isStatus());
         productDto.setDescription(product.getDescription());
         productDto.setUpdatedAt(product.getUpdatedAt());
         productDto.setView(product.getView());
@@ -48,6 +49,25 @@ public class ProductMapper {
         productDto.setImportDetails(product.getImportDetails().stream().map(importDetailMapper::toDto).collect(Collectors.toSet()));
 
         return productDto;
+    }
+
+    public ProductRequest toProductRequest(Product product) {
+        if (product == null) {
+            return null;
+        }
+
+        ProductRequest productRequest = new ProductRequest();
+        productRequest.setProductId(product.getProductId());
+        productRequest.setAvatar(product.getAvatarProduct());
+        productRequest.setDescription(product.getDescription());
+        productRequest.setDiscount(product.getDiscount());
+        productRequest.setPrice(product.getPrice());
+        productRequest.setProductName(product.getProductName());
+        productRequest.setQuantity(product.getQuantity());
+        productRequest.setStatus(product.isStatus());
+        productRequest.setStoreId(product.getStore().getStoreId());
+        productRequest.setProductTypeId(product.getProductType().getProductTypeId());
+        return productRequest;
     }
 
     public Product toEntity(ProductDto productDto) {
@@ -63,7 +83,7 @@ public class ProductMapper {
         product.setPrice(productDto.getPrice());
         product.setProductName(productDto.getProductName());
         product.setQuantity(productDto.getQuantity());
-        product.setStatus(productDto.getStatus());
+        product.setStatus(productDto.isStatus());
         product.setDescription(productDto.getDescription());
         product.setUpdatedAt(productDto.getUpdatedAt());
         product.setView(productDto.getView());

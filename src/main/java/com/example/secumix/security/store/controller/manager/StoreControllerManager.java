@@ -3,6 +3,7 @@ package com.example.secumix.security.store.controller.manager;
 import com.cloudinary.Cloudinary;
 import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.ResponseObject;
+import com.example.secumix.security.Utils.ImageUpload;
 import com.example.secumix.security.notify.Notify;
 import com.example.secumix.security.notify.NotifyRepository;
 import com.example.secumix.security.store.model.entities.Store;
@@ -45,15 +46,16 @@ public class StoreControllerManager {
     private final ICustomerService customerService;
     private final ProfileDetailRepo profileDetailRepo;
     private final IStoreService storeService;
+    private final ImageUpload imageUpload;
 
-    public Map upload(MultipartFile file) {
-        try {
-            Map data = this.cloudinary.uploader().upload(file.getBytes(), Map.of());
-            return data;
-        } catch (IOException io) {
-            throw new RuntimeException("Image upload fail");
-        }
-    }
+//    public Map upload(MultipartFile file) {
+//        try {
+//            Map data = this.cloudinary.uploader().upload(file.getBytes(), Map.of());
+//            return data;
+//        } catch (IOException io) {
+//            throw new RuntimeException("Image upload fail");
+//        }
+//    }
 
     @GetMapping(value = "/store/revenue")
     ResponseEntity<ResponseObject> RevenueByStore(@RequestParam int storeid) {
@@ -67,8 +69,9 @@ public class StoreControllerManager {
     public ResponseEntity<ResponseObject> editStoreInfo(@PathVariable int storeid,
                                                         @RequestParam(required = false) String address,
                                                         @RequestParam(required = false) String phonenumber,
-                                                        @RequestParam(required = false) String storename
-    ) {
+                                                        @RequestParam(required = false) String storename,
+                                                        @RequestParam(required = false) MultipartFile image
+                                                        ) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String email = auth.getName();
@@ -78,7 +81,9 @@ public class StoreControllerManager {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(new ResponseObject("FAILED","Khong phai cua hang cua ban" , ""));
             }
-            StoreInfoEditRequest storeInfoEditRequest = new StoreInfoEditRequest(storeid, storename,address,phonenumber);
+
+            String uploadResult = imageUpload.upload(image);
+            StoreInfoEditRequest storeInfoEditRequest = new StoreInfoEditRequest(storeid, storename,address,phonenumber, uploadResult);
             storeService.updateInfo(storeInfoEditRequest);
 
 
@@ -112,8 +117,7 @@ public class StoreControllerManager {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new ResponseObject("FAILED", "Not exist storetype", "")
             );
-        Map<String, Object> uploadResult = upload(image);
-
+        String uploadResult = imageUpload.upload(image);
         Store newObj = Store.builder()
                 .address(address)
                 .storeName(name)
@@ -121,7 +125,7 @@ public class StoreControllerManager {
                 .emailmanager(email)
                 .phoneNumber(phonenumber)
                 .storeType(storeType.get())
-                .image(uploadResult.get("secure_url").toString())
+                .image(uploadResult)
                 .build();
         storeRepo.save(newObj);
         Notify notify = Notify.builder()

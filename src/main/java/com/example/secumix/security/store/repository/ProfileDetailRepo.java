@@ -27,4 +27,7 @@ public interface ProfileDetailRepo extends JpaRepository<ProfileDetail, Integer>
             "p.phoneNumber LIKE %:keyword%"
     )
     Page<ProfileDetail> findCustomerByTitleContainingIgnoreCase(int storeid, String keyword, Pageable pageable);
+
+    @Query(" select p from profile p where p.user.id=:id")
+    ProfileDetail findByUserId(Integer id);
 }

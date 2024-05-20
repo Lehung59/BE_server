@@ -2,6 +2,7 @@ package com.example.secumix.security.store.services;
 
 
 
+import com.example.secumix.security.store.model.dtos.OrderDetailDto;
 import com.example.secumix.security.store.model.entities.CartItem;
 import com.example.secumix.security.store.model.entities.OrderDetail;
 import com.example.secumix.security.store.model.request.OrderDetailRequest;
@@ -37,4 +38,10 @@ public interface IOrderDetailService {
     Page<OrderDetailResponse> findAllOrderByCustomerAndStorePaginable(Pageable paging, int storeid, int customerid);
 
     Page<OrderDetailResponse> findOrderByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid, int customerid);
+
+    Page<OrderDetailResponse> findAllOrderPaginable(Pageable paging, int storeid);
+
+    Page<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid);
+
+    OrderDetailDto findDtoById(int orderDetailId);
 }

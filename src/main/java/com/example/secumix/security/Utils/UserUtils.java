@@ -1,6 +1,7 @@
 package com.example.secumix.security.Utils;
 
 import com.example.secumix.security.user.User;
+import com.example.secumix.security.user.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,12 @@ import java.util.Date;
 import java.util.Random;
 @Component
 public class UserUtils {
+    private final UserRepository userRepository;
+
+    public UserUtils(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     public static String calculateTimeSinceLastLogout(long lastLogoutTime) {
         // Lấy thời gian hiện tại
         Instant currentTime = Instant.now();
@@ -52,6 +59,11 @@ public class UserUtils {
     public String getUserEmail() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth.getName();
+    }
+    public int getUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return userRepository.findByEmail(email).get().getId();
     }
 
     public static Date getCurrentDay() {

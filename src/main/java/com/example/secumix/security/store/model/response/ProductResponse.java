@@ -13,7 +13,7 @@ public class ProductResponse {
     private long price;
     private String productName;
     private int quantity;
-    private int status;
+    private boolean status;
 
 
     private String description;

@@ -1,12 +1,16 @@
 package com.example.secumix.security.store.services.impl;
 
 
+import com.example.secumix.security.Exception.CustomException;
+import com.example.secumix.security.Utils.DtoMapper.OrderDetailMapper;
 import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.notify.Notify;
 import com.example.secumix.security.notify.NotifyRepository;
+import com.example.secumix.security.store.model.dtos.OrderDetailDto;
 import com.example.secumix.security.store.model.entities.*;
 import com.example.secumix.security.store.model.request.OrderDetailRequest;
 import com.example.secumix.security.store.model.response.OrderDetailResponse;
+import com.example.secumix.security.store.model.response.ProductResponse;
 import com.example.secumix.security.store.services.ICartItemService;
 import com.example.secumix.security.store.services.IOrderDetailService;
 import com.example.secumix.security.store.repository.*;
@@ -18,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -41,6 +46,8 @@ public class OrderDetailService implements IOrderDetailService {
     private final CartItemRepo cartItemRepo;
     private final PayRepo payRepo;
     private final ProfileDetailRepository detailRepository;
+    private final UserUtils userUtils;
+    private final OrderDetailMapper orderDetailMapper;
 
     @Override
     public List<OrderDetailResponse> GetAll() {
@@ -326,6 +333,52 @@ public class OrderDetailService implements IOrderDetailService {
                 .collect(Collectors.toList());
         return new PageImpl<>(orderDetailResponses, pageable, orderDetails.getTotalElements());
     }
+
+    @Override
+    public Page<OrderDetailResponse> findAllOrderPaginable(Pageable pageable, int storeId) {
+        Page<OrderDetail> orderDetails = orderDetailRepo.getAllByStoreWithPagination(storeId,pageable);
+        String storeName = storeRepo.findStoreById(storeId).get().getStoreName();
+
+
+
+        List<OrderDetailResponse> orderDetailResponses = orderDetails
+                .stream()
+                .map(orderDetail -> convertToOrderDetailResponse(storeName,orderDetail,""))
+                .toList();
+
+        return new PageImpl<>(orderDetailResponses, pageable, orderDetails.getTotalElements());
+    }
+
+    @Override
+    public Page<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, Pageable pageable, int storeId) {
+        Page<OrderDetail> orderDetails = orderDetailRepo.findByTitleContainingIgnoreCase(storeId, keyword, pageable);
+        String storeName = storeRepo.findStoreById(storeId).get().getStoreName();
+        List<OrderDetailResponse> orderDetailResponses = orderDetails
+                .stream()
+                .map(orderDetail -> convertToOrderDetailResponse(storeName,orderDetail,""))
+                .toList();
+
+        return new PageImpl<>(orderDetailResponses, pageable, orderDetails.getTotalElements());
+    }
+
+    @Override
+    public OrderDetailDto findDtoById(int orderDetailId) {
+        Optional<OrderDetail> orderDetail = orderDetailRepo.findById(orderDetailId);
+        if(orderDetail.isEmpty()){
+            throw new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay don hang nay");
+        }
+        String uId = userUtils.getUserEmail();
+        int sId = storeRepo.findByEmailManager(uId).get().getStoreId();
+        System.out.println(uId);
+        System.out.println(orderDetail.get().getStoreId());
+        if(orderDetail.get().getStoreId() != sId){
+            throw new CustomException(HttpStatus.NOT_FOUND, "Cua hang ban khong co don hang nay");
+
+        }
+
+        return orderDetailMapper.toDto(orderDetail.get());
+    }
+
     private OrderDetailResponse convertToOrderDetailResponse(String storeName, OrderDetail orderDetail, String address) {
         OrderDetailResponse response = new OrderDetailResponse();
         response.setOrderDetailId(orderDetail.getOrderDetailId());

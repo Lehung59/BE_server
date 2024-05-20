@@ -45,12 +45,22 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
     @Query("select o from orderdetail o where o.storeName=:storeName AND o.user.id=:customerid")
     Page<OrderDetail> findAllOrderByCustomerAndStorePaginable(Pageable pageable, String storeName, int customerid);
 
-    @Query("select o.productName from orderdetail o where o.storeName=:storeName AND o.user.id=:customerid")
-    List<String> findAllOrderByCustomerAndStorePaginable( String storeName, int customerid);
+//    @Query("select o.productName from orderdetail o where o.storeName=:storeName AND o.user.id=:customerid")
+//    List<String> findAllOrderByCustomerAndStorePaginable( String storeName, int customerid);
 
 
     @Query("select o from orderdetail o where o.storeName=:storeName AND o.user.id=:customerid " +
             "AND LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<OrderDetail> findOrderByTitleContainingIgnoreCase(String keyword, Pageable pageable, String storeName, int customerid);
+
+
+    @Query("select o from orderdetail o where o.storeId=:storeId")
+    Page<OrderDetail> getAllByStoreWithPagination(int storeId, Pageable pageable);
+
+
+    @Query("select o from orderdetail o where o.storeId=:storeId " +
+            "AND LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    Page<OrderDetail> findByTitleContainingIgnoreCase(int storeId, String keyword, Pageable pageable);
 }

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(value = "/shipper")
+@RequestMapping(value = "/api/v1/shipper")
 public class ShipperController {
     @Autowired
     private IOrderDetailService orderService;

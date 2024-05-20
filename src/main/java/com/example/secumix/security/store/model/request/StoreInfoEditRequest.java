@@ -12,6 +12,7 @@ public class StoreInfoEditRequest {
     private String storeName;
     private String address;
     private String phonumber;
+    private String avatar;
 
 
 }

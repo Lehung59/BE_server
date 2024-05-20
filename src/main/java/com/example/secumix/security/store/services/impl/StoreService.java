@@ -26,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,13 +65,12 @@ public class StoreService implements IStoreService {
     @Override
     public void updateInfo(StoreInfoEditRequest storeInfoEditRequest) {
         Optional<Store> storeOptional = storeRepo.findStoreByName(storeInfoEditRequest.getStoreName());
-        if (storeOptional.isPresent() ) {
+        if (storeOptional.isPresent() && !Objects.equals(storeOptional.get().getStoreName(), storeInfoEditRequest.getStoreName())) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Tên cửa hàng đã tồn tại");
         }
-
         // Kiểm tra số điện thoại đã tồn tại
         Optional<Store> storeOptional2 = storeRepo.findByPhonenumber(storeInfoEditRequest.getPhonumber());
-        if (storeOptional2.isPresent() ) {
+        if (storeOptional2.isPresent() && !Objects.equals(storeOptional2.get().getPhoneNumber(), storeInfoEditRequest.getPhonumber())) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Số điện thoại đã tồn tại");
         }
 
@@ -79,9 +79,14 @@ public class StoreService implements IStoreService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Store không tồn tại"));
 
         // Cập nhật thông tin store
-        newObject.setPhoneNumber(storeInfoEditRequest.getPhonumber());
-        newObject.setStoreName(storeInfoEditRequest.getStoreName());
-        newObject.setAddress(storeInfoEditRequest.getAddress());
+        if(storeInfoEditRequest.getPhonumber() != null)
+            newObject.setPhoneNumber(storeInfoEditRequest.getPhonumber());
+        if(storeInfoEditRequest.getStoreName() != null)
+            newObject.setStoreName(storeInfoEditRequest.getStoreName());
+        if(storeInfoEditRequest.getAddress() != null)
+            newObject.setAddress(storeInfoEditRequest.getAddress());
+        if(storeInfoEditRequest.getAvatar() != null)
+            newObject.setImage(storeInfoEditRequest.getAvatar());
 
         // Lưu đối tượng store đã cập nhật
         storeRepo.save(newObject);
@@ -95,11 +100,6 @@ public class StoreService implements IStoreService {
                 .stream()
                 .map(storeMapper::convertToStoreViewResponse)
                 .toList();
-//        List<String> storeViewResponses = stores
-//                .stream()
-//                .map(Store::getStoreName)
-//                .toList();
-
         return new PageImpl<>(storeViewResponses, pageable, stores.getTotalElements());
     }
 
@@ -113,43 +113,5 @@ public class StoreService implements IStoreService {
 
         return new PageImpl<>(importResponses, pageable, stores.getTotalElements());
     }
-//
-//    public static StoreViewResponse convertToStoreViewResponse(Store store) {
-//        if (store == null) {
-//            return null;
-//        }
-//        StoreViewResponse storeViewResponse = new StoreViewResponse();
-//        storeViewResponse.setStoreId(store.getStoreId());
-//        storeViewResponse.setStoreName(store.getStoreName());
-//        storeViewResponse.setAddress(store.getAddress());
-//        storeViewResponse.setPhoneNumber(store.getPhoneNumber());
-//        storeViewResponse.setRate(store.getRate());
-//        storeViewResponse.setImage(store.getImage());
-//        storeViewResponse.setStoreType(store.getStoreType() != null ? store.getStoreType().getStoreTypeName() : null);
-//        storeViewResponse.setProductType(store.getProductType().stream().map(ProductType::getProductTypeName).toList());
-////        List<ProductDto> productListDtos = store.getProductList().stream()
-////                .map(product -> {
-////                    ProductDto dto = new ProductDto();
-////                    dto.setProductId(product.getProductId());
-////                    dto.setProductName(product.getProductName());
-////                    // Map other fields as needed
-////                    return dto;
-////                }).collect(Collectors.toList());
-////        storeViewResponse.setProductList(productListDtos);
-//        storeViewResponse.setEmailmanager(store.getEmailmanager());
-////        List<Integer> userId = storeRepo.
-//        Set<User> userId = store.getUsers();
-//        Set<CustomerDto> customerDtos = store.getUsers().stream()
-//                .map(customer -> {
-//                    CustomerDto dto = new CustomerDto();
-//                    dto.setId(customer.getId());
-//                    dto.setEmail(customer.getEmail());
-//                    // Map other fields as needed
-//                    return dto;
-//                }).collect(Collectors.toSet());
-//        storeViewResponse.setCustomerDtos(customerDtos);
-//
-//        return storeViewResponse;
-//    }
 
 }

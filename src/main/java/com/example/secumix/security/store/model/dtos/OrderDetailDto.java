@@ -15,8 +15,10 @@ public class OrderDetailDto  {
     private int storeId;
     private long priceTotal;
     private int productId;
-    private int cartId;
+    private Integer cartId;
     private int userId;
     private Integer shipperId;
     private int orderStatusId;
+    private String customerPhone;
+    private String customerName;
 }

@@ -3,16 +3,17 @@ package com.example.secumix.security.store.controller.manager;
 
 import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.ResponseObject;
+import com.example.secumix.security.Utils.DtoMapper.ProductMapper;
 import com.example.secumix.security.Utils.ImageUpload;
+import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.store.model.entities.Product;
 import com.example.secumix.security.store.model.entities.ProductImage;
 import com.example.secumix.security.store.model.entities.ProductType;
+import com.example.secumix.security.store.model.entities.Store;
 import com.example.secumix.security.store.model.request.AddProductRequest;
+import com.example.secumix.security.store.model.request.ProductRequest;
 import com.example.secumix.security.store.model.response.ProductResponse;
-import com.example.secumix.security.store.repository.ImportDetailRepo;
-import com.example.secumix.security.store.repository.ProductImageRepo;
-import com.example.secumix.security.store.repository.ProductTypeRepo;
-import com.example.secumix.security.store.repository.StoreTypeRepo;
+import com.example.secumix.security.store.repository.*;
 import com.example.secumix.security.store.services.IProductService;
 import com.example.secumix.security.store.services.IProductTypeService;
 import com.example.secumix.security.store.services.IStoreService;
@@ -28,12 +29,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1/management")
 @RequiredArgsConstructor
 public class ProductControllerManager {
+    private final StoreRepo storeRepo;
+    private final ProductMapper productMapper;
     @Value("${default_avt}")
     private String defaultAvt;
     private final ImageUpload imageUpload;
@@ -47,7 +51,7 @@ public class ProductControllerManager {
     private final IStoreService storeService;
     private final StoreTypeRepo storeTypeRepo;
     private final ProductTypeRepo productTypeRepo;
-
+    private final UserUtils userUtils;
 
 
     @PostMapping(value = "/{storeid}/product/insert")
@@ -147,6 +151,59 @@ public class ProductControllerManager {
                 new ResponseObject("OK","Cac san pham trong cua hang cua ban.",products)
         );
     }
+    @PutMapping(value = "/{storeid}/product/edit")
+    ResponseEntity<ResponseObject>editProduct(@PathVariable int storeid,
+                                              @RequestParam int productId,
+                                              @RequestParam(required = false) MultipartFile avatar,
+                                              @RequestParam(required = false) String name,
+                                              @RequestParam(required = false) String description,
+                                              @RequestParam(required = false) Integer productTypeId ,
+                                              @RequestParam(required = false) Long price,
+                                              @RequestParam(required = false) Integer discount,
+                                              @RequestParam(required = false) Boolean status,
+                                              @RequestParam(required = false) Integer quantity
+    ){
+
+        try{
+            Optional<Store> storeOptional = storeService.findStoreById(storeid);
+            if (storeOptional.isEmpty()) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ResponseObject("FAILED", "Cannot find store", "")
+            );
+            if (!Objects.equals(storeOptional.get().getEmailmanager(), userUtils.getUserEmail())) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                    new ResponseObject("FAILED", "Cannot access to this store", "")
+            );
+            Optional<Product> product = productService.findById(productId);
+            if (product.isEmpty() || product.get().getStore().getStoreId() != storeid) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ResponseObject("FAILED", "Khong tim thay san pham trong cua hang", "")
+            );
+            String avrUrl = product.get().getAvatarProduct();
+            if(avatar!=null){
+                 avrUrl = imageUpload.upload(avatar);
+            }
+            ProductRequest productRequest = productMapper.toProductRequest(product.get());
+            if(name!=null) productRequest.setProductName(name);
+            if(description!=null) productRequest.setDescription(description);
+            if(productTypeId!=null) productRequest.setProductTypeId(productTypeId);
+            if(quantity!=null) productRequest.setQuantity(quantity);
+            if(price!=null) productRequest.setPrice(price);
+            if(discount!=null) productRequest.setDiscount(discount);
+            if(avrUrl!=null) productRequest.setAvatar(avrUrl);
+            if(status!=null) productRequest.setStatus(status);
+            productService.updateProduct(productRequest);
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK","Sua thanh cong.","")
+            );
+        }
+
+
+        catch (CustomException ex) {
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
+    }
+
+
 
 
 }
