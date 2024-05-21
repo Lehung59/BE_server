@@ -215,6 +215,11 @@ public class AuthenticationService {
     saveUserToken(user, jwtToken);
 
     return AuthenticationResponse.builder()
+            .userId(user.getId())
+            .firstname(user.getFirstname())
+            .lastname(user.getLastname())
+            .role(user.getRole())
+            .email(user.getEmail())
             .accessToken(jwtToken)
             .refreshToken(refreshToken)
             .build();
