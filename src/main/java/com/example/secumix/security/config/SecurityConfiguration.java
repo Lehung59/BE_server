@@ -52,15 +52,16 @@ public class SecurityConfiguration {
                      "/category/getall",
                     "/swagger-ui-custom",
                     "/api/v1/customer/**",
-                    "/api/v1/product/**"
+                    "/api/v1/product/**",
+                    "/**"
             };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
+
 //    private final CustomOAuth2UserService oauth2UserService;
-    @Autowired
-    @Lazy
+
 //    private final OAuthLoginSuccessHandler oauthLoginSuccessHandler;
     
     @Bean
@@ -81,7 +82,7 @@ public class SecurityConfiguration {
 //                        .antMatchers(POST, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_CREATE.name())
 //                        .antMatchers(PUT, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_UPDATE.name())
 //                        .antMatchers(DELETE, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_DELETE.name())
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
 //                .oauth2Login()
 //                .userInfoEndpoint()
 //                .userService(oauth2UserService)
@@ -92,8 +93,8 @@ public class SecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout.logoutUrl("/api/v1/auth/logout").addLogoutHandler(logoutHandler)
-                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()));
-
+                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
+                .cors(AbstractHttpConfigurer::disable);
         // Add JWT authentication filter after OAuth2Login filter
         http.addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
