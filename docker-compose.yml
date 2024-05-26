@@ -1,0 +1,12 @@
+version: '3'
+
+
+services:
+  spring-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    # Đặt biến môi trường dựa trên môi trường Docker
