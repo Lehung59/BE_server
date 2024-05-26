@@ -1,0 +1,83 @@
+server:
+  port: 9000
+
+spring:
+  thymeleaf:
+    check-template: true
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: LEGACYHTML5
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+    cache: false
+
+  # datasource
+  #  datasource:
+
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  datasource:
+#    url: jdbc:mysql://localhost:3306/gr
+#    username: root
+#    password: root
+    url: jdbc:mysql://viaduct.proxy.rlwy.net:58538/railway
+    username: root
+    password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  main:
+    allow-bean-definition-overriding: true
+
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: update
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: Iv1.731596c579d3b990
+            clientSecret: 1a16900f622b3b74d6d2e1efa40c53a63ad8705d
+            scope:
+              - email
+              - profile
+          google:
+            clientId: 825867327215-1mjta7um55kagi30ccucbn4f26q1bib9.apps.googleusercontent.com
+            clientSecret: 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
+            scope:
+              - email
+              - profile
+          facebook:
+            clientId: 1096220391374810
+            clientSecret: 511c1cce66db75b519fc74752441d7e0
+            scope:
+              - email
+              - public_profile
+
+application:
+  security:
+    jwt:
+      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom
+default_avt: "https://res.cloudinary.com/dqvr7kat6/image/upload/v1712428988/z9fgzziw6xy1vpkg1x1p.jpg"
