@@ -73,6 +73,7 @@ com\example\secumix\security\store\model\response\StoreCustomerRespone.class
 com\example\secumix\security\Oauth2\CustomOAuth2User.class
 com\example\secumix\security\store\services\impl\CustomerService.class
 com\example\secumix\security\auth\AuthenticationRequest.class
+com\example\secumix\security\config\CorsConfig.class
 com\example\secumix\security\store\repository\ProductRepo.class
 com\example\secumix\security\Utils\DtoMapper\ProductImageMapper.class
 com\example\secumix\security\store\model\dtos\UserDto.class
