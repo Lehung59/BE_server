@@ -1,11 +1,11 @@
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\auth\AuthenticationController.java
+F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\config\WebConfig.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\userprofile\ProfileService.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\auth\AuthenticationRequest.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\config\ConfigCloudinary.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\config\SecurityConfiguration.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\model\request\StoreInfoEditRequest.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\user\UserService.java
-F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\config\CorsConfig.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\model\entities\CartItem.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Utils\DtoMapper\ProductMapper.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\notify\NotifyRepository.java

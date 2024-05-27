@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.secumix.security.SecumixApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 35.342 s - in com.example.secumix.security.SecumixApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 62.656 s - in com.example.secumix.security.SecumixApplicationTests
