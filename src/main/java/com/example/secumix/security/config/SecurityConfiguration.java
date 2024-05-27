@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import static com.example.secumix.security.user.Permission.*;
 import static com.example.secumix.security.user.Role.*;
 import static org.springframework.http.HttpMethod.*;
+import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -94,8 +95,7 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout.logoutUrl("/api/v1/auth/logout").addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
-                .cors(AbstractHttpConfigurer::disable);
-        // Add JWT authentication filter after OAuth2Login filter
+                .cors(withDefaults()); // Apply CORS configuration
         http.addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
