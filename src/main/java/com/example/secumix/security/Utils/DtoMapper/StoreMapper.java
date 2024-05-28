@@ -1,4 +1,5 @@
 package com.example.secumix.security.Utils.DtoMapper;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import com.example.secumix.security.store.repository.StoreRepo;
 import com.example.secumix.security.user.User;
 import com.example.secumix.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Component;
 
 
@@ -28,11 +30,21 @@ public class StoreMapper {
     private final UserRepository userRepository;
     private final ProductRepo productRepository;
     private final StoreRepo storeRepo;
+    private final ProductTypeRepo productTypeRepo;
+    private final ProductRepo productRepo;
 
     public StoreDto toDto(Store store) {
         if (store == null) {
             return null;
         }
+        List<Product> productList = store.getProductList();
+        List<ProductType> productTypeList = store.getProductType();
+        Set<User> userList = store.getUsers();
+
+        List<String> products = productList.stream().map(Product::getProductName).toList();
+        Set<String> usersEmail = userList.stream().map(User::getEmail).collect(Collectors.toSet());
+        List<String> productTypes = productTypeList.stream().map(ProductType::getProductTypeName).toList();
+
 
         StoreDto storeDto = new StoreDto();
         storeDto.setStoreId(store.getStoreId());
@@ -42,10 +54,10 @@ public class StoreMapper {
         storeDto.setRate(store.getRate());
         storeDto.setImage(store.getImage());
         storeDto.setStoreTypeId(store.getStoreType().getStoreTypeId());
-        storeDto.setProductTypeIds(store.getProductType().stream().map(ProductType::getProductTypeId).collect(Collectors.toList()));
-        storeDto.setProductListIds(store.getProductList().stream().map(Product::getProductId).collect(Collectors.toList()));
+        storeDto.setProductType(productTypes);
+        storeDto.setProductList(products);
         storeDto.setEmailManager(store.getEmailmanager());
-        storeDto.setUserIds(store.getUsers().stream().map(User::getId).collect(Collectors.toSet()));
+        storeDto.setUserEmail(usersEmail);
 
         return storeDto;
     }
@@ -67,15 +79,19 @@ public class StoreMapper {
         storeType.setStoreTypeId(storeDto.getStoreTypeId());
         store.setStoreType(storeType);
 
-        List<ProductType> productTypes = storeDto.getProductTypeIds().stream()
-                .map(productTypeRepository::findById)
+        List<ProductType> productTypes = storeDto.getProductType().stream()
+                .map(productType -> {
+                    return productTypeRepo.findProductTypeByName(productType,storeDto.getStoreId());
+                })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
         store.setProductType(productTypes);
 
-        List<Product> products = storeDto.getProductListIds().stream()
-                .map(productRepository::findById)
+        List<Product> products = storeDto.getProductList().stream()
+                .map(productName ->{
+                    return productRepo.findByName(storeDto.getStoreId(),productName);
+                })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
@@ -83,8 +99,8 @@ public class StoreMapper {
 
         store.setEmailmanager(storeDto.getEmailManager());
 
-        Set<User> users = storeDto.getUserIds().stream()
-                .map(userRepository::findById)
+        Set<User> users = storeDto.getUserEmail().stream()
+                .map(userRepository::findByEmail)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());

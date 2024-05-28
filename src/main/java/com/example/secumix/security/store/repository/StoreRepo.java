@@ -6,9 +6,12 @@ import com.example.secumix.security.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,4 +43,22 @@ public interface StoreRepo extends JpaRepository<Store, Integer> {
 
     @Query("SELECT i FROM store i ")
     Page<Store> getAllStoreWithPagination(Pageable pageable);
+
+    @Modifying
+    @Query(value = "SELECT * FROM users_stores WHERE store_id=:storeId AND user_id=:userId", nativeQuery = true)
+    List<?> checkFavor(@Param("userId") int userId, @Param("storeId") int storeId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO users_stores (user_id, store_id) VALUES (:userId, :storeId)", nativeQuery = true)
+    void saveToFavor(@Param("userId") int userId, @Param("storeId") int storeId);
+
+    @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId)", nativeQuery = true)
+    Page<Store> findStoreFavor(@Param("userId") int userId, Pageable pageable);
+
+    @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId) " +
+            "AND (s.storename LIKE %:keyword% )",
+            nativeQuery = true)
+    Page<Store> findStoreFavorKeyword(@Param("userId") int userId, @Param("keyword") String keyword, Pageable pageable);
+
 }

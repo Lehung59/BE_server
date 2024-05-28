@@ -111,5 +111,9 @@ public class User implements UserDetails {
   public boolean isEnabled() {
     return enabled;
   }
+  public void addStore(Store store) {
+    this.stores.add(store);
+    store.getUsers().add(this);
+  }
 
 }

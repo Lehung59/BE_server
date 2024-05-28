@@ -9,6 +9,7 @@ import com.example.secumix.security.notify.NotifyRepository;
 import com.example.secumix.security.store.model.entities.Store;
 import com.example.secumix.security.store.model.entities.StoreType;
 import com.example.secumix.security.store.model.request.StoreInfoEditRequest;
+import com.example.secumix.security.store.model.response.StoreInfoView;
 import com.example.secumix.security.store.repository.*;
 import com.example.secumix.security.store.services.ICustomerService;
 import com.example.secumix.security.store.services.IOrderDetailService;
@@ -48,14 +49,6 @@ public class StoreControllerManager {
     private final IStoreService storeService;
     private final ImageUpload imageUpload;
 
-//    public Map upload(MultipartFile file) {
-//        try {
-//            Map data = this.cloudinary.uploader().upload(file.getBytes(), Map.of());
-//            return data;
-//        } catch (IOException io) {
-//            throw new RuntimeException("Image upload fail");
-//        }
-//    }
 
     @GetMapping(value = "/store/revenue")
     ResponseEntity<ResponseObject> RevenueByStore(@RequestParam int storeid) {
@@ -63,6 +56,22 @@ public class StoreControllerManager {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
                 "OK", "Doanh thu ", revenue
         ));
+    }
+
+    @GetMapping(value = "{storeid}/info/view")
+    public ResponseEntity<ResponseObject> viewStoreInfo(@PathVariable int storeid) {
+        try{
+            storeService.checkStoreAuthen(storeid);
+
+            StoreInfoView storeInfoView = storeService.getInfo(storeid);
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK", "Success", storeInfoView)
+            );
+        } catch (CustomException ex){
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
     }
 
     @PutMapping(value = "{storeid}/info/edit")

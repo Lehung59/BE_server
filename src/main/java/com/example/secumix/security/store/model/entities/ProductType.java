@@ -41,7 +41,7 @@ public class ProductType {
     @JsonManagedReference
     private Set<Product> products;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     @JoinColumn(name = "storeid",foreignKey = @ForeignKey(name = "fk_store_producttype"))
     private Store store;

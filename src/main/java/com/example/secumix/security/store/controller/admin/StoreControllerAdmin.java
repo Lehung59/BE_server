@@ -4,6 +4,7 @@ import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.ResponseObject;
 
 
+import com.example.secumix.security.store.model.dtos.StoreDto;
 import com.example.secumix.security.store.model.entities.StoreType;
 import com.example.secumix.security.store.model.request.StoreViewResponse;
 import com.example.secumix.security.store.repository.StoreTypeRepo;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/admin")
 public class StoreControllerAdmin {
     @Autowired
     private StoreTypeRepo storeTypeRepo;
@@ -32,7 +33,8 @@ public class StoreControllerAdmin {
     private IStoreService storeService;
 
     //--------------------------------admin
-    @GetMapping(value = "/admin/store/view")
+
+    @GetMapping(value = "/store/view")
     public ResponseEntity<ResponseObject> viewStore(@RequestParam(required = false) String keyword,
                                                     @RequestParam(defaultValue = "1") int page,
                                                     @RequestParam(defaultValue = "10") int size ) {
@@ -50,7 +52,7 @@ public class StoreControllerAdmin {
 
             storeViewRespones = pageTuts.getContent();
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK","Các hóa đơn nhập hàng của bạn",storeViewRespones)
+                    new ResponseObject("OK","Các cua hang hien tai",storeViewRespones)
             );
 
 
@@ -63,7 +65,7 @@ public class StoreControllerAdmin {
     }
 
 
-    @PostMapping(value = "/admin/storetype/insert")
+    @PostMapping(value = "/storetype/insert")
     public ResponseEntity<ResponseObject> insertStoreType(@RequestParam String name
     ){
         Optional<StoreType> store = storeTypeRepo.findByName(name);

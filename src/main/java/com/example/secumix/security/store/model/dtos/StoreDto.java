@@ -14,8 +14,8 @@ public class StoreDto {
     private int rate;
     private String image;
     private int storeTypeId;
-    private List<Integer> productTypeIds;
-    private List<Integer> productListIds;
+    private List<String> productType;
+    private List<String> productList;
     private String emailManager;
-    private Set<Integer> userIds;
+    private Set<String> userEmail;
 }
