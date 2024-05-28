@@ -21,25 +21,6 @@ public class UserController {
     private final UserService service;
     @Autowired
     private ProfileDetailRepository profileDetailRepository;
-    @GetMapping("/profile")
-    ResponseEntity<ProfileResponse> getProfile(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        Optional<ProfileResponse> profileResponse= profileDetailRepository.findProfileDetailBy(email).map(
-                profileDetail -> {
-                    ProfileResponse mapper= new ProfileResponse();
-                    mapper.setFirstname(profileDetail.getFirstname());
-                    mapper.setLastname(profileDetail.getLastname());
-                    mapper.setAddress(profileDetail.getAddress());
-                    mapper.setPhoneNumber(profileDetail.getPhoneNumber());
-                    mapper.setSocialContact(profileDetail.getSocialContact());
-                    mapper.setAvatar(profileDetail.getAvatar());
-                    return mapper;
-                }
-
-        );
-        return ResponseEntity.status(HttpStatus.OK).body(profileResponse.get());
-    }
 
     @PostMapping(value = "/changepassword")
     public ResponseEntity<String> changePassword(

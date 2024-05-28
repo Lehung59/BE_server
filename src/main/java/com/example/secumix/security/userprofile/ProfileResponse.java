@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.validation.constraints.Pattern;
 @Data
 public class ProfileResponse {
-
+    private int userId;
     private String firstname;
     private String lastname;
 

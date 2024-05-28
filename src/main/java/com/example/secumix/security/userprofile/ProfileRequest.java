@@ -1,11 +1,14 @@
 package com.example.secumix.security.userprofile;
 
+import lombok.Builder;
 import lombok.Data;
 
 
 import javax.validation.constraints.Pattern;
 @Data
+@Builder
 public class ProfileRequest {
+    private int userId;
     private String firstname;
     private String lastname;
     private String address;

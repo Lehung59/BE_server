@@ -15,6 +15,7 @@ import com.example.secumix.security.store.model.request.StoreInfoEditRequest;
 import com.example.secumix.security.store.model.request.StoreViewResponse;
 import com.example.secumix.security.store.model.response.ImportResponse;
 import com.example.secumix.security.store.model.response.ProductResponse;
+import com.example.secumix.security.store.model.response.StoreFavorRespone;
 import com.example.secumix.security.store.model.response.StoreInfoView;
 import com.example.secumix.security.store.repository.StoreRepo;
 import com.example.secumix.security.store.services.IStoreService;
@@ -52,6 +53,7 @@ public class StoreService implements IStoreService {
 
     public void checkStoreAuthen(int storeId) throws CustomException {
         return;
+//        chinh sau
 //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 //        String email = auth.getName();
 //        Optional<Store> store = storeRepo.findStoreById(storeId);
@@ -151,24 +153,34 @@ public class StoreService implements IStoreService {
 
     }
 
+
     @Override
-    public Page<StoreDto> viewFavor(int userId, String keyword, int page, int size) {
+    public List<StoreFavorRespone> findFavorStore(int userId, String keyword, int page, int size) {
         Pageable paging = PageRequest.of(page - 1, size);
         Page<Store> stores;
         if(keyword == null || keyword.isEmpty()){
             stores = storeRepo.findStoreFavor(userId, paging);
 
         } else stores = storeRepo.findStoreFavorKeyword(userId, keyword,paging);
-        List<Store> storeList=stores.getContent();
-        List<StoreDto> storeDtoList = storeList
-                .stream()
-                .map(store ->
-                {return storeMapper.toDto(store);})
-                .toList();
+        List<StoreFavorRespone> listStores = stores.getContent().stream().map(store -> {
+            return StoreFavorRespone.builder()
+                    .avatar(store.getImage())
+                    .storeAddress(store.getAddress())
+                    .storeName(store.getStoreName())
+                    .storeId(store.getStoreId())
+                    .build();
+        }).toList();
 
-        return new PageImpl<>(storeDtoList, paging, stores.getTotalElements());
 
+        return listStores;
+    }
 
+    @Override
+    public void removeStoreFromFavorList(int storeid, int userId) {
+
+        if(storeRepo.checkFavor(userId,storeid).isEmpty())
+            throw new CustomException(HttpStatus.NOT_FOUND,"Khong co cua hang nay trong pha nyeu thich cua ban");
+        storeRepo.deleteStoreFavor(storeid,userId);
     }
 
 }

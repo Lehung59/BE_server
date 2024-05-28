@@ -5,11 +5,13 @@ import com.example.secumix.security.store.model.dtos.StoreDto;
 import com.example.secumix.security.store.model.entities.Store;
 import com.example.secumix.security.store.model.request.StoreInfoEditRequest;
 import com.example.secumix.security.store.model.request.StoreViewResponse;
+import com.example.secumix.security.store.model.response.StoreFavorRespone;
 import com.example.secumix.security.store.model.response.StoreInfoView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IStoreService {
@@ -29,5 +31,7 @@ public interface IStoreService {
 
     void addStoreToFavor(int userId, int storeid);
 
-    Page<StoreDto> viewFavor(int id, String keyword, int page, int size);
+    List<StoreFavorRespone> findFavorStore(int userId, String keyword, int page, int size);
+
+    void removeStoreFromFavorList(int storeid, int userId);
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProfileDetailRepo extends JpaRepository<ProfileDetail, Integer> {
@@ -30,4 +31,7 @@ public interface ProfileDetailRepo extends JpaRepository<ProfileDetail, Integer>
 
     @Query(" select p from profile p where p.user.id=:id")
     ProfileDetail findByUserId(Integer id);
+
+    @Query(" select p from profile p where p.user.id=:id")
+    Optional<ProfileDetail> findByUserIdCheck(Integer id);
 }

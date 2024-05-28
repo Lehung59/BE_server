@@ -61,4 +61,8 @@ public interface StoreRepo extends JpaRepository<Store, Integer> {
             nativeQuery = true)
     Page<Store> findStoreFavorKeyword(@Param("userId") int userId, @Param("keyword") String keyword, Pageable pageable);
 
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM users_stores WHERE user_id = :userId AND store_id = :storeId", nativeQuery = true)
+    void deleteStoreFavor(@Param("storeId") int storeId, @Param("userId") int userId);
 }

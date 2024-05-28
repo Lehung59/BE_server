@@ -7,6 +7,7 @@ import com.example.secumix.security.Utils.ImageUpload;
 import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.notify.NotifyRepository;
 import com.example.secumix.security.store.model.dtos.StoreDto;
+import com.example.secumix.security.store.model.response.StoreFavorRespone;
 import com.example.secumix.security.store.repository.*;
 import com.example.secumix.security.store.services.ICustomerService;
 import com.example.secumix.security.store.services.IOrderDetailService;
@@ -51,10 +52,9 @@ public class StoreControllerCustomer {
         try{
             int userId = userUtils.getUserId();
 
-            Page<StoreDto> storeDtoList = storeService.viewFavor(userId,keyword,page,size);
-
+            List<StoreFavorRespone> storeFavorRespones = storeService.findFavorStore(userId,keyword,page,size);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
-                    "OK", "Cac cua hang yeu thich cua ban", storeDtoList.getContent()
+                    "OK", "Cac cua hang yeu thich cua ban", storeFavorRespones
             ));
         } catch (CustomException ex){
             return ResponseEntity.status(ex.getStatus())
@@ -62,6 +62,21 @@ public class StoreControllerCustomer {
         }
     }
 
+    @DeleteMapping(value = "/favor/remove")
+    ResponseEntity<ResponseObject> removeFavor(@RequestParam int  storeid){
+        try{
+            int userId = userUtils.getUserId();
+
+            storeService.removeStoreFromFavorList(storeid,userId);
+
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
+                    "OK", "Da xoa thanh cong", ""
+            ));
+        }catch (CustomException ex){
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
+    }
 
     @PostMapping(value = "/favor/add")
     ResponseEntity<ResponseObject> addToFavor(@RequestParam int storeid) {
