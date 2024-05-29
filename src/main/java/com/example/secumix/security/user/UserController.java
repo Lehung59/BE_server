@@ -14,7 +14,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping(value ="/api/v1")
 @RequiredArgsConstructor
 public class UserController {
 
