@@ -80,4 +80,4 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui-custom
-default_avt: "https://res.cloudinary.com/dqvr7kat6/image/upload/v1712428988/z9fgzziw6xy1vpkg1x1p.jpg"
+default_avt: "https://res.cloudinary.com/dqvr7kat6/image/upload/v1716968114/yloze4dca4hti9nptvgf.png"

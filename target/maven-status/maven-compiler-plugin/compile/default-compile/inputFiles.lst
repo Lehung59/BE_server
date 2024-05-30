@@ -19,7 +19,6 @@ F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\confi
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\model\dtos\OrderDetailDto.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\notify\WebSocketController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\model\response\OrderDetailResponse.java
-F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\userprofile\ProfileController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\services\impl\StoreService.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\model\request\AddProductRequest.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Utils\DtoMapper\OrderDetailMapper.java
@@ -110,6 +109,7 @@ F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Oauth2\CustomOAuth2UserService.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\OrderController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\token\TokenType.java
+F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\userprofile\AccountController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\repository\PayRepo.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\userprofile\ProfileDetail.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Utils\DtoMapper\ProductImageMapper.java

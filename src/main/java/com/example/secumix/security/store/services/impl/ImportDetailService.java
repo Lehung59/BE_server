@@ -65,13 +65,13 @@ public class ImportDetailService implements IImportDetailService {
     public ImportResponse updateImport(ImportEditRequest importEditRequest) throws CustomException {
         ImportDetail importDetail = importDetailRepo.findById(importEditRequest.getImportDetailId())
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "ImportDetail not found"));
-
-        List<ImportDetail> importDetailList = importDetailRepo.findByStore( userUtils.getUserEmail());
-        boolean exists = importDetailList.stream()
-                .anyMatch(item -> item.getImportDetailId() == importEditRequest.getImportDetailId());
-        if (!exists) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Ban khong co quyen chinh sua cai nay");
-        }
+//sua
+//        List<ImportDetail> importDetailList = importDetailRepo.findByStore( userUtils.getUserEmail());
+//        boolean exists = importDetailList.stream()
+//                .anyMatch(item -> item.getImportDetailId() == importEditRequest.getImportDetailId());
+//        if (!exists) {
+//            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Ban khong co quyen chinh sua cai nay");
+//        }
 
         if (importEditRequest.getPrice() >= 0) {
             importDetail.setPrice(importEditRequest.getPrice());
