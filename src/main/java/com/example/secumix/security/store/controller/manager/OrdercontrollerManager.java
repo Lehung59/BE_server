@@ -49,11 +49,13 @@ public class OrdercontrollerManager {
     }
 
     @GetMapping(value = "/{storeid}/orderdetail/view/{orderDetailId}")
-    ResponseEntity<ResponseObject> GetAllOrderDetailByStore(@PathVariable int orderDetailId){
+    ResponseEntity<ResponseObject> GetAllOrderDetailByStore(@PathVariable int orderDetailId,
+                                                            @PathVariable int storeid){
 
 
         try{
-            OrderDetailDto orderDetailDto = orderDetailService.findDtoById(orderDetailId);
+
+            OrderDetailDto orderDetailDto = orderDetailService.findDtoById(orderDetailId,storeid);
 
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("OK","Chi tiet don hang "+orderDetailId,orderDetailDto)

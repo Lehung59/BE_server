@@ -15,6 +15,8 @@ import com.example.secumix.security.userprofile.ProfileDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class OrderDetailMapper {
 
@@ -51,7 +53,11 @@ public class OrderDetailMapper {
         orderDetailDto.setStoreId(orderDetail.getStoreId());
         orderDetailDto.setPriceTotal(orderDetail.getPriceTotal());
         orderDetailDto.setProductId(orderDetail.getProduct() != null ? orderDetail.getProduct().getProductId() : 0);
-        orderDetailDto.setCartId(orderDetail.getCart() != null ? orderDetail.getCart().getCartId() : 0);
+        orderDetailDto.setCartId(
+                Optional.ofNullable(orderDetail.getCart())
+                        .flatMap(cart -> Optional.of(cart.getCartId()))
+                        .orElse(0)
+        );
         orderDetailDto.setUserId(orderDetail.getUser() != null ? orderDetail.getUser().getId() : 0);
         orderDetailDto.setShipperId(orderDetail.getShipperid());
         orderDetailDto.setOrderStatusId(orderDetail.getOrderStatus() != null ? orderDetail.getOrderStatus().getOrderStatusId() : 0);

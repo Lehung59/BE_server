@@ -14,14 +14,14 @@ import java.util.Optional;
 
 @Repository
 public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
-    @Query("select o from orderdetail o where o.cart.user.email=:email")
+    @Query("select o from orderdetail o where o.user.email=:email")
     List<OrderDetail> getAllByUser(String email);
 
-    @Query("select o from orderdetail o where o.cart.user.id=:userId")
+    @Query("select o from orderdetail o where o.user.id=:userId")
     List<OrderDetail> getAllByUser(int userId);
 
 
-    @Query("select o from orderdetail o where o.orderDetailId=:orderdetailid and o.cart.user.email=:email")
+    @Query("select o from orderdetail o where o.orderDetailId=:orderdetailid and o.user.email=:email")
     Optional<OrderDetail> findByIDandUser(int orderdetailid, String email);
     @Query("select o from orderdetail o where o.storeName=:storeName")
     List<OrderDetail> getAllByStore(String storeName);

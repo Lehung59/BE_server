@@ -18,12 +18,12 @@ spring:
   #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   datasource:
-#    url: jdbc:mysql://localhost:3306/gr
-#    username: root
-#    password: root
-    url: jdbc:mysql://viaduct.proxy.rlwy.net:58538/railway
+    url: jdbc:mysql://localhost:3306/gr
     username: root
-    password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
+    password: root
+#    url: jdbc:mysql://viaduct.proxy.rlwy.net:58538/railway
+#    username: root
+#    password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
     driver-class-name: com.mysql.cj.jdbc.Driver
   main:
     allow-bean-definition-overriding: true
@@ -55,8 +55,8 @@ spring:
               - email
               - profile
           google:
-            clientId: 825867327215-1mjta7um55kagi30ccucbn4f26q1bib9.apps.googleusercontent.com
-            clientSecret: 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
+            clientId: 443598481657-mdgnmebmg14jjbp4f1enoufho4tclioj.apps.googleusercontent.com
+            clientSecret: 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
             scope:
               - email
               - profile

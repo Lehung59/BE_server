@@ -13,7 +13,7 @@ public interface PayRepo extends JpaRepository<Pay, Integer>
 {
     @Query("select o from pay o where o.orderDetail.storeName=:storename")
     List<Pay> GetAllPayByStore(String storename);
-    @Query("select o from pay o where o.orderDetail.cart.user.email=:email")
+    @Query("select o from pay o where o.orderDetail.user.email=:email")
     List<Pay> GetAllPAyByUser(String email);
 
 }

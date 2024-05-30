@@ -82,14 +82,7 @@ public class StoreControllerManager {
                                                         @RequestParam(required = false) MultipartFile image
                                                         ) {
         try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String email = auth.getName();
-            Store store = storeService.findStoreById(storeid)
-                    .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong ton tai cua hang"));
-            if (!store.getEmailmanager().equals(email)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ResponseObject("FAILED","Khong phai cua hang cua ban" , ""));
-            }
+            storeService.checkStoreAuthen(storeid);
 
             String uploadResult = imageUpload.upload(image);
             StoreInfoEditRequest storeInfoEditRequest = new StoreInfoEditRequest(storeid, storename,address,phonenumber, uploadResult);

@@ -1,7 +1,9 @@
 package com.example.secumix.security.Utils;
 
+import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.user.User;
 import com.example.secumix.security.user.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -58,7 +60,8 @@ public class UserUtils {
 
     public String getUserEmail() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth.getName();
+        User user = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay nguoi dang nhap nay: "+auth.getName()));
+        return user.getEmail();
     }
     public int getUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -1,5 +1,6 @@
 package com.example.secumix.security.store.controller;
 
+import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.ResponseObject;
 import com.example.secumix.security.store.model.entities.CartItem;
 import com.example.secumix.security.store.model.entities.OrderDetail;
@@ -60,8 +61,8 @@ public class OrderController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         User user = userRepository.findByEmail(email).get();
-        OrderDetail orderDetail = orderDetailRepo.findById(orderdetailid).get();
-        if (orderDetail.getCart().getUser().getEmail().equals(email) || user.getRole().getPermissions().contains(Permission.SHIPPER_READ)) {
+        OrderDetail orderDetail = orderDetailRepo.findById(orderdetailid).orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay don hang voi id" + orderdetailid));
+        if (orderDetail.getUser().getEmail().equals(email) || user.getRole().getPermissions().contains(Permission.SHIPPER_READ)) {
             return true;
         }
         return true;

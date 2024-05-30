@@ -29,6 +29,7 @@ public class CartItemService implements ICartItemService {
     private final CartItemRepo cartItemRepo;
     private final CartRepo cartRepo;
     private final NotifyRepository notifyRepository;
+    private final UserUtils userUtils;
 
     @Override
     public List<CartItemResponse> findByProduct(int productid) {
@@ -86,8 +87,7 @@ public class CartItemService implements ICartItemService {
     }
     @Override
     public void Insert(CartItemRequest cartItemRequest) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+        String email = userUtils.getUserEmail();
         Product product= productRepo.findById(cartItemRequest.getProductid()).get();
         Cart cart= cartRepo.findByEmail(email);
         Optional<CartItem> rscartItem= cartItemRepo.finfByProductandUser(cartItemRequest.getProductid(), email);

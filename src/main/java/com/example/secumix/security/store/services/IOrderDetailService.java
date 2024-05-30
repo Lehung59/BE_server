@@ -43,5 +43,5 @@ public interface IOrderDetailService {
 
     Page<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid);
 
-    OrderDetailDto findDtoById(int orderDetailId);
+    OrderDetailDto findDtoById(int orderDetailId, int storeId);
 }

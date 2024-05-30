@@ -101,6 +101,7 @@ com\example\secumix\security\userprofile\ProfileDetail$ProfileDetailBuilder.clas
 com\example\secumix\security\notify\NotifyRepository.class
 com\example\secumix\security\store\services\IStoreTypeService.class
 com\example\secumix\security\user\User$UserBuilder.class
+com\example\secumix\security\store\controller\customer\CartItemController.class
 com\example\secumix\security\userprofile\ProfileRequest.class
 com\example\secumix\security\Oauth2\CustomOAuth2UserService.class
 com\example\secumix\security\ResponseObject.class
@@ -141,7 +142,6 @@ com\example\secumix\security\store\model\request\ImportEditRequest.class
 com\example\secumix\security\store\controller\OrderStatusController.class
 com\example\secumix\security\store\services\ICartItemService.class
 com\example\secumix\security\notify\NotificationService.class
-com\example\secumix\security\store\controller\CartItemController.class
 com\example\secumix\security\store\services\impl\OrderDetailService.class
 com\example\secumix\security\auth\rule\PasswordConstraintValidator.class
 com\example\secumix\security\store\services\impl\ProductService.class

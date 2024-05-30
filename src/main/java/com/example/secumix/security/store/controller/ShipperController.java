@@ -40,6 +40,11 @@ public class ShipperController {
                         new ResponseObject("OK","Nhận đơn thành công","")
                 );
             }else {
+                if(orderDetail.get().getOrderStatus().getOrderStatusId() == 4){
+                    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
+                            new ResponseObject("NOT IMPLEMENT","Don hang da bi huy","")
+                    );
+                }
                 return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(
                         new ResponseObject("NOT FOUND","Đã có người nhận đơn này","")
                 );

@@ -165,13 +165,7 @@ public class ProductControllerManager {
     ){
 
         try{
-            Optional<Store> storeOptional = storeService.findStoreById(storeid);
-            if (storeOptional.isEmpty()) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ResponseObject("FAILED", "Cannot find store", "")
-            );
-            if (!Objects.equals(storeOptional.get().getEmailmanager(), userUtils.getUserEmail())) return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-                    new ResponseObject("FAILED", "Cannot access to this store", "")
-            );
+            storeService.checkStoreAuthen(storeid);
             Optional<Product> product = productService.findById(productId);
             if (product.isEmpty() || product.get().getStore().getStoreId() != storeid) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new ResponseObject("FAILED", "Khong tim thay san pham trong cua hang", "")
