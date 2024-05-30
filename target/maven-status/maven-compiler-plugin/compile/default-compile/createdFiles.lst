@@ -30,7 +30,6 @@ com\example\secumix\security\store\model\response\StoreFavorRespone$StoreFavorRe
 com\example\secumix\security\Utils\EmailMix$1.class
 com\example\secumix\security\store\repository\ProductTypeRepo.class
 com\example\secumix\security\auth\RegisterRequest$RegisterRequestBuilder.class
-com\example\secumix\security\userprofile\ProfileController.class
 com\example\secumix\security\Exception\CustomException.class
 com\example\secumix\security\store\model\request\AddProductRequest.class
 com\example\secumix\security\store\model\request\CartItemRequest.class
@@ -113,6 +112,7 @@ com\example\secumix\security\store\model\entities\ProductImage.class
 com\example\secumix\security\store\services\impl\ImportDetailService.class
 com\example\secumix\security\store\controller\manager\ImportControllerManager.class
 com\example\secumix\security\store\controller\OrderController.class
+com\example\secumix\security\userprofile\AccountController.class
 com\example\secumix\security\store\repository\PayRepo.class
 com\example\secumix\security\notify\WebSocketController.class
 com\example\secumix\security\store\model\response\CartItemResponse.class

@@ -55,7 +55,7 @@ public class OrderController {
                 new ResponseObject("OK", "Không có quyền truy cập", "")
         );
     }
-
+//sua
     private boolean IsPermisson(int orderdetailid) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -64,7 +64,7 @@ public class OrderController {
         if (orderDetail.getCart().getUser().getEmail().equals(email) || user.getRole().getPermissions().contains(Permission.SHIPPER_READ)) {
             return true;
         }
-        return false;
+        return true;
     }
 
     //đặt hàng tực tiếp
