@@ -19,6 +19,9 @@ import java.util.Optional;
 public interface ProductRepo extends JpaRepository<Product, Integer> {
     @Query("select o from product o where o.store.storeId=:storeid and o.productName=:name")
     Optional<Product> findByName(int storeid, String name);
+
+
+
     @Query("select o from product o where o.productName=:name")
     List<Product> findByProductName( String name);
     @Query("select o from product o where o.store.emailmanager=:email")
@@ -39,4 +42,14 @@ public interface ProductRepo extends JpaRepository<Product, Integer> {
     @Query("select p from product p where p.productId = :productId")
     Product findProductForUpdate(@Param("productId") int productId);
 
+
+    @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true")
+    Page<Product> findSellingProduct(int storeid, Pageable paging);
+
+
+    @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true " +
+            "AND (p.productName LIKE %:keyword% )" +
+            "OR (p.description LIKE %:keyword% )"
+    )
+    Page<Product> findSellingProductKeyword(int storeid, Pageable paging, String keyword);
 }

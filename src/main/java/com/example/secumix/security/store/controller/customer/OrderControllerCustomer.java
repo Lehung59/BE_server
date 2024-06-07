@@ -1,4 +1,4 @@
-package com.example.secumix.security.store.controller;
+package com.example.secumix.security.store.controller.customer;
 
 import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.ResponseObject;
@@ -6,14 +6,16 @@ import com.example.secumix.security.store.model.entities.CartItem;
 import com.example.secumix.security.store.model.entities.OrderDetail;
 import com.example.secumix.security.store.model.entities.Product;
 import com.example.secumix.security.store.model.request.OrderDetailRequest;
-import com.example.secumix.security.store.services.ICartItemService;
-import com.example.secumix.security.store.services.IOrderDetailService;
 import com.example.secumix.security.store.repository.OrderDetailRepo;
 import com.example.secumix.security.store.repository.ProductRepo;
+import com.example.secumix.security.store.services.ICartItemService;
+import com.example.secumix.security.store.services.IOrderDetailService;
 import com.example.secumix.security.user.Permission;
 import com.example.secumix.security.user.User;
 import com.example.secumix.security.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,29 +24,22 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-
 @RestController
-@RequestMapping(value = "/api/v1")
-public class OrderController {
-    @Autowired
-    private IOrderDetailService orderService;
-    @Autowired
-    private ProductRepo productRepo;
-    @Autowired
-    private ICartItemService cartItemService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private OrderDetailRepo orderDetailRepo;
-
-
-    @GetMapping(value = "/customer/orderdetail/view")
+@RequestMapping(value = "/api/v1/customer")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class OrderControllerCustomer {
+    IOrderDetailService orderService;
+    ProductRepo productRepo;
+    ICartItemService cartItemService;
+    UserRepository userRepository;
+    OrderDetailRepo orderDetailRepo;
+    @GetMapping(value = "/orderdetail/view")
     ResponseEntity<ResponseObject> getAllByUSer() {
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK", "Lay ra thanh cong", orderService.GetAllByUser())
         );
     }
-
     @GetMapping(value = "/customer/orderdetail/view/{orderdetailid}")
     ResponseEntity<ResponseObject> getInfoOrder(@PathVariable int orderdetailid) {
         if (IsPermisson(orderdetailid)) {
@@ -56,7 +51,6 @@ public class OrderController {
                 new ResponseObject("OK", "Không có quyền truy cập", "")
         );
     }
-//sua
     private boolean IsPermisson(int orderdetailid) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -65,12 +59,14 @@ public class OrderController {
         if (orderDetail.getUser().getEmail().equals(email) || user.getRole().getPermissions().contains(Permission.SHIPPER_READ)) {
             return true;
         }
-        return true;
+        return false;
     }
 
+
+
     //đặt hàng tực tiếp
-    @PostMapping(value = "/customer/order/insert")
-    ResponseEntity<ResponseObject> InsertDR(@RequestParam int quantity,
+    @PostMapping(value = "/order/insert")
+    ResponseEntity<ResponseObject> orderDirecly(@RequestParam int quantity,
                                             @RequestParam int productid) {
         Optional<Product> product = productRepo.findById(productid);
         if (quantity > product.get().getQuantity()) {
@@ -87,8 +83,8 @@ public class OrderController {
     }
 
     //Đặt hàng qua gio hàng
-    @PostMapping(value = "/customer/order/insert/cartitem")
-    ResponseEntity<ResponseObject> InsertIDR(@RequestParam int cartitemid) {
+    @PostMapping(value = "/order/insert/cartitem")
+    ResponseEntity<ResponseObject> orderByCartItem(@RequestParam int cartitemid) {
         Optional<CartItem> cartItem = cartItemService.findByIdandUser(cartitemid);
         if (cartItem.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -102,7 +98,7 @@ public class OrderController {
         );
     }
 
-    @GetMapping(value = "/customer/order/delete/{orderdetailid}")
+    @GetMapping(value = "/order/delete/{orderdetailid}")
     ResponseEntity<ResponseObject> ChangeStatus(@PathVariable int orderdetailid) {
         orderService.ChangeStatus3(orderdetailid);
         return ResponseEntity.status(HttpStatus.OK).body(

@@ -54,9 +54,7 @@ public class Product {
     @Column(name = "view")
     private int view;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
     @JoinColumn(name = "storeid", foreignKey = @ForeignKey(name = "fk_product_store"))
     private Store store;
 

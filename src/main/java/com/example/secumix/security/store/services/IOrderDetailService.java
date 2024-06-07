@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IOrderDetailService {
-    List<OrderDetailResponse> GetAll();
-    List<OrderDetailResponse> GetAllStore(String storeName);
     List<OrderDetailResponse> GetAllByUser();
     Optional<OrderDetail> findByIDandUser(int orderdetailid);
 
@@ -44,4 +42,6 @@ public interface IOrderDetailService {
     Page<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid);
 
     OrderDetailDto findDtoById(int orderDetailId, int storeId);
+
+    List<OrderDetailResponse> findOrderNotShipped();
 }

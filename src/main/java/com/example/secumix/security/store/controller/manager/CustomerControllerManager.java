@@ -28,27 +28,9 @@ import java.util.Map;
 @RequestMapping(value = "/api/v1/management")
 @RequiredArgsConstructor
 public class CustomerControllerManager {
-    private  final IProductService productService;
-    private final ImportDetailRepo importDetailRepo;
-    private final StoreRepo storeRepo;
-    private final OrderDetailRepo orderDetailRepo;
     private final IOrderDetailService orderDetailService;
-    private final ProductRepo productRepo;
-    private final StoreTypeRepo storeTypeRepo;
-    private final NotifyRepository notifyRepository;
-    private final Cloudinary cloudinary;
-    private final UserRepository userRepository;
     private final ICustomerService customerService;
-    private final ProfileDetailRepo profileDetailRepo;
 
-    public Map upload(MultipartFile file)  {
-        try{
-            Map data = this.cloudinary.uploader().upload(file.getBytes(), Map.of());
-            return data;
-        }catch (IOException io){
-            throw new RuntimeException("Image upload fail");
-        }
-    }
 
 
 
@@ -68,7 +50,6 @@ public class CustomerControllerManager {
         }
 
         storeCustomerRespones = pageTuts.getContent();
-//        List<ProfileDetail> listtt = profileDetailRepo.getAllCustomerByStoreWithPagination(storeid);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Cac khach hang cua ban.", storeCustomerRespones)
         );
@@ -89,9 +70,6 @@ public class CustomerControllerManager {
         } else {
             pageTuts = orderDetailService.findOrderByTitleContainingIgnoreCase(keyword, paging, storeid,customerid);
         }
-        String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
-
-//        List<String> orderDetailTitle = orderDetailRepo.findAllOrderByCustomerAndStorePaginable(storeName,customerid).stream();
 
         orderDetailResponses = pageTuts.getContent();
         return ResponseEntity.status(HttpStatus.OK).body(

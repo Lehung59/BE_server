@@ -36,6 +36,7 @@ F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\repository\ProductImageRepo.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\services\impl\StoreTypeService.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\manager\StoreControllerManager.java
+F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\customer\OrderControllerCustomer.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\manager\OrdercontrollerManager.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\repository\OrderStatusRepo.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\model\dtos\UserDto.java
@@ -107,13 +108,11 @@ F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\userprofile\IProfileService.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\manager\CustomerControllerManager.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Oauth2\CustomOAuth2UserService.java
-F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\OrderController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\token\TokenType.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\userprofile\AccountController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\repository\PayRepo.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\userprofile\ProfileDetail.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Utils\DtoMapper\ProductImageMapper.java
-F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\ShipperController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\model\response\ImportResponse.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Utils\DtoMapper\CustomerMapper.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\repository\OrderDetailRepo.java
@@ -123,6 +122,7 @@ F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\user\
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\services\ICartItemService.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\user\Permission.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Exception\CustomException.java
+F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\store\controller\shipper\ShipperController.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\auth\rule\PasswordMatches.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Utils\DtoMapper\StoreMapper.java
 F:\AHUST\GR\BE_server\BE_server\src\main\java\com\example\secumix\security\Oauth2\OAuthLoginSuccessHandler.java

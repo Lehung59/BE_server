@@ -18,6 +18,7 @@ com\example\secumix\security\store\model\entities\Product$ProductBuilder.class
 com\example\secumix\security\Utils\DtoMapper\ImportDetailMapper.class
 com\example\secumix\security\Utils\DtoMapper\ProductMapper.class
 com\example\secumix\security\store\repository\OrderStatusRepo.class
+com\example\secumix\security\store\controller\customer\OrderControllerCustomer.class
 com\example\secumix\security\store\repository\OrderDetailRepo.class
 com\example\secumix\security\store\model\dtos\CustomerDto.class
 com\example\secumix\security\store\services\IStoreService.class
@@ -72,7 +73,6 @@ com\example\secumix\security\store\controller\manager\StoreControllerManager.cla
 com\example\secumix\security\store\repository\CartRepo.class
 com\example\secumix\security\user\ChangePasswordRequest.class
 com\example\secumix\security\store\model\response\StoreCustomerRespone.class
-com\example\secumix\security\Oauth2\CustomOAuth2User.class
 com\example\secumix\security\userprofile\ProfileRequest$ProfileRequestBuilder.class
 com\example\secumix\security\store\services\impl\CustomerService.class
 com\example\secumix\security\auth\AuthenticationRequest.class
@@ -103,7 +103,6 @@ com\example\secumix\security\store\services\IStoreTypeService.class
 com\example\secumix\security\user\User$UserBuilder.class
 com\example\secumix\security\store\controller\customer\CartItemController.class
 com\example\secumix\security\userprofile\ProfileRequest.class
-com\example\secumix\security\Oauth2\CustomOAuth2UserService.class
 com\example\secumix\security\ResponseObject.class
 com\example\secumix\security\store\services\impl\CartItemService.class
 com\example\secumix\security\store\repository\ProductImageRepo.class
@@ -112,7 +111,6 @@ com\example\secumix\security\store\model\request\ProductRequest.class
 com\example\secumix\security\store\model\entities\ProductImage.class
 com\example\secumix\security\store\services\impl\ImportDetailService.class
 com\example\secumix\security\store\controller\manager\ImportControllerManager.class
-com\example\secumix\security\store\controller\OrderController.class
 com\example\secumix\security\userprofile\AccountController.class
 com\example\secumix\security\store\repository\PayRepo.class
 com\example\secumix\security\notify\WebSocketController.class
@@ -125,15 +123,14 @@ com\example\secumix\security\auth\rule\PasswordMatches.class
 com\example\secumix\security\token\Token$TokenBuilder.class
 com\example\secumix\security\auth\rule\PasswordMatchesValidator.class
 com\example\secumix\security\store\controller\customer\ProfileControllerCustomer.class
-com\example\secumix\security\store\controller\ShipperController.class
 com\example\secumix\security\store\model\request\ProductTypeRequest.class
 com\example\secumix\security\config\WebConfig.class
 com\example\secumix\security\store\services\IOrderDetailService.class
 com\example\secumix\security\store\model\dtos\ImportDetailDto.class
 com\example\secumix\security\config\LogoutService.class
 com\example\secumix\security\store\controller\manager\CustomerControllerManager.class
-com\example\secumix\security\Oauth2\OAuthLoginSuccessHandler.class
 com\example\secumix\security\store\model\response\OrderDetailResponse.class
+com\example\secumix\security\store\controller\shipper\ShipperController.class
 com\example\secumix\security\store\model\dtos\StoreDto.class
 com\example\secumix\security\store\model\entities\OrderDetail$OrderDetailBuilder.class
 com\example\secumix\security\auditing\ApplicationAuditAware.class

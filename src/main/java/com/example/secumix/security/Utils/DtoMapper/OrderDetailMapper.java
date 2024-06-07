@@ -1,18 +1,14 @@
 package com.example.secumix.security.Utils.DtoMapper;
 
+import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.store.model.dtos.OrderDetailDto;
-import com.example.secumix.security.store.model.entities.Cart;
-import com.example.secumix.security.store.model.entities.OrderDetail;
-import com.example.secumix.security.store.model.entities.OrderStatus;
-import com.example.secumix.security.store.model.entities.Product;
-import com.example.secumix.security.store.repository.CartRepo;
-import com.example.secumix.security.store.repository.OrderStatusRepo;
-import com.example.secumix.security.store.repository.ProductRepo;
-import com.example.secumix.security.store.repository.ProfileDetailRepo;
+import com.example.secumix.security.store.model.entities.*;
+import com.example.secumix.security.store.repository.*;
 import com.example.secumix.security.user.User;
 import com.example.secumix.security.user.UserRepository;
 import com.example.secumix.security.userprofile.ProfileDetail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -34,23 +30,26 @@ public class OrderDetailMapper {
 
     @Autowired
     private ProfileDetailRepo profileDetailRepo;
+    @Autowired
+    private StoreRepo storeRepo;
 
     public OrderDetailDto toDto(OrderDetail orderDetail) {
         if (orderDetail == null) {
             return null;
         }
         ProfileDetail profileDetail = profileDetailRepo.findByUserId(orderDetail.getUser().getId());
-
+        Product product = orderDetail.getProduct();
+        Store store = orderDetail.getStore();
         OrderDetailDto orderDetailDto = new OrderDetailDto();
         orderDetailDto.setOrderDetailId(orderDetail.getOrderDetailId());
         orderDetailDto.setCreatedAt(orderDetail.getCreatedAt());
         orderDetailDto.setUpdatedAt(orderDetail.getUpdatedAt());
         orderDetailDto.setQuantity(orderDetail.getQuantity());
-        orderDetailDto.setProductName(orderDetail.getProductName());
-        orderDetailDto.setStoreName(orderDetail.getStoreName());
+        orderDetailDto.setProductName(product.getProductName());
+        orderDetailDto.setStoreName(store.getStoreName());
         orderDetailDto.setCustomerPhone(profileDetail.getPhoneNumber());
         orderDetailDto.setCustomerName(profileDetail.getFirstname() + " " + profileDetail.getLastname());
-        orderDetailDto.setStoreId(orderDetail.getStoreId());
+        orderDetailDto.setStoreId(orderDetail.getStore().getStoreId());
         orderDetailDto.setPriceTotal(orderDetail.getPriceTotal());
         orderDetailDto.setProductId(orderDetail.getProduct() != null ? orderDetail.getProduct().getProductId() : 0);
         orderDetailDto.setCartId(
@@ -69,15 +68,13 @@ public class OrderDetailMapper {
         if (orderDetailDto == null) {
             return null;
         }
-
+        Store store = storeRepo.findStoreById(orderDetailDto.getStoreId()).orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay cua hang"));
         OrderDetail orderDetail = new OrderDetail();
         orderDetail.setOrderDetailId(orderDetailDto.getOrderDetailId());
         orderDetail.setCreatedAt(orderDetailDto.getCreatedAt());
         orderDetail.setUpdatedAt(orderDetailDto.getUpdatedAt());
         orderDetail.setQuantity(orderDetailDto.getQuantity());
-        orderDetail.setProductName(orderDetailDto.getProductName());
-        orderDetail.setStoreName(orderDetailDto.getStoreName());
-        orderDetail.setStoreId(orderDetailDto.getStoreId());
+        orderDetail.setStore(store);
         orderDetail.setPriceTotal(orderDetailDto.getPriceTotal());
 
         if (orderDetailDto.getProductId() > 0) {

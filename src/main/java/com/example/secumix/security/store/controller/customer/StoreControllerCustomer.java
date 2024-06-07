@@ -7,6 +7,7 @@ import com.example.secumix.security.Utils.ImageUpload;
 import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.notify.NotifyRepository;
 import com.example.secumix.security.store.model.dtos.StoreDto;
+import com.example.secumix.security.store.model.response.ProductResponse;
 import com.example.secumix.security.store.model.response.StoreFavorRespone;
 import com.example.secumix.security.store.repository.*;
 import com.example.secumix.security.store.services.ICustomerService;
@@ -28,22 +29,26 @@ import java.util.List;
 @RequestMapping(value = "/api/v1/customer")
 
 public class StoreControllerCustomer {
-    private final IProductService productService;
-    private final ImportDetailRepo importDetailRepo;
-    private final StoreRepo storeRepo;
-    private final OrderDetailRepo orderDetailRepo;
-    private final IOrderDetailService orderDetailService;
-    private final ProductRepo productRepo;
-    private final StoreTypeRepo storeTypeRepo;
-    private final NotifyRepository notifyRepository;
-    private final Cloudinary cloudinary;
-    private final UserRepository userRepository;
-    private final ICustomerService customerService;
-    private final ProfileDetailRepo profileDetailRepo;
+
     private final IStoreService storeService;
-    private final ImageUpload imageUpload;
     private final UserUtils userUtils;
-    private final UserService userService;
+
+    @GetMapping(value = "/store/view/{storeid}")
+    ResponseEntity<ResponseObject> viewProduct(@RequestParam(required = false) String keyword,
+                                               @RequestParam(defaultValue = "1") int page,
+                                               @RequestParam(defaultValue = "10") int size,
+                                               @PathVariable int storeid){
+        try{
+            List<ProductResponse> productResponseList = storeService.findSellingProduct(storeid,keyword,page,size);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
+                    "OK", "Cac san pham cuar cua hang id "+storeid, productResponseList
+            ));
+
+        } catch (CustomException ex){
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
+    }
 
     @GetMapping(value = "/favor/view")
     ResponseEntity<ResponseObject> viewFavor(@RequestParam(required = false) String keyword,

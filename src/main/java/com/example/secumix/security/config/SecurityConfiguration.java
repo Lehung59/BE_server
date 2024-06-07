@@ -1,18 +1,21 @@
 package com.example.secumix.security.config;
 
-import com.example.secumix.security.Oauth2.CustomOAuth2UserService;
-import com.example.secumix.security.Oauth2.OAuthLoginSuccessHandler;
+//import com.example.secumix.security.Oauth2.CustomOAuth2UserService;
+//import com.example.secumix.security.Oauth2.OAuthLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import org.springframework.security.web.SecurityFilterChain;
@@ -52,9 +55,7 @@ public class SecurityConfiguration {
                     "/api/v1/auth/bank/{Represent}",
                      "/category/getall",
                     "/swagger-ui-custom",
-                    "/api/v1/customer/**",
-                    "/api/v1/product/**",
-                    "/**"
+                    "/api/v1/product/**"
             };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -64,7 +65,42 @@ public class SecurityConfiguration {
 //    private final CustomOAuth2UserService oauth2UserService;
 
 //    private final OAuthLoginSuccessHandler oauthLoginSuccessHandler;
-    
+//
+//
+//    @Order(1)
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeRequests(req -> req
+//                        .antMatchers(WHITE_LIST_URL).permitAll()
+//                        .antMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+//                        .antMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
+//                        .antMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
+//                        .antMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
+//                        .antMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
+//                        .anyRequest().authenticated())
+//                .formLogin(
+//                        l -> l.loginPage("/login").usernameParameter("email")
+//                                .permitAll()
+//                )
+//                .oauth2Login(
+//                        l -> l.loginPage("/login")
+//                                .defaultSuccessUrl("/api/v1/auth/user", true)
+//                )
+////                .oauth2Login()
+////                .defaultSuccessUrl("/api/v1/auth/user", true)
+////                .and()
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authenticationProvider(authenticationProvider)
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                .logout(logout -> logout
+//                        .logoutUrl("/api/v1/auth/logout")
+//                        .addLogoutHandler(logoutHandler)
+//                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
+//                .cors(withDefaults()); // Apply CORS configuration
+//
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -78,12 +114,9 @@ public class SecurityConfiguration {
                                 MANAGER_UPDATE.name())
                         .antMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(),
                                 MANAGER_DELETE.name())
-//                        .antMatchers("/api/v1/customer/**").hasAnyRole(CUSTOMER.name())
-//                        .antMatchers(GET, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_READ.name())
-//                        .antMatchers(POST, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_CREATE.name())
-//                        .antMatchers(PUT, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_UPDATE.name())
-//                        .antMatchers(DELETE, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_DELETE.name())
-                        .anyRequest().permitAll())
+                        .antMatchers("/api/v1/customer/**").hasAnyRole(USER.name())
+                        .antMatchers("/api/v1/shipper/**").hasAnyRole(SHIPPER.name())
+                        .anyRequest().authenticated())
 //                .oauth2Login()
 //                .userInfoEndpoint()
 //                .userService(oauth2UserService)
@@ -100,6 +133,67 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+
+//
+//    @Order(3)
+//    public SecurityFilterChain oauth2SecurityConfig (HttpSecurity http) throws Exception {
+//            http
+//                    .csrf().disable()
+//                    .requestMatchers().antMatchers("/google/**","/oauth2/**","/login/oauth2/**")
+//                    .and()
+//                    .authorizeRequests().antMatchers("/oauth2/**","/login/oauth2/**").permitAll()
+//                    .anyRequest().fullyAuthenticated()
+//                    .and()
+//                    .oauth2Login();
+//        return http.build();
+//    }
+
+
+
+
+
+//
+//
+//
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeRequests(req -> req
+//                        .antMatchers(WHITE_LIST_URL).permitAll()
+//                        .antMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+//                        .antMatchers(GET, "/api/v1/management/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
+//                        .antMatchers(POST, "/api/v1/management/**").hasAnyAuthority(ADMIN_CREATE.name(),
+//                                MANAGER_CREATE.name())
+//                        .antMatchers(PUT, "/api/v1/management/**").hasAnyAuthority(ADMIN_UPDATE.name(),
+//                                MANAGER_UPDATE.name())
+//                        .antMatchers(DELETE, "/api/v1/management/**").hasAnyAuthority(ADMIN_DELETE.name(),
+//                                MANAGER_DELETE.name())
+////                        .antMatchers("/api/v1/customer/**").hasAnyRole(CUSTOMER.name())
+////                        .antMatchers(GET, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_READ.name())
+////                        .antMatchers(POST, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_CREATE.name())
+////                        .antMatchers(PUT, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_UPDATE.name())
+////                        .antMatchers(DELETE, "/api/v1/customer/**").hasAnyAuthority(CUSTOMER_DELETE.name())
+//                        .anyRequest().permitAll())
+//                .oauth2Login()
+//                .defaultSuccessUrl("/api/v1/auth/user", true)
+//                .and()
+//
+////                .userInfoEndpoint()
+////                .userService(oauth2UserService)
+////                .and()
+////                .successHandler(oauthLoginSuccessHandler)
+////                .and()
+//                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+//                .authenticationProvider(authenticationProvider)
+//                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+//                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout").addLogoutHandler(logoutHandler)
+//                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
+//                .cors(withDefaults()); // Apply CORS configuration
+//        http.addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//
+//        return http.build();
+//    }
 }
 
 

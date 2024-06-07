@@ -7,6 +7,7 @@ import com.example.secumix.security.store.model.entities.OrderDetail;
 import com.example.secumix.security.store.model.entities.OrderStatus;
 import com.example.secumix.security.store.repository.OrderDetailRepo;
 import com.example.secumix.security.store.repository.OrderStatusRepo;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +17,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class OrderStatusController {
-    @Autowired
-    private OrderStatusRepo orderStatusRepo;
-    @Autowired
-    private OrderDetailRepo orderDetailRepo;
+    private final OrderStatusRepo orderStatusRepo;
+    private final OrderDetailRepo orderDetailRepo;
 
     @PostMapping(value = "/management/orderstatus/change")
     ResponseEntity<ResponseObject> changeOrderStatus( @RequestParam int orderId,

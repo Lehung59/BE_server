@@ -58,10 +58,13 @@ public class Store {
     @JsonManagedReference
     private List<ProductType> productType;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "store",fetch = FetchType.LAZY)
-    @JsonBackReference
+    @OneToMany(mappedBy = "store")
+    @JsonManagedReference
     private List<Product> productList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "store")
+    private List<OrderDetail> orderDetails;
 
     @Column
     private String emailmanager;

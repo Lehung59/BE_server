@@ -2,6 +2,7 @@ package com.example.secumix.security.store.model.response;
 
 
 
+import lombok.Builder;
 import lombok.Data;
 
 

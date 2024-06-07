@@ -36,15 +36,15 @@ public class OrderDetail {
     @Max(value = 20, message = "too many products")
     private int quantity;
 
-    @Column(name = "productname")
-    private String productName;
-    @Column(name = "storename")
-    private String storeName;
-    @Column(name = "storeid")
-    private int storeId;
 
     @Column(name = "procetotal")
     private long priceTotal;
+
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storeid", foreignKey = @ForeignKey(name = "fk_orderdetail_store"))
+    private Store store;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

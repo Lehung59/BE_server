@@ -55,6 +55,8 @@ public interface StoreRepo extends JpaRepository<Store, Integer> {
 
     @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId)", nativeQuery = true)
     Page<Store> findStoreFavor(@Param("userId") int userId, Pageable pageable);
+    @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId)", nativeQuery = true)
+    List<Store> findStoreFavor(@Param("userId") int userId);
 
     @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId) " +
             "AND (s.storename LIKE %:keyword% )",

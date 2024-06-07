@@ -1,25 +1,21 @@
 package com.example.secumix.security.store.services.impl;
 
 import com.example.secumix.security.Exception.CustomException;
-import com.example.secumix.security.ResponseObject;
 import com.example.secumix.security.Utils.DtoMapper.StoreMapper;
-import com.example.secumix.security.store.model.dtos.CustomerDto;
-import com.example.secumix.security.store.model.dtos.ProductDto;
-import com.example.secumix.security.store.model.dtos.StoreDto;
-import com.example.secumix.security.store.model.dtos.UserDto;
-import com.example.secumix.security.store.model.entities.ImportDetail;
+
+import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.store.model.entities.Product;
 import com.example.secumix.security.store.model.entities.ProductType;
 import com.example.secumix.security.store.model.entities.Store;
 import com.example.secumix.security.store.model.request.StoreInfoEditRequest;
 import com.example.secumix.security.store.model.request.StoreViewResponse;
-import com.example.secumix.security.store.model.response.ImportResponse;
+
 import com.example.secumix.security.store.model.response.ProductResponse;
 import com.example.secumix.security.store.model.response.StoreFavorRespone;
 import com.example.secumix.security.store.model.response.StoreInfoView;
+import com.example.secumix.security.store.repository.ProductRepo;
 import com.example.secumix.security.store.repository.StoreRepo;
 import com.example.secumix.security.store.services.IStoreService;
-import com.example.secumix.security.user.User;
 import com.example.secumix.security.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +23,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -35,8 +30,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -44,6 +37,8 @@ public class StoreService implements IStoreService {
     private final StoreRepo storeRepo;
     private final StoreMapper storeMapper;
     private final UserRepository userRepository;
+    private final ProductRepo productRepo;
+    private final UserUtils userUtils;
 
     @Override
     public Optional<Store> findStoreById(int storeId) {
@@ -52,19 +47,18 @@ public class StoreService implements IStoreService {
 
 
     public void checkStoreAuthen(int storeId) throws CustomException {
-        return;
-//        chinh sau
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String email = auth.getName();
-//        Optional<Store> store = storeRepo.findStoreById(storeId);
-//
-//        if (store.isEmpty()) {
-//            throw new CustomException(HttpStatus.NOT_FOUND, "Cửa hàng không tồn tại");
-//        }
-//
-//        if (!store.get().getEmailmanager().equals(email)) {
-//            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Bạn không là chủ của cửa hàng");
-//        }
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        Optional<Store> store = storeRepo.findStoreById(storeId);
+
+        if (store.isEmpty()) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Cửa hàng không tồn tại");
+        }
+
+        if (!store.get().getEmailmanager().equals(email)) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Bạn không là chủ của cửa hàng");
+        }
     }
 
     @Override
@@ -152,6 +146,35 @@ public class StoreService implements IStoreService {
         storeRepo.saveToFavor(userId,storeid);
 
     }
+    @Override
+    public List<ProductResponse> findSellingProduct(int storeid, String keyword, int page, int size) {
+        int userId = userUtils.getUserId();
+        List<Integer>storeIdFavor =  storeRepo.findStoreFavor(userId).stream().map(Store::getStoreId).toList();
+        if(!storeIdFavor.contains(storeid)) throw new CustomException(HttpStatus.NOT_IMPLEMENTED,"CUa hang chua co trong danh sach yeu thich");
+
+        Pageable paging = PageRequest.of(page - 1, size);
+        Page<Product> products;
+        if(keyword == null || keyword.isEmpty()){
+            products = productRepo.findSellingProduct(storeid, paging);
+
+        } else products = productRepo.findSellingProductKeyword(storeid,paging,keyword);
+        List<ProductResponse> productResponseList = products.getContent().stream().map(product -> {
+            ProductResponse productResponse = new ProductResponse();
+            productResponse.setAvatarProduct(product.getAvatarProduct());
+            productResponse.setProductName(product.getProductName());
+            productResponse.setProductType(product.getProductType().getProductTypeName());
+            productResponse.setQuantity(product.getQuantity());
+            productResponse.setStoreName(product.getStore().getStoreName());
+            productResponse.setDescription(product.getDescription());
+            productResponse.setPrice(product.getPrice());
+            productResponse.setStatus(product.isStatus());
+            productResponse.setDiscount(product.getDiscount());
+            productResponse.setView(product.getView());
+            return productResponse;
+        }).toList();
+
+
+        return productResponseList;    }
 
 
     @Override
@@ -182,5 +205,7 @@ public class StoreService implements IStoreService {
             throw new CustomException(HttpStatus.NOT_FOUND,"Khong co cua hang nay trong pha nyeu thich cua ban");
         storeRepo.deleteStoreFavor(storeid,userId);
     }
+
+
 
 }

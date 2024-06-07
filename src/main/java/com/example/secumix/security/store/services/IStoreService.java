@@ -5,6 +5,7 @@ import com.example.secumix.security.store.model.dtos.StoreDto;
 import com.example.secumix.security.store.model.entities.Store;
 import com.example.secumix.security.store.model.request.StoreInfoEditRequest;
 import com.example.secumix.security.store.model.request.StoreViewResponse;
+import com.example.secumix.security.store.model.response.ProductResponse;
 import com.example.secumix.security.store.model.response.StoreFavorRespone;
 import com.example.secumix.security.store.model.response.StoreInfoView;
 import org.springframework.data.domain.Page;
@@ -34,4 +35,6 @@ public interface IStoreService {
     List<StoreFavorRespone> findFavorStore(int userId, String keyword, int page, int size);
 
     void removeStoreFromFavorList(int storeid, int userId);
+
+    List<ProductResponse> findSellingProduct(int storeid, String keyword, int page, int size);
 }

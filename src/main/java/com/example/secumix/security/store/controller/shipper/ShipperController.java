@@ -1,4 +1,4 @@
-package com.example.secumix.security.store.controller;
+package com.example.secumix.security.store.controller.shipper;
 
 import com.example.secumix.security.ResponseObject;
 import com.example.secumix.security.store.model.entities.OrderDetail;
@@ -73,6 +73,21 @@ public class ShipperController {
                 new ResponseObject("NOT FOUND","Khong tim thay","")
         );
     }
+    @GetMapping(value = "/orderlist/view")
+    ResponseEntity<ResponseObject> orderlistview(){
+        var listOrderNotShipped = orderService.findOrderNotShipped();
+        if(listOrderNotShipped.isEmpty())
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK","Hien khong co don hang nao ",""
+                    )
+            );
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK","Danh sach cac don hang chua duoc giao",listOrderNotShipped
+                )
+        );
+    }
+
+
     @GetMapping(value = "/getallorder")
     ResponseEntity<ResponseObject> GetAllOrder(){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

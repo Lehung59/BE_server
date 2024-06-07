@@ -116,7 +116,7 @@ public class ImportControllerManager {
 
             storeService.checkStoreAuthen(storeid);
             Optional<Product> product = productRepo.findByName(storeid, productname);
-            Optional<Store> store = storeService.findStoreById(storeid);
+            Store store = storeService.findStoreById(storeid).orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay cua hang"));
             Product finalProduct = new Product();
             if (product.isEmpty()) {
                 if (priceOut == null) {
@@ -138,14 +138,14 @@ public class ImportControllerManager {
                     .quantity(quantity)
                     .discount(0)
                     .productType(productType)
-                    .store(store.get())
+                    .store(store)
                     .view(0)
                     .status(false)
                     .price(priceOut)
                     .createdAt(UserUtils.getCurrentDay())
                     .updatedAt(UserUtils.getCurrentDay())
                     .productName(productname)
-                    .description(productname + "--" + store.get().getStoreName())
+                    .description(productname + "--" + store.getStoreName())
                     .build();
             finalProduct = newObj;
             productRepo.save(newObj);
