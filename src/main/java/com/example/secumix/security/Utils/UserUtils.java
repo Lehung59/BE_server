@@ -1,8 +1,12 @@
 package com.example.secumix.security.Utils;
 
 import com.example.secumix.security.Exception.CustomException;
+import com.example.secumix.security.store.model.entities.Store;
+import com.example.secumix.security.store.repository.StoreRepo;
+import com.example.secumix.security.user.Role;
 import com.example.secumix.security.user.User;
 import com.example.secumix.security.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,12 +17,12 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Random;
 @Component
+@RequiredArgsConstructor
 public class UserUtils {
     private final UserRepository userRepository;
+    private final StoreRepo storeRepo;
 
-    public UserUtils(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+
 
     public static String calculateTimeSinceLastLogout(long lastLogoutTime) {
         // Lấy thời gian hiện tại
@@ -58,6 +62,15 @@ public class UserUtils {
 //        return new Date(currentDate.getTime());
 //    }
 
+    public int getStoreId(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Store store = storeRepo.findStoreByMailManager(auth.getName()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay cua hang co mail nay: "+auth.getName()));
+        return store.getStoreId();
+    }
+    public String getRole(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().toString();
+    }
     public String getUserEmail() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByEmail(auth.getName()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay nguoi dang nhap nay: "+auth.getName()));

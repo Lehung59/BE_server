@@ -160,6 +160,7 @@ public class StoreService implements IStoreService {
         } else products = productRepo.findSellingProductKeyword(storeid,paging,keyword);
         List<ProductResponse> productResponseList = products.getContent().stream().map(product -> {
             ProductResponse productResponse = new ProductResponse();
+            productResponse.setProductId(product.getProductId());
             productResponse.setAvatarProduct(product.getAvatarProduct());
             productResponse.setProductName(product.getProductName());
             productResponse.setProductType(product.getProductType().getProductTypeName());

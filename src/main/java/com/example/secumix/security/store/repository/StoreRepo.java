@@ -25,6 +25,8 @@ public interface StoreRepo extends JpaRepository<Store, Integer> {
     @Query("select u from User u join u.stores s where s.storeId = :storeId")
     List<User> findCustomerByStoreId(int storeId);
 
+    @Query("select s from store s where s.emailmanager = :emailManger")
+    Optional<Store> findStoreByMailManager(String emailManger);
 
     @Query("select o from store o where o.storeName=:storeName")
     Optional<Store> findStoreByName(String storeName);

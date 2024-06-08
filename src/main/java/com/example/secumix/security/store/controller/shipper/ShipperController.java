@@ -1,6 +1,8 @@
 package com.example.secumix.security.store.controller.shipper;
 
+import com.example.secumix.security.Exception.CustomException;
 import com.example.secumix.security.ResponseObject;
+import com.example.secumix.security.Utils.UserUtils;
 import com.example.secumix.security.store.model.entities.OrderDetail;
 import com.example.secumix.security.store.model.response.OrderDetailResponse;
 import com.example.secumix.security.store.services.IOrderDetailService;
@@ -12,10 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +28,22 @@ public class ShipperController {
     private OrderDetailRepo orderDetailRepo;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserUtils userUtils;
+
+    @GetMapping(value = "/orderdetail")
+    ResponseEntity<ResponseObject> viewOrderDetail(@RequestParam(name = "orderid") int orderId){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK","Chi tiet don hang",orderService.findDtoById(orderId))
+            );
+
+
+        } catch (CustomException ex) {
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
+    }
 
     @GetMapping(value = "/changestatus1/{orderdetailid}")
     ResponseEntity<ResponseObject> Changestatus1(@PathVariable int orderdetailid){
@@ -86,6 +101,27 @@ public class ShipperController {
                 )
         );
     }
+    @GetMapping(value = "/orderlist/taken")
+    ResponseEntity<ResponseObject> orderlisttaken(){
+        int shipperId = userUtils.getUserId();
+        List<OrderDetailResponse> listOrder = orderService.findOrderReadyToShip(shipperId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK","Danh sach cac don hang ban da nhan",listOrder
+                )
+        );
+    }
+
+    @GetMapping(value = "/orderlist/shipped")
+    ResponseEntity<ResponseObject> orderlistshipped(){
+        int shipperId = userUtils.getUserId();
+        List<OrderDetailResponse> listOrder = orderService.findOrderShipped(shipperId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject("OK","Danh sach cac don hang ban da giao",listOrder
+                )
+        );
+    }
+
+
 
 
     @GetMapping(value = "/getallorder")

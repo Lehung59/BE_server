@@ -55,7 +55,10 @@ public class SecurityConfiguration {
                     "/api/v1/auth/bank/{Represent}",
                      "/category/getall",
                     "/swagger-ui-custom",
-                    "/api/v1/product/**"
+                    "/api/v1/product/**",
+                    "/notifications/**",
+                    "/notification/**",
+                    "/ws/**"
             };
 
     private final JwtAuthenticationFilter jwtAuthFilter;

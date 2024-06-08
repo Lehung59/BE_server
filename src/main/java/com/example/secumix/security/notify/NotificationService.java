@@ -1,5 +1,7 @@
 package com.example.secumix.security.notify;
 
+import com.example.secumix.security.Utils.DtoMapper.NotifiMapper;
+import com.example.secumix.security.store.model.dtos.NotifiDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
@@ -16,6 +18,8 @@ public class NotificationService {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private NotifiMapper notifiMapper;
 
     public Notify addNotification(Notify notification) {
         Notify savedNotification = notificationRepository.save(notification);
@@ -30,10 +34,9 @@ public class NotificationService {
                 notification);
     }
 
-    public List<Notify> getNotificationsByUsername() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        List<Notify> notifies= notificationRepository.findNotifiesByEmail(email);
+    public List<NotifiDto> getNotificationsByUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();String email = auth.getName();
+        List<NotifiDto> notifies= notificationRepository.findNotifiesByEmail(email).stream().map(notifiMapper::toDto).toList();
         return notifies;
     }
 }

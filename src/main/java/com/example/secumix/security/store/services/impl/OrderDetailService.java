@@ -137,6 +137,7 @@ public class OrderDetailService implements IOrderDetailService {
         orderDetail.setOrderStatus(orderStatus);
         orderDetail.setUpdatedAt(UserUtils.getCurrentDay());
         orderDetail.setShipperid(shipper.getId());
+        orderDetail.setShipTakenAt(UserUtils.getCurrentDay());
         orderDetailRepo.save(orderDetail);
         Notify notify = Notify.builder()
                 .user(customer)
@@ -155,6 +156,7 @@ public class OrderDetailService implements IOrderDetailService {
         OrderDetail orderDetail = orderDetailRepo.findById(orderdetailid).get();
         User customer = orderDetail.getUser();
         orderDetail.setOrderStatus(orderStatus);
+        orderDetail.setShippedAt(UserUtils.getCurrentDay());
         orderDetail.setUpdatedAt(UserUtils.getCurrentDay());
         orderDetailRepo.save(orderDetail);
         Product product = orderDetail.getProduct();
@@ -190,6 +192,7 @@ public class OrderDetailService implements IOrderDetailService {
         User customer = orderDetail.getUser();
         orderDetail.setOrderStatus(orderStatus);
         orderDetail.setUpdatedAt(UserUtils.getCurrentDay());
+        orderDetail.setCancelAt(UserUtils.getCurrentDay());
         orderDetailRepo.save(orderDetail);
         Store store = orderDetail.getStore();
         Product product = orderDetail.getProduct();
@@ -323,18 +326,12 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
-    public OrderDetailDto findDtoById(int orderDetailId, int storeId) {
-        Optional<OrderDetail> orderDetail = orderDetailRepo.findById(orderDetailId);
-        if (orderDetail.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay don hang nay");
-        }
-        storeService.checkStoreAuthen(storeId);
-
-        if (orderDetail.get().getStore().getStoreId() != storeId) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Cua hang ban khong co don hang nay");
-
-        }
-        return orderDetailMapper.toDto(orderDetail.get());
+    public OrderDetailDto findDtoById(int orderDetailId) {
+        OrderDetail orderDetail = orderDetailRepo.findById(orderDetailId).orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND,"Khong ton tai order nay"));
+        Store store = orderDetail.getStore();
+        if(!userUtils.getRole().contains("ROLE_SHIPPER"))
+            storeService.checkStoreAuthen(store.getStoreId());
+        return orderDetailMapper.toDto(orderDetail);
     }
 
     @Override
@@ -343,6 +340,24 @@ public class OrderDetailService implements IOrderDetailService {
                 this::convertToOrderDetailResponse
         ).toList();
     }
+
+    @Override
+    public List<OrderDetailResponse> findOrderReadyToShip(int shipperId) {
+        return orderDetailRepo.findOrderReadyToShip(shipperId).stream().map(
+                this::convertToOrderDetailResponse
+        ).toList();
+
+
+    }
+    @Override
+    public List<OrderDetailResponse> findOrderShipped(int shipperId) {
+        return orderDetailRepo.findOrderReadyToShip(shipperId).stream().map(
+                this::convertToOrderDetailResponse
+        ).toList();
+
+
+    }
+
 
     private OrderDetailResponse convertToOrderDetailResponse(OrderDetail orderDetail) {
         OrderDetailResponse response = new OrderDetailResponse();

@@ -56,7 +56,7 @@ public class OrdercontrollerManager {
 
         try{
 
-            OrderDetailDto orderDetailDto = orderDetailService.findDtoById(orderDetailId,storeid);
+            OrderDetailDto orderDetailDto = orderDetailService.findDtoById(orderDetailId);
 
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("OK","Chi tiet don hang "+orderDetailId,orderDetailDto)

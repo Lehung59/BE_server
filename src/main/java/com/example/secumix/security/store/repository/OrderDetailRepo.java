@@ -67,4 +67,9 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
 
     @Query("select o from orderdetail o where o.orderStatus.orderStatusId=1 ")
     List<OrderDetail> findOrderNotShipped();
+    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus=2 ")
+    List<OrderDetail> findOrderReadyToShip(int shipperId);
+
+    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus=3 ")
+    List<OrderDetail> findOrderShipped(int shipperId);
 }

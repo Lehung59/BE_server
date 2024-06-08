@@ -31,6 +31,17 @@ public class OrderDetail {
     @Column(name = "updated_at")
     private Date updatedAt;
 
+    @Column(name = "shiptaken_at")
+    private Date shipTakenAt;
+
+    @Column(name = "shipped_at")
+    private Date shippedAt;
+
+    @Column(name = "cancel_at")
+    private Date cancelAt;
+
+
+
     @Column(name = "quantity")
     @Min(value = 0)
     @Max(value = 20, message = "too many products")
