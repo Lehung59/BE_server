@@ -58,7 +58,8 @@ public class SecurityConfiguration {
                     "/api/v1/product/**",
                     "/notifications/**",
                     "/notification/**",
-                    "/ws/**"
+                    "/ws/**",
+                    "/socket.io/**"
             };
 
     private final JwtAuthenticationFilter jwtAuthFilter;

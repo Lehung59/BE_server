@@ -18,7 +18,7 @@ public class AuthenticationResponse {
   private String lastname;
   private String email;
   private Role role;
-
+  private Integer storeId;
   @JsonProperty("accesstoken")
   private String accessToken;
   @JsonProperty("refreshtoken")

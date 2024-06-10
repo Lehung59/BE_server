@@ -99,25 +99,29 @@ public class StoreControllerManager {
 
     }
 
-    @PostMapping(value = "/info/{storetypeid}/insert")
+    @PostMapping(value = "/info/insert")
     public ResponseEntity<ResponseObject> insertStoreInfo(@RequestParam String address,
                                                           @RequestParam MultipartFile image,
                                                           @RequestParam String phonenumber,
                                                           @RequestParam String name,
-                                                          @PathVariable int storetypeid) {
+                                                          @RequestParam int storetypeid) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         User user = userRepository.findByEmail(email).get();
         Optional<Store> store = storeRepo.findByPhonenumber(phonenumber);
         Optional<StoreType> storeType = storeTypeRepo.findById(storetypeid);
-
+        if(storeRepo.findStoreByName(name).isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject("FAILED", "Tên cửa hàng đã tồn tại", "")
+            );
+        }
         if (store.isPresent())
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ResponseObject("FAILED", "Store phonenumber alreasy exsis", "")
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject("FAILED", "Số điện thoại này đã tồn tại", "")
             );
         if (storeType.isEmpty())
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ResponseObject("FAILED", "Not exist storetype", "")
+                    new ResponseObject("FAILED", "Không tồn tại loại cửa hàng này", "")
             );
         String uploadResult = imageUpload.upload(image);
         Store newObj = Store.builder()
@@ -129,14 +133,14 @@ public class StoreControllerManager {
                 .storeType(storeType.get())
                 .image(uploadResult)
                 .build();
-        storeRepo.save(newObj);
+        Store newStore = storeRepo.save(newObj);
         Notify notify = Notify.builder()
                 .description("Cửa hàng của bạn đã được mở".concat(newObj.getStoreName())) //Truyền link đến store đó
                 .user(user)
                 .build();
         notifyRepository.save(notify);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "Success", "")
+                new ResponseObject("OK", "Success", newStore)
         );
     }
 

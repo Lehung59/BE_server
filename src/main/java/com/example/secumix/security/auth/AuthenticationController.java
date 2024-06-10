@@ -182,7 +182,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
+    public ResponseEntity<?> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
         Optional<User> user = userService.FindByEmail(request.getEmail());
@@ -190,7 +190,7 @@ public class AuthenticationController {
             return user.get().isEnabled() ?
                     ResponseEntity.status(HttpStatus.OK).body(service.authenticate(request)
                     ) :
-                    ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).build();
+                    ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(new ResponseObject("FAILED", "Tài khoản chưa được kích hoạt", ""));
 
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

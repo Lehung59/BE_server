@@ -7,7 +7,9 @@ import com.example.secumix.security.config.JwtService;
 import com.example.secumix.security.notify.Notify;
 import com.example.secumix.security.notify.NotifyRepository;
 import com.example.secumix.security.store.model.entities.Cart;
+import com.example.secumix.security.store.model.entities.Store;
 import com.example.secumix.security.store.repository.CartRepo;
+import com.example.secumix.security.store.repository.StoreRepo;
 import com.example.secumix.security.token.Token;
 import com.example.secumix.security.token.TokenRepository;
 import com.example.secumix.security.token.TokenType;
@@ -51,6 +53,8 @@ public class AuthenticationService {
     private CartRepo cartRepo;
 
     private final NotifyRepository notifyRepository;
+    @Autowired
+    private StoreRepo storeRepo;
 
     public Optional<Token> getVerificationToken(String token) {
         Optional<Token> result = tokenRepository.findByToken(token);
@@ -99,9 +103,9 @@ public class AuthenticationService {
         String subject = "Xác nhận tài khoản";
         String confirmationUrl
                 = "http://localhost:9000/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
-        String message = "Tài khoản được khởi tạo từ DuyThuong. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
+        String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
-        EmailMix e = new EmailMix("thuong0205966@huce.edu.vn", "crognmvpbikkgogj", 0);
+        EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
         e.sendContentToVer2(recipientAddress, subject, message);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -146,9 +150,9 @@ public class AuthenticationService {
         String subject = "Xác nhận tài khoản";
         String confirmationUrl
                 = "http://localhost:9000/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
-        String message = "Tài khoản được khởi tạo từ DuyThuong. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
+        String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
-        EmailMix e = new EmailMix("thuong0205966@huce.edu.vn", "crognmvpbikkgogj", 0);
+        EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
         e.sendContentToVer2(recipientAddress, subject, message);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -194,9 +198,9 @@ public class AuthenticationService {
         String subject = "Xác nhận tài khoản";
         String confirmationUrl
                 = "http://localhost:9000/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
-        String message = "Tài khoản được khởi tạo từ DuyThuong. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
+        String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
-        EmailMix e = new EmailMix("thuong0205966@huce.edu.vn", "crognmvpbikkgogj", 0);
+        EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
         e.sendContentToVer2(recipientAddress, subject, message);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -222,9 +226,16 @@ public class AuthenticationService {
 
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
+        Integer storeId = null;
+        if(user.getRole().equals(Role.MANAGER) ){
+            storeId = 0;
+            Optional<Store> store = storeRepo.findByEmailManager(user.getEmail());
+            if(store.isPresent()) storeId = store.get().getStoreId();
+        }
 
         return AuthenticationResponse.builder()
                 .userId(user.getId())
+                .storeId(storeId)
                 .firstname(user.getFirstname())
                 .lastname(user.getLastname())
                 .role(user.getRole())
