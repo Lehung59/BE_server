@@ -8,6 +8,7 @@ com\example\secumix\security\store\model\response\ProductTypeResponse.class
 com\example\secumix\security\config\HttpsToHttpFilter.class
 com\example\secumix\security\store\model\response\StoreFavorRespone.class
 com\example\secumix\security\store\controller\manager\ProductControllerManager.class
+com\example\secumix\security\store\model\dtos\NotifiDto.class
 com\example\secumix\security\store\model\dtos\ProductDto.class
 com\example\secumix\security\user\Permission.class
 com\example\secumix\security\store\model\entities\ProductType$ProductTypeBuilder.class
@@ -127,6 +128,7 @@ com\example\secumix\security\store\model\request\ProductTypeRequest.class
 com\example\secumix\security\config\WebConfig.class
 com\example\secumix\security\store\services\IOrderDetailService.class
 com\example\secumix\security\store\model\dtos\ImportDetailDto.class
+com\example\secumix\security\Utils\DtoMapper\NotifiMapper.class
 com\example\secumix\security\config\LogoutService.class
 com\example\secumix\security\store\controller\manager\CustomerControllerManager.class
 com\example\secumix\security\store\model\response\OrderDetailResponse.class
