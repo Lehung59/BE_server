@@ -191,6 +191,7 @@ public class StoreService implements IStoreService {
             List<String> productName = store.getProductList().stream().map(Product::getProductName).toList();
             List<String> productTypeName = store.getProductType().stream().map(ProductType::getProductTypeName).toList();
             return StoreInfoView.builder()
+                    .storeId(store.getStoreId())
                     .image(store.getImage())
                     .storeName(store.getStoreName())
                     .address(store.getAddress())

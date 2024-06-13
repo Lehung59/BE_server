@@ -31,6 +31,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.secumix.entities.Role.CUSTOMER;
+
 @Service
 public class ProductService implements IProductService {
     @Autowired
@@ -39,6 +41,8 @@ public class ProductService implements IProductService {
     private StoreRepo storeRepo;
     @Autowired
     private ProductTypeRepo productTypeRepo;
+    @Autowired
+    private UserUtils userUtils;
 
     @Override
     public List<ProductResponse> getAllProduct() {
@@ -84,11 +88,17 @@ public class ProductService implements IProductService {
 
     @Override
     public Optional<ProductResponse> findbyId(int id) {
+
         return productRepo.findById(id).map(
                 product -> {
-                    product.setView(product.getView()+1);
-                    productRepo.save(product);
+                    userUtils.getRole();
+                    if(userUtils.getRole().contains("ROLE_USER")){
+                        product.setView(product.getView()+1);
+                        productRepo.save(product);
+                    }
+
                     ProductResponse productResponse = new ProductResponse();
+                    productResponse.setProductId(product.getProductId());
                     productResponse.setAvatarProduct(product.getAvatarProduct());
                     productResponse.setProductName(product.getProductName());
                     productResponse.setProductType(product.getProductType().getProductTypeName());
