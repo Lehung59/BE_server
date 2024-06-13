@@ -24,12 +24,12 @@ spring:
   #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   datasource:
-    url: jdbc:mysql://localhost:3306/gr
-    username: root
-    password: root
-#    url: jdbc:mysql://viaduct.proxy.rlwy.net:58538/railway
+#    url: jdbc:mysql://localhost:3306/gr
 #    username: root
-#    password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
+#    password: root
+    url: jdbc:mysql://viaduct.proxy.rlwy.net:58538/railway
+    username: root
+    password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
     driver-class-name: com.mysql.cj.jdbc.Driver
   main:
     allow-bean-definition-overriding: true
