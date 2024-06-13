@@ -105,7 +105,7 @@ public class AuthenticationService {
         String recipientAddress = request.getEmail();
         String subject = "Xác nhận tài khoản";
         String confirmationUrl
-                = "http://localhost:9000/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
+                = "https://charismatic-friendship-production.up.railway.app/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
         String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
         EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
@@ -152,7 +152,7 @@ public class AuthenticationService {
         String recipientAddress = request.getEmail();
         String subject = "Xác nhận tài khoản";
         String confirmationUrl
-                = "http://localhost:9000/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
+                = "https://charismatic-friendship-production.up.railway.app/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
         String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
         EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
@@ -200,7 +200,7 @@ public class AuthenticationService {
         String recipientAddress = request.getEmail();
         String subject = "Xác nhận tài khoản";
         String confirmationUrl
-                = "http://localhost:9000/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
+                = "https://charismatic-friendship-production.up.railway.app/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
         String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
         EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);

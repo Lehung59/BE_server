@@ -11,6 +11,7 @@ import com.example.secumix.entities.User;
 import com.example.secumix.services.impl.UserService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -115,8 +116,8 @@ public class AuthenticationController {
     }
 
     @GetMapping("/registrationConfirm.html")
-    ResponseEntity<ResponseObject> confirmRegistration(
-            @RequestParam("token") String token) {
+    public ResponseEntity<?> confirmRegistration(@RequestParam("token") String token) {
+
         Optional<Token> verificationToken = service.getVerificationToken(token);
 
         if (verificationToken == null) {
@@ -130,12 +131,12 @@ public class AuthenticationController {
             );
 
         } else {
-            User user = verificationToken.get().user;
+            User user = verificationToken.get().getUser();
             user.setEnabled(true);
             userService.SaveUser(user);
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK", "Kích hoạt thành công tài khoản của bạn", "")
-            );
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .header(HttpHeaders.LOCATION, "http://localhost:5173/login")
+                    .body(null);
         }
     }
 
