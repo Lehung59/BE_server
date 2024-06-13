@@ -89,10 +89,12 @@ public class OrderDetailService implements IOrderDetailService {
         String email = auth.getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CustomException(HttpStatus.NOT_IMPLEMENTED, "Khong ton tai nguoi dung nay"));
         OrderStatus orderStatus = orderStatusRepo.findById(1).get();
+        long realPrice = product.getPrice();
+        if(product.getDiscount()!=0) realPrice-=product.getDiscount()*product.getPrice()/100;
         OrderDetail orderDetail = OrderDetail.builder()
                 .orderStatus(orderStatus)
                 .quantity(orderDetailRequest.getQuantity())
-                .priceTotal(product.getPrice() * orderDetailRequest.getQuantity())
+                .priceTotal(realPrice * orderDetailRequest.getQuantity())
                 .user(user)
                 .product(product)
                 .createdAt(UserUtils.getCurrentDay())
@@ -217,12 +219,14 @@ public class OrderDetailService implements IOrderDetailService {
         String email = auth.getName();
         Cart cart = cartRepo.findByEmail(email);
         OrderStatus orderStatus = orderStatusRepo.findById(1).get();
+        long realPrice = product.getPrice();
+        if(product.getDiscount()!=0) realPrice-=product.getDiscount()*product.getPrice()/100;
         OrderDetail orderDetail = OrderDetail.builder()
                 .orderStatus(orderStatus)
                 .cart(cart)
                 .user(cart.getUser())
                 .quantity(orderDetailRequest.getQuantity())
-                .priceTotal(product.getPrice() * orderDetailRequest.getQuantity())
+                .priceTotal(realPrice * orderDetailRequest.getQuantity())
                 .product(product)
                 .store(store)
                 .createdAt(UserUtils.getCurrentDay())

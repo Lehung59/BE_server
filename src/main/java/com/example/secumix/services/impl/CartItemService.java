@@ -51,16 +51,20 @@ public class CartItemService implements ICartItemService {
     public List<CartItemResponse> findByUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
+
+
         return cartItemRepo.findByUser(email).stream().map(
                 cartItem -> {
                     Product product= cartItem.getProduct();
+                    long realPrice = product.getPrice();
+                    if(product.getDiscount()!=0) realPrice-=product.getDiscount()*product.getPrice()/100;
                     CartItemResponse cartItemResponse= new CartItemResponse();
                     cartItemResponse.setCartItemId(cartItem.getCartItemId());
                     cartItemResponse.setProductName(product.getProductName());
                     cartItemResponse.setProductImg(product.getAvatarProduct());
                     cartItemResponse.setQuantity(cartItem.getQuantity());
                     cartItemResponse.setStoreName(product.getStore().getStoreName());
-                    cartItemResponse.setPriceTotal(product.getPrice()*cartItem.getQuantity());
+                    cartItemResponse.setPriceTotal(realPrice*cartItem.getQuantity());
                     return cartItemResponse;
                 }
         ).collect(Collectors.toList());
