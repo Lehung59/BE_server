@@ -21,4 +21,5 @@ public class OrderDetailDto  {
     private int orderStatusId;
     private String customerPhone;
     private String customerName;
+    private String address;
 }

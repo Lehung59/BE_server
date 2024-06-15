@@ -14,17 +14,9 @@ public class ProductResponse {
     private String productName;
     private int quantity;
     private boolean status;
-
-
     private String description;
-
-
     private int view;
-
-
     private String storeName;
-
-
     private String productType;
 
 }

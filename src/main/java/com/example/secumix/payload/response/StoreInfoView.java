@@ -17,6 +17,7 @@ public class StoreInfoView {
     private List<String> productTypeName;
     private List<String> productListName;
     private String emailmanager;
+    private String storeType;
 
 
 }

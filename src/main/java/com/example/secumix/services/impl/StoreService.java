@@ -133,6 +133,7 @@ public class StoreService implements IStoreService {
                 .rate(store.getRate())
                 .productTypeName(productTypeName)
                 .productListName(productName)
+                .storeType(store.getStoreType().getStoreTypeName())
                 .build();
         return storeInfoView;
     }
@@ -200,6 +201,7 @@ public class StoreService implements IStoreService {
                     .productTypeName(productTypeName)
                     .productListName(productName)
                     .emailmanager(store.getEmailmanager())
+                    .storeType(store.getStoreType().getStoreTypeName())
                     .build();
         }).toList();
 

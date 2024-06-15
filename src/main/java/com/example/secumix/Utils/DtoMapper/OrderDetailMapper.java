@@ -58,6 +58,7 @@ public class OrderDetailMapper {
                         .orElse(0)
         );
         orderDetailDto.setUserId(orderDetail.getUser() != null ? orderDetail.getUser().getId() : 0);
+        orderDetailDto.setAddress(profileDetail.getAddress());
         orderDetailDto.setShipperId(orderDetail.getShipperid());
         orderDetailDto.setOrderStatusId(orderDetail.getOrderStatus() != null ? orderDetail.getOrderStatus().getOrderStatusId() : 0);
 
