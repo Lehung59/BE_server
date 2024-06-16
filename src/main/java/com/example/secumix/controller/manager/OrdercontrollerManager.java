@@ -25,21 +25,16 @@ public class OrdercontrollerManager {
 
     @GetMapping(value = "/{storeid}/order/view")
     ResponseEntity<ResponseObject> GetAllOrderDetailByStore(@PathVariable int storeid,
-                                                        @RequestParam (value = "keyword", required = false) String keyword,
-                                                        @RequestParam(defaultValue = "1") int page,
-                                                        @RequestParam(defaultValue = "10") int size){
+                                                        @RequestParam (value = "keyword", required = false) String keyword
+    ){
 
         List<OrderDetailResponse> orderDetailResponses = new ArrayList<OrderDetailResponse>();
-        Pageable paging = PageRequest.of(page - 1, size);
-
-        Page<OrderDetailResponse> pageTuts;
         if (keyword == null) {
-            pageTuts = orderDetailService.findAllOrderPaginable(paging,storeid);
+            orderDetailResponses = orderDetailService.findAllOrderPaginable(storeid);
         } else {
-            pageTuts = orderDetailService.findByTitleContainingIgnoreCase(keyword, paging, storeid);
+            orderDetailResponses = orderDetailService.findByTitleContainingIgnoreCase(keyword, storeid);
         }
 
-        orderDetailResponses = pageTuts.getContent();
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Cac san pham trong cua hang cua ban.",orderDetailResponses)

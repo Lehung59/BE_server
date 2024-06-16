@@ -30,10 +30,10 @@ public interface ProductRepo extends JpaRepository<Product, Integer> {
     @Query("select o from product o where o.productType.productTypeId=:producttypeid")
     List<Product> findByProductType(int producttypeid);
     @Query("SELECT DISTINCT p FROM product p WHERE p.store.storeId = :storeId AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    Page<Product> findByTitleContainingIgnoreCase(int storeId, String keyword, Pageable pageable);
+    List<Product> findByTitleContainingIgnoreCase(int storeId, String keyword);
 
     @Query("SELECT p FROM product p WHERE p.store.storeId = :storeId")
-    Page<Product> getAllByStoreWithPagination(int storeId, Pageable pageable);
+    List<Product> getAllByStoreWithPagination(int storeId);
     @Query("SELECT o FROM profile o WHERE o.user.id=:customerid")
     ProfileDetail findByUserId(int customerid);
 
@@ -43,12 +43,12 @@ public interface ProductRepo extends JpaRepository<Product, Integer> {
 
 
     @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true")
-    Page<Product> findSellingProduct(int storeid, Pageable paging);
+    List<Product> findSellingProduct(int storeid);
 
 
     @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true " +
             "AND (p.productName LIKE %:keyword% )" +
             "OR (p.description LIKE %:keyword% )"
     )
-    Page<Product> findSellingProductKeyword(int storeid, Pageable paging, String keyword);
+    List<Product> findSellingProductKeyword(int storeid, String keyword);
 }

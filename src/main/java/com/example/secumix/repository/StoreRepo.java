@@ -39,12 +39,12 @@ public interface StoreRepo extends JpaRepository<Store, Integer> {
             "LOWER(i.emailmanager) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(i.phoneNumber) LIKE LOWER(CONCAT('%', :keyword, '%')) "
     )
-    Page<Store> findStoreByTitleContainingIgnoreCase(String keyword, Pageable pageable);
+    List<Store> findStoreByTitleContainingIgnoreCase(String keyword);
 
 
 
     @Query("SELECT i FROM store i ")
-    Page<Store> getAllStoreWithPagination(Pageable pageable);
+    List<Store> getAllStoreWithPagination();
 
     @Modifying
     @Query(value = "SELECT * FROM users_stores WHERE store_id=:storeId AND user_id=:userId", nativeQuery = true)
@@ -56,14 +56,13 @@ public interface StoreRepo extends JpaRepository<Store, Integer> {
     void saveToFavor(@Param("userId") int userId, @Param("storeId") int storeId);
 
     @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId)", nativeQuery = true)
-    Page<Store> findStoreFavor(@Param("userId") int userId, Pageable pageable);
-    @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId)", nativeQuery = true)
     List<Store> findStoreFavor(@Param("userId") int userId);
+
 
     @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId) " +
             "AND (s.storename LIKE %:keyword% )",
             nativeQuery = true)
-    Page<Store> findStoreFavorKeyword(@Param("userId") int userId, @Param("keyword") String keyword, Pageable pageable);
+    List<Store> findStoreFavorKeyword(@Param("userId") int userId, @Param("keyword") String keyword);
 
     @Modifying
     @Transactional

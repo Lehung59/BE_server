@@ -21,17 +21,17 @@ public interface IStoreService {
 
     void updateInfo(StoreInfoEditRequest storeInfoEditRequest);
 
-    Page<StoreViewResponse> findAllStorePaginable(Pageable paging);
+    List<StoreViewResponse> findAllStorePaginable();
 
-    Page<StoreViewResponse> findAllStoreByTitleContainingIgnoreCase(String keyword, Pageable paging);
+    List<StoreViewResponse> findAllStoreByTitleContainingIgnoreCase(String keyword);
 
     StoreInfoView getInfo(int storeid);
 
     void addStoreToFavor(int userId, int storeid);
 
-    List<StoreInfoView> findFavorStore(int userId, String keyword, int page, int size);
+    List<StoreInfoView> findFavorStore(int userId, String keyword);
 
     void removeStoreFromFavorList(int storeid, int userId);
 
-    List<ProductResponse> findSellingProduct(int storeid, String keyword, int page, int size);
+    List<ProductResponse> findSellingProduct(int storeid, String keyword);
 }

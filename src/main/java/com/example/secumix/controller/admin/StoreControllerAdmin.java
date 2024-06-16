@@ -32,22 +32,17 @@ public class StoreControllerAdmin {
     //--------------------------------admin
 
     @GetMapping(value = "/store/view")
-    public ResponseEntity<ResponseObject> viewStore(@RequestParam(required = false) String keyword,
-                                                    @RequestParam(defaultValue = "1") int page,
-                                                    @RequestParam(defaultValue = "10") int size ) {
+    public ResponseEntity<ResponseObject> viewStore(@RequestParam(required = false) String keyword
+    ) {
         try{
             List<StoreViewResponse> storeViewRespones = new ArrayList<StoreViewResponse>();
-            Pageable paging = PageRequest.of(page - 1, size);
-            Page<StoreViewResponse> pageTuts;
-
 
             if (keyword == null) {
-                pageTuts = storeService.findAllStorePaginable(paging);
+                storeViewRespones = storeService.findAllStorePaginable();
             } else {
-                pageTuts = storeService.findAllStoreByTitleContainingIgnoreCase(keyword, paging);
+                storeViewRespones = storeService.findAllStoreByTitleContainingIgnoreCase(keyword);
             }
 
-            storeViewRespones = pageTuts.getContent();
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("OK","Các cua hang hien tai",storeViewRespones)
             );

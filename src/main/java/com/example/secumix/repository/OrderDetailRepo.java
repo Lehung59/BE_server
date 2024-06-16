@@ -43,7 +43,7 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
 
 
     @Query("select o from orderdetail o where o.store.storeName=:storeName AND o.user.id=:customerid")
-    Page<OrderDetail> findAllOrderByCustomerAndStorePaginable(Pageable pageable, String storeName, int customerid);
+    List<OrderDetail> findAllOrderByCustomerAndStorePaginable(String storeName, int customerid);
 
 //    @Query("select o.productName from orderdetail o where o.storeName=:storeName AND o.user.id=:customerid")
 //    List<String> findAllOrderByCustomerAndStorePaginable( String storeName, int customerid);
@@ -52,17 +52,17 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
     @Query("select o from orderdetail o where o.store.storeName=:storeName AND o.user.id=:customerid " +
             "AND LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    Page<OrderDetail> findOrderByTitleContainingIgnoreCase(String keyword, Pageable pageable, String storeName, int customerid);
+    List<OrderDetail> findOrderByTitleContainingIgnoreCase(String keyword, String storeName, int customerid);
 
 
     @Query("select o from orderdetail o where o.store.storeId=:storeId")
-    Page<OrderDetail> getAllByStoreWithPagination(int storeId, Pageable pageable);
+    List<OrderDetail> getAllByStoreWithPagination(int storeId);
 
 
     @Query("select o from orderdetail o where o.store.storeId=:storeId " +
             "AND LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    Page<OrderDetail> findByTitleContainingIgnoreCase(int storeId, String keyword, Pageable pageable);
+    List<OrderDetail> findByTitleContainingIgnoreCase(int storeId, String keyword);
 
     @Query("select o from orderdetail o where o.orderStatus.orderStatusId=1 ")
     List<OrderDetail> findOrderNotShipped();

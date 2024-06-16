@@ -25,25 +25,25 @@ public class CustomerService implements ICustomerService{
     private final OrderDetailRepo orderDetailRepo;
 
     @Override
-    public Page<StoreCustomerRespone> findAllCustomerPaginable(Pageable pageable, int storeid) {
-        Page<ProfileDetail> customers = profileDetailRepo.getAllCustomerByStoreWithPagination(storeid,pageable);
+    public List<StoreCustomerRespone> findAllCustomerPaginable( int storeid) {
+        List<ProfileDetail> customers = profileDetailRepo.getAllCustomerByStoreWithPagination(storeid);
         List<StoreCustomerRespone> customerRespones = customers
                 .stream()
                 .map(customer -> convertToCustomerResponse(customer, storeid))
                 .collect(Collectors.toList());
-        return new PageImpl<>(customerRespones, pageable, customers.getTotalElements());
+        return customerRespones;
     }
 
 
 
     @Override
-    public Page<StoreCustomerRespone> findCustomerByTitleContainingIgnoreCase(String keyword, Pageable pageable, int storeid) {
-        Page<ProfileDetail> customers = profileDetailRepo.findCustomerByTitleContainingIgnoreCase(storeid, keyword, pageable);
+    public List<StoreCustomerRespone> findCustomerByTitleContainingIgnoreCase(String keyword, int storeid) {
+        List<ProfileDetail> customers = profileDetailRepo.findCustomerByTitleContainingIgnoreCase(storeid, keyword);
         List<StoreCustomerRespone> productResponseList = customers
                 .stream()
                 .map(customer -> convertToCustomerResponse(customer, storeid))
                 .collect(Collectors.toList());
-        return new PageImpl<>(productResponseList, pageable, customers.getTotalElements());
+        return productResponseList;
     }
 
     private StoreCustomerRespone convertToCustomerResponse(ProfileDetail customer, int storeId) {

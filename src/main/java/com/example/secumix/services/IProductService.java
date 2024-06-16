@@ -24,9 +24,9 @@ public interface IProductService {
 
     void saveProduct(AddProductRequest addProductRequest);
 
-    Page<ProductResponse> findAllProductPaginable(Pageable paging,int storeId);
+    List<ProductResponse> findAllProductPaginable(int storeId);
 
-    Page<ProductResponse> findByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid);
+    List<ProductResponse> findByTitleContainingIgnoreCase(String keyword, int storeid);
 
 
     void updateProduct(ProductRequest productRequest);

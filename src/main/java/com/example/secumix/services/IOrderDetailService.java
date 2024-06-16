@@ -33,13 +33,13 @@ public interface IOrderDetailService {
 
     List<OrderDetailResponse> getOrderDetailByShipperId(int id);
 
-    Page<OrderDetailResponse> findAllOrderByCustomerAndStorePaginable(Pageable paging, int storeid, int customerid);
+    List<OrderDetailResponse> findAllOrderByCustomerAndStorePaginable( int storeid, int customerid);
 
-    Page<OrderDetailResponse> findOrderByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid, int customerid);
+    List<OrderDetailResponse> findOrderByTitleContainingIgnoreCase(String keyword,  int storeid, int customerid);
 
-    Page<OrderDetailResponse> findAllOrderPaginable(Pageable paging, int storeid);
+    List<OrderDetailResponse> findAllOrderPaginable( int storeid);
 
-    Page<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, Pageable paging, int storeid);
+    List<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword,  int storeid);
 
     OrderDetailDto findDtoById(int orderDetailId);
 

@@ -129,22 +129,16 @@ public class ProductControllerManager {
 
     @GetMapping(value = "/{storeid}/product/view")
     ResponseEntity<ResponseObject>GetAllProductByStore(@PathVariable int storeid,
-                                                       @RequestParam(required = false) String keyword,
-                                                       @RequestParam(defaultValue = "1") int page,
-                                                       @RequestParam(defaultValue = "10") int size){
+                                                       @RequestParam(required = false) String keyword
+    ){
 
         List<ProductResponse> products = new ArrayList<ProductResponse>();
-        Pageable paging = PageRequest.of(page - 1, size);
 
-        Page<ProductResponse> pageTuts;
         if (keyword == null) {
-            pageTuts = productService.findAllProductPaginable(paging,storeid);
+            products = productService.findAllProductPaginable(storeid);
         } else {
-            pageTuts = productService.findByTitleContainingIgnoreCase(keyword, paging, storeid);
+            products = productService.findByTitleContainingIgnoreCase(keyword, storeid);
         }
-
-        products = pageTuts.getContent();
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Cac san pham trong cua hang cua ban.",products)
         );

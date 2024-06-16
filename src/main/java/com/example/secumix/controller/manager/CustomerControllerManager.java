@@ -28,20 +28,17 @@ public class CustomerControllerManager {
 
     @GetMapping(value = "/{storeid}/customer/view")
     ResponseEntity<ResponseObject> viewCustomerByStore(@PathVariable("storeid") int storeid,
-                                                       @RequestParam(required = false) String keyword,
-                                                       @RequestParam(defaultValue = "1") int page,
-                                                       @RequestParam(defaultValue = "10") int size) {
+                                                       @RequestParam(required = false) String keyword
+    ) {
         List<StoreCustomerRespone> storeCustomerRespones = new ArrayList<StoreCustomerRespone>();
-        Pageable paging = PageRequest.of(page - 1, size);
 
-        Page<StoreCustomerRespone> pageTuts;
+
         if (keyword == null) {
-            pageTuts = customerService.findAllCustomerPaginable(paging,storeid);
+            storeCustomerRespones = customerService.findAllCustomerPaginable(storeid);
         } else {
-            pageTuts = customerService.findCustomerByTitleContainingIgnoreCase(keyword, paging, storeid);
+            storeCustomerRespones = customerService.findCustomerByTitleContainingIgnoreCase(keyword, storeid);
         }
 
-        storeCustomerRespones = pageTuts.getContent();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Cac khach hang cua ban.", storeCustomerRespones)
         );
@@ -50,20 +47,15 @@ public class CustomerControllerManager {
     @GetMapping(value = "/{storeid}/customer/{customerid}/detail")
     ResponseEntity<ResponseObject> viewCustomerOrderListByStore(@PathVariable("storeid") int storeid,
                                                                 @PathVariable("customerid") int customerid,
-                                                                @RequestParam(required = false) String keyword,
-                                                                @RequestParam(defaultValue = "1") int page,
-                                                                @RequestParam(defaultValue = "10") int size) {
+                                                                @RequestParam(required = false) String keyword) {
         List<OrderDetailResponse> orderDetailResponses = new ArrayList<OrderDetailResponse>();
-        Pageable paging = PageRequest.of(page - 1, size);
 
-        Page<OrderDetailResponse> pageTuts;
         if (keyword == null) {
-            pageTuts = orderDetailService.findAllOrderByCustomerAndStorePaginable(paging,storeid,customerid);
+            orderDetailResponses = orderDetailService.findAllOrderByCustomerAndStorePaginable(storeid,customerid);
         } else {
-            pageTuts = orderDetailService.findOrderByTitleContainingIgnoreCase(keyword, paging, storeid,customerid);
+            orderDetailResponses = orderDetailService.findOrderByTitleContainingIgnoreCase(keyword, storeid,customerid);
         }
 
-        orderDetailResponses = pageTuts.getContent();
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject("OK","Các đơn hàng của khách "+customerid, orderDetailResponses)
         );

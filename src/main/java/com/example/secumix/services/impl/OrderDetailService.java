@@ -285,47 +285,47 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
-    public Page<OrderDetailResponse> findAllOrderByCustomerAndStorePaginable(Pageable pageable, int storeid, int customerid) {
+    public List<OrderDetailResponse> findAllOrderByCustomerAndStorePaginable(int storeid, int customerid) {
         String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
-        Page<OrderDetail> orderDetails = orderDetailRepo.findAllOrderByCustomerAndStorePaginable(pageable, storeName, customerid);
+        List<OrderDetail> orderDetails = orderDetailRepo.findAllOrderByCustomerAndStorePaginable(storeName, customerid);
         List<OrderDetailResponse> orderDetailResponses = orderDetails
                 .stream()
                 .map(this::convertToOrderDetailResponse)
                 .collect(Collectors.toList());
-        return new PageImpl<>(orderDetailResponses, pageable, orderDetails.getTotalElements());
+        return orderDetailResponses;
     }
 
     @Override
-    public Page<OrderDetailResponse> findOrderByTitleContainingIgnoreCase(String keyword, Pageable pageable, int storeid, int customerid) {
+    public List<OrderDetailResponse> findOrderByTitleContainingIgnoreCase(String keyword, int storeid, int customerid) {
         String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
-        Page<OrderDetail> orderDetails = orderDetailRepo.findOrderByTitleContainingIgnoreCase(keyword, pageable, storeName, customerid);
+        List<OrderDetail> orderDetails = orderDetailRepo.findOrderByTitleContainingIgnoreCase(keyword, storeName, customerid);
         List<OrderDetailResponse> orderDetailResponses = orderDetails
                 .stream()
                 .map(this::convertToOrderDetailResponse)
                 .collect(Collectors.toList());
-        return new PageImpl<>(orderDetailResponses, pageable, orderDetails.getTotalElements());
+        return orderDetailResponses;
     }
 
     @Override
-    public Page<OrderDetailResponse> findAllOrderPaginable(Pageable pageable, int storeId) {
-        Page<OrderDetail> orderDetails = orderDetailRepo.getAllByStoreWithPagination(storeId, pageable);
-        List<OrderDetailResponse> orderDetailResponses = orderDetails.getContent()
+    public List<OrderDetailResponse> findAllOrderPaginable( int storeId) {
+        List<OrderDetail> orderDetails = orderDetailRepo.getAllByStoreWithPagination(storeId);
+        List<OrderDetailResponse> orderDetailResponses = orderDetails
                 .stream()
                 .map(this::convertToOrderDetailResponse)
                 .toList();
 
-        return new PageImpl<>(orderDetailResponses, pageable, orderDetails.getTotalElements());
+        return orderDetailResponses;
     }
 
     @Override
-    public Page<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, Pageable pageable, int storeId) {
-        Page<OrderDetail> orderDetails = orderDetailRepo.findByTitleContainingIgnoreCase(storeId, keyword, pageable);
-        List<OrderDetailResponse> orderDetailResponses = orderDetails.getContent()
+    public List<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, int storeId) {
+        List<OrderDetail> orderDetails = orderDetailRepo.findByTitleContainingIgnoreCase(storeId, keyword);
+        List<OrderDetailResponse> orderDetailResponses = orderDetails
                 .stream()
                 .map(this::convertToOrderDetailResponse)
                 .toList();
 
-        return new PageImpl<>(orderDetailResponses, pageable, orderDetails.getTotalElements());
+        return orderDetailResponses;
     }
 
     @Override

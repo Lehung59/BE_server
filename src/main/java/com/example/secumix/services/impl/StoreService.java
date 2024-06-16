@@ -98,24 +98,24 @@ public class StoreService implements IStoreService {
     }
 
     @Override
-    public Page<StoreViewResponse> findAllStorePaginable(Pageable pageable) {
-        Page<Store> stores = storeRepo.getAllStoreWithPagination(pageable);
+    public List<StoreViewResponse> findAllStorePaginable() {
+        List<Store> stores = storeRepo.getAllStoreWithPagination();
         List<StoreViewResponse> storeViewResponses = stores
                 .stream()
                 .map(storeMapper::convertToStoreViewResponse)
                 .toList();
-        return new PageImpl<>(storeViewResponses, pageable, stores.getTotalElements());
+        return storeViewResponses;
     }
 
     @Override
-    public Page<StoreViewResponse> findAllStoreByTitleContainingIgnoreCase(String keyword, Pageable pageable) {
-        Page<Store> stores = storeRepo.findStoreByTitleContainingIgnoreCase(keyword, pageable);
+    public List<StoreViewResponse> findAllStoreByTitleContainingIgnoreCase(String keyword) {
+        List<Store> stores = storeRepo.findStoreByTitleContainingIgnoreCase(keyword);
         List<StoreViewResponse> importResponses = stores
                 .stream()
                 .map(storeMapper::convertToStoreViewResponse)
                 .toList();
 
-        return new PageImpl<>(importResponses, pageable, stores.getTotalElements());
+        return importResponses;
     }
 
     @Override
@@ -148,18 +148,15 @@ public class StoreService implements IStoreService {
 
     }
     @Override
-    public List<ProductResponse> findSellingProduct(int storeid, String keyword, int page, int size) {
+    public List<ProductResponse> findSellingProduct(int storeid, String keyword) {
         int userId = userUtils.getUserId();
-        List<Integer>storeIdFavor =  storeRepo.findStoreFavor(userId).stream().map(Store::getStoreId).toList();
-        if(!storeIdFavor.contains(storeid)) throw new CustomException(HttpStatus.NOT_IMPLEMENTED,"CUa hang chua co trong danh sach yeu thich");
 
-        Pageable paging = PageRequest.of(page - 1, size);
-        Page<Product> products;
+        List<Product> products;
         if(keyword == null || keyword.isEmpty()){
-            products = productRepo.findSellingProduct(storeid, paging);
+            products = productRepo.findSellingProduct(storeid);
 
-        } else products = productRepo.findSellingProductKeyword(storeid,paging,keyword);
-        List<ProductResponse> productResponseList = products.getContent().stream().map(product -> {
+        } else products = productRepo.findSellingProductKeyword(storeid,keyword);
+        List<ProductResponse> productResponseList = products.stream().map(product -> {
             ProductResponse productResponse = new ProductResponse();
             productResponse.setProductId(product.getProductId());
             productResponse.setAvatarProduct(product.getAvatarProduct());
@@ -180,15 +177,14 @@ public class StoreService implements IStoreService {
 
 
     @Override
-    public List<StoreInfoView> findFavorStore(int userId, String keyword, int page, int size) {
-        Pageable paging = PageRequest.of(page - 1, size);
-        Page<Store> stores;
+    public List<StoreInfoView> findFavorStore(int userId, String keyword) {
+        List<Store> stores;
         if(keyword == null || keyword.isEmpty()){
-            stores = storeRepo.findStoreFavor(userId, paging);
+            stores = storeRepo.findStoreFavor(userId);
 
-        } else stores = storeRepo.findStoreFavorKeyword(userId, keyword,paging);
+        } else stores = storeRepo.findStoreFavorKeyword(userId, keyword);
 
-        List<StoreInfoView> listStores = stores.getContent().stream().map(store -> {
+        List<StoreInfoView> listStores = stores.stream().map(store -> {
             List<String> productName = store.getProductList().stream().map(Product::getProductName).toList();
             List<String> productTypeName = store.getProductType().stream().map(ProductType::getProductTypeName).toList();
             return StoreInfoView.builder()

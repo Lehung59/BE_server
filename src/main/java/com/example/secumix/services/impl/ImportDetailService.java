@@ -36,27 +36,27 @@ public class ImportDetailService implements IImportDetailService {
     }
 
     @Override
-    public Page<ImportResponse> findAllImportPaginable(Pageable pageable, int storeid) {
-        Page<ImportDetail> importDetails = importDetailRepo.getAllImportByStoreWithPagination(storeid,pageable);
+    public List<ImportResponse> findAllImportPaginable( int storeid) {
+        List<ImportDetail> importDetails = importDetailRepo.getAllImportByStoreWithPagination(storeid);
         String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
         List<ImportResponse> importResponses = importDetails
                 .stream()
                 .map(importDetail -> convertToImportResponse(importDetail, storeName))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(importResponses, pageable, importDetails.getTotalElements());
+        return importResponses;
     }
 
     @Override
-    public Page<ImportResponse> findImportByTitleContainingIgnoreCase(String keyword, Pageable pageable, int storeid) {
-        Page<ImportDetail> importDetails = importDetailRepo.findImportByTitleContainingIgnoreCase(storeid, keyword, pageable);
+    public List<ImportResponse> findImportByTitleContainingIgnoreCase(String keyword, int storeid) {
+        List<ImportDetail> importDetails = importDetailRepo.findImportByTitleContainingIgnoreCase(storeid, keyword);
         String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
         List<ImportResponse> importResponses = importDetails
                 .stream()
                 .map(importDetail -> convertToImportResponse(importDetail, storeName))
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(importResponses, pageable, importDetails.getTotalElements());
+        return importResponses;
     }
 
     @Override

@@ -25,11 +25,9 @@ public class StoreControllerCustomer {
 
     @GetMapping(value = "/store/view/{storeid}")
     ResponseEntity<ResponseObject> viewProduct(@RequestParam(required = false) String keyword,
-                                               @RequestParam(defaultValue = "1") int page,
-                                               @RequestParam(defaultValue = "10") int size,
                                                @PathVariable int storeid){
         try{
-            List<ProductResponse> productResponseList = storeService.findSellingProduct(storeid,keyword,page,size);
+            List<ProductResponse> productResponseList = storeService.findSellingProduct(storeid,keyword);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
                     "OK", "Cac san pham cuar cua hang id "+storeid, productResponseList
             ));
@@ -41,13 +39,12 @@ public class StoreControllerCustomer {
     }
 
     @GetMapping(value = "/favor/view")
-    ResponseEntity<ResponseObject> viewFavor(@RequestParam(required = false) String keyword,
-                                             @RequestParam(defaultValue = "1") int page,
-                                             @RequestParam(defaultValue = "10") int size){
+    ResponseEntity<ResponseObject> viewFavor(@RequestParam(required = false) String keyword
+                                             ){
         try{
             int userId = userUtils.getUserId();
 
-            List<StoreInfoView> storeFavorRespones = storeService.findFavorStore(userId,keyword,page,size);
+            List<StoreInfoView> storeFavorRespones = storeService.findFavorStore(userId,keyword);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
                     "OK", "Cac cua hang yeu thich cua ban", storeFavorRespones
             ));

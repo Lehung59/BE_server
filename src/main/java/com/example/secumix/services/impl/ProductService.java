@@ -187,25 +187,25 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<ProductResponse> findAllProductPaginable(Pageable pageable, int storeId) {
-        Page<Product> products = productRepo.getAllByStoreWithPagination(storeId,pageable);
+    public List<ProductResponse> findAllProductPaginable(int storeId) {
+        List<Product> products = productRepo.getAllByStoreWithPagination(storeId);
         List<ProductResponse> productResponseList = products
                 .stream()
                 .map(ProductService::convertToProductResponse)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(productResponseList, pageable, products.getTotalElements());
+        return productResponseList;
     }
 
     @Override
-    public Page<ProductResponse> findByTitleContainingIgnoreCase(String keyword, Pageable pageable, int storeId) {
-        Page<Product> products = productRepo.findByTitleContainingIgnoreCase(storeId, keyword, pageable);
+    public List<ProductResponse> findByTitleContainingIgnoreCase(String keyword,  int storeId) {
+        List<Product> products = productRepo.findByTitleContainingIgnoreCase(storeId, keyword);
         List<ProductResponse> productResponseList = products
                 .stream()
                 .map(ProductService::convertToProductResponse)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(productResponseList, pageable, products.getTotalElements());
+        return productResponseList;
     }
 
     @Override

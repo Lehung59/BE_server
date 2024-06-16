@@ -45,21 +45,16 @@ public class ImportControllerManager {
 
     @GetMapping(value = "/{storeid}/import/view")
     ResponseEntity<ResponseObject> getAllImport(@PathVariable int storeid,
-                                                @RequestParam(required = false) String keyword,
-                                                @RequestParam(defaultValue = "1") int page,
-                                                @RequestParam(defaultValue = "10") int size){
+                                                @RequestParam(required = false) String keyword){
         try{
             storeService.checkStoreAuthen(storeid);
             List<ImportResponse> importResponses = new ArrayList<ImportResponse>();
-            Pageable paging = PageRequest.of(page - 1, size);
-            Page<ImportResponse> pageTuts;
             if (keyword == null) {
-                pageTuts = importDetailService.findAllImportPaginable(paging,storeid);
+                importResponses = importDetailService.findAllImportPaginable(storeid);
             } else {
-                pageTuts = importDetailService.findImportByTitleContainingIgnoreCase(keyword, paging, storeid);
+                importResponses = importDetailService.findImportByTitleContainingIgnoreCase(keyword,  storeid);
             }
 
-            importResponses = pageTuts.getContent();
 
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject("OK","Các hóa đơn nhập hàng của bạn",importResponses)
