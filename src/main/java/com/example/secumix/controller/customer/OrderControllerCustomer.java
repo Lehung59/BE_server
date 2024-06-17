@@ -1,12 +1,15 @@
 package com.example.secumix.controller.customer;
 
+import com.example.secumix.Utils.DtoMapper.OrderDetailMapper;
 import com.example.secumix.constants.Constants;
 import com.example.secumix.exception.CustomException;
 import com.example.secumix.ResponseObject;
 import com.example.secumix.entities.CartItem;
 import com.example.secumix.entities.OrderDetail;
 import com.example.secumix.entities.Product;
+import com.example.secumix.payload.Pagination;
 import com.example.secumix.payload.request.OrderDetailRequest;
+import com.example.secumix.payload.response.OrderDetailResponse;
 import com.example.secumix.repository.OrderDetailRepo;
 import com.example.secumix.repository.ProductRepo;
 import com.example.secumix.services.ICartItemService;
@@ -17,13 +20,16 @@ import com.example.secumix.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/v1/customer")
@@ -35,16 +41,35 @@ public class OrderControllerCustomer {
     ICartItemService cartItemService;
     UserRepository userRepository;
     OrderDetailRepo orderDetailRepo;
+    OrderDetailMapper orderDetailMapper;
+
     @GetMapping(value = "/orderdetail/view")
-    ResponseEntity<ResponseObject> getAllByUSer(@RequestParam(defaultValue = Constants.PAGE) int page,
-                                                @RequestParam(defaultValue = Constants.SIZE) int size,
-                                                @RequestParam(required = false) String orderStatus
-                                                ) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "Lay ra thanh cong", orderService.GetAllByUser(page,size,orderStatus))
+    public ResponseEntity<ResponseObject> getAllByUser(@RequestParam(defaultValue = Constants.PAGE) int page,
+                                                       @RequestParam(defaultValue = Constants.SIZE) int size,
+                                                       @RequestParam(required = false) String orderStatus) {
+        Page<OrderDetail> orderDetails = orderService.GetAllByUser(page, size, orderStatus);
+
+        List<OrderDetailResponse> orderDetailResponses = orderDetails.getContent().stream()
+                .map(orderDetailMapper::convertToOrderDetailResponse)
+                .collect(Collectors.toList());
+
+        Pagination pagination = new Pagination(
+                orderDetails.getTotalElements(),
+                orderDetails.getTotalPages(),
+                orderDetails.getNumber() + 1,
+                orderDetails.getSize()
         );
+
+        ResponseObject responseObject = new ResponseObject(
+                "OK",
+                "Lay ra thanh cong",
+                orderDetailResponses,
+                pagination
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
-    @GetMapping(value = "/customer/orderdetail/view/{orderdetailid}")
+    @GetMapping(value = "/orderdetail/view/{orderdetailid}")
     ResponseEntity<ResponseObject> getInfoOrder(@PathVariable int orderdetailid) {
         if (IsPermisson(orderdetailid)) {
             return ResponseEntity.status(HttpStatus.OK).body(

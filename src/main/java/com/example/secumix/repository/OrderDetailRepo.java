@@ -34,7 +34,7 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
     List<OrderDetail> getOrderDetailByShipperId(int shipperid);
 
     @Query("select sum(o.priceTotal) from orderdetail o where o.orderStatus.orderStatusId=3 and o.store.storeId=:storeId")
-    long RevenueByStore(int storeId);
+    Long RevenueByStore(int storeId);
 
     @Query("select sum(o.priceTotal) from orderdetail o where o.orderStatus.orderStatusId=3 and o.user.id=:userId and o.store.storeId=:storeId")
     Long RevenueByStoreAndUser(int userId, int storeId);
@@ -48,39 +48,58 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
 
 
     @Query("select o from orderdetail o where o.store.storeName=:storeName AND o.user.id=:customerid")
-    List<OrderDetail> findAllOrderByCustomerAndStorePaginable(String storeName, int customerid);
+    Page<OrderDetail> findAllOrderByCustomerAndStorePaginable(String storeName, int customerid, Pageable pageable);
 
 //    @Query("select o.productName from orderdetail o where o.storeName=:storeName AND o.user.id=:customerid")
 //    List<String> findAllOrderByCustomerAndStorePaginable( String storeName, int customerid);
 
 
     @Query("select o from orderdetail o where o.store.storeName=:storeName AND o.user.id=:customerid " +
-            "AND LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<OrderDetail> findOrderByTitleContainingIgnoreCase(String keyword, String storeName, int customerid);
+            "AND (LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<OrderDetail> findOrderByTitleContainingIgnoreCase(String keyword, String storeName, int customerid, Pageable pageable);
 
 
     @Query("select o from orderdetail o where o.store.storeId=:storeId")
-    List<OrderDetail> getAllByStoreWithPagination(int storeId);
+    Page<OrderDetail> getAllByStoreWithPagination(int storeId, Pageable pageable);
 
 
     @Query("select o from orderdetail o where o.store.storeId=:storeId " +
-            "AND LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<OrderDetail> findByTitleContainingIgnoreCase(int storeId, String keyword);
+            "AND (LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<OrderDetail> findByTitleContainingIgnoreCase(int storeId, String keyword, Pageable pageable);
 
     @Query("select o from orderdetail o where o.orderStatus.orderStatusId=1 ")
-    List<OrderDetail> findOrderNotShipped();
-    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus=2 ")
-    List<OrderDetail> findOrderReadyToShip(int shipperId);
+    Page<OrderDetail> findOrderNotShipped(Pageable pageable);
 
-    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus=3 ")
-    List<OrderDetail> findOrderShipped(int shipperId);
+    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus.orderStatusId = 2 ")
+    Page<OrderDetail> findOrderReadyToShip(int shipperId, Pageable pageable);
+
+    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus.orderStatusId = 3 ")
+    Page<OrderDetail> findOrderShipped(int shipperId, Pageable pageable );
     @Query("select o from orderdetail o where o.user.email=:email and o.orderStatus.orderStatusId=2")
     Page<OrderDetail> getAllByUserDelvery(String email, Pageable paging);
+
     @Query("select o from orderdetail o where o.user.email=:email and o.orderStatus.orderStatusId=3")
     Page<OrderDetail> getAllByUserShipped(String email, Pageable paging);
     @Query("select o from orderdetail o where o.user.email=:email and o.orderStatus.orderStatusId=4")
 
     Page<OrderDetail> getAllByUserCancel(String email, Pageable paging);
+
+
+    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus.orderStatusId=3 "+
+            "AND (LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            " LOWER(o.product.store.storeName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<OrderDetail> findOrderShippedContainKey(int shipperId, String keyword, Pageable paging);
+    @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus.orderStatusId=2 "+
+            "AND (LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            " LOWER(o.product.store.storeName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<OrderDetail> findOrderReadyToShipContainKey(int shipperId, String keyword, Pageable paging);
+    @Query("select o from orderdetail o where o.orderStatus.orderStatusId = 1 " +
+            "AND (LOWER(o.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(o.product.store.storeName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(o.orderStatus.orderStatusName) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    Page<OrderDetail> findOrderNotShippedContainKey(String keyword, Pageable paging);
 }

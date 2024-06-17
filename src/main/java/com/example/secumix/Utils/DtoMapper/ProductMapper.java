@@ -5,6 +5,7 @@ import com.example.secumix.entities.Product;
 import com.example.secumix.entities.ProductType;
 import com.example.secumix.entities.Store;
 import com.example.secumix.payload.request.ProductRequest;
+import com.example.secumix.payload.response.ProductResponse;
 import com.example.secumix.repository.ProductTypeRepo;
 import com.example.secumix.repository.StoreRepo;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,23 @@ public class ProductMapper {
         productDto.setImportDetails(product.getImportDetails().stream().map(importDetailMapper::toDto).collect(Collectors.toSet()));
 
         return productDto;
+    }
+    public ProductResponse convertToProductResponse(Product product) {
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setProductId(product.getProductId());
+        productResponse.setAvatarProduct(product.getAvatarProduct());
+        productResponse.setProductName(product.getProductName());
+        productResponse.setProductType(product.getProductType().getProductTypeName());
+        productResponse.setQuantity(product.getQuantity());
+        productResponse.setStoreName(product.getStore().getStoreName());
+        productResponse.setDescription(product.getDescription());
+        productResponse.setPrice(product.getPrice());
+        productResponse.setStatus(product.isStatus());
+        productResponse.setStoreId(product.getStore().getStoreId());
+        productResponse.setProductTypeId(product.getProductType().getProductTypeId());
+        productResponse.setDiscount(product.getDiscount());
+        productResponse.setView(product.getView());
+        return productResponse;
     }
 
     public ProductRequest toProductRequest(Product product) {

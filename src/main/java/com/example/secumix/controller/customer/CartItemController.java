@@ -1,20 +1,26 @@
 package com.example.secumix.controller.customer;
 
 import com.example.secumix.ResponseObject;
+import com.example.secumix.Utils.DtoMapper.CartItemMapper;
 import com.example.secumix.constants.Constants;
 import com.example.secumix.entities.CartItem;
 import com.example.secumix.entities.Product;
+import com.example.secumix.payload.Pagination;
 import com.example.secumix.payload.request.CartItemRequest;
 
+import com.example.secumix.payload.response.CartItemResponse;
 import com.example.secumix.services.ICartItemService;
 import com.example.secumix.repository.ProductRepo;
 import com.example.secumix.services.impl.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/v1/customer")
@@ -23,15 +29,34 @@ public class CartItemController {
     private final ICartItemService cartItemService;
     private final ProductRepo productRepo;
     private final UserService userService;
+    private final CartItemMapper cartItemMapper;
+
+
     @GetMapping("/cartitem/view")
-    ResponseEntity<ResponseObject> getAllItemByUser(@RequestParam(defaultValue = Constants.PAGE) int page,
-                                                    @RequestParam(defaultValue = Constants.SIZE) int size
-                                                    ){
+    public ResponseEntity<ResponseObject> getAllItemByUser(@RequestParam(defaultValue = Constants.PAGE) int page,
+                                                           @RequestParam(defaultValue = Constants.SIZE) int size) {
 
+        Page<CartItem> cartItems = cartItemService.findByUser(page, size);
 
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Get All" , cartItemService.findByUser(page,size))
+        List<CartItemResponse> cartItemResponses = cartItems.getContent().stream()
+                .map(cartItemMapper::convertToCartItemResponse)
+                .collect(Collectors.toList());
+
+        Pagination pagination = new Pagination(
+                cartItems.getTotalElements(),
+                cartItems.getTotalPages(),
+                cartItems.getNumber() + 1,
+                cartItems.getSize()
         );
+
+        ResponseObject responseObject = new ResponseObject(
+                "OK",
+                "Get All",
+                cartItemResponses,
+                pagination
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
 
     @PostMapping(value = "/cartitem/insert")

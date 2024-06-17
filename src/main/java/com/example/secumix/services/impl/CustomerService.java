@@ -10,6 +10,7 @@ import com.example.secumix.entities.ProfileDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,28 +26,18 @@ public class CustomerService implements ICustomerService{
     private final OrderDetailRepo orderDetailRepo;
 
     @Override
-    public List<StoreCustomerRespone> findAllCustomerPaginable( int storeid) {
-        List<ProfileDetail> customers = profileDetailRepo.getAllCustomerByStoreWithPagination(storeid);
-        List<StoreCustomerRespone> customerRespones = customers
-                .stream()
-                .map(customer -> convertToCustomerResponse(customer, storeid))
-                .collect(Collectors.toList());
-        return customerRespones;
+    public Page<ProfileDetail> findAllCustomerPaginable(int storeid, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        return profileDetailRepo.getAllCustomerByStoreWithPagination(storeid, paging);
     }
-
 
 
     @Override
-    public List<StoreCustomerRespone> findCustomerByTitleContainingIgnoreCase(String keyword, int storeid) {
-        List<ProfileDetail> customers = profileDetailRepo.findCustomerByTitleContainingIgnoreCase(storeid, keyword);
-        List<StoreCustomerRespone> productResponseList = customers
-                .stream()
-                .map(customer -> convertToCustomerResponse(customer, storeid))
-                .collect(Collectors.toList());
-        return productResponseList;
+    public Page<ProfileDetail> findCustomerByTitleContainingIgnoreCase(String keyword, int page, int size, int storeid) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        return profileDetailRepo.findCustomerByTitleContainingIgnoreCase(storeid, keyword, paging);
     }
-
-    private StoreCustomerRespone convertToCustomerResponse(ProfileDetail customer, int storeId) {
+    public StoreCustomerRespone convertToCustomerResponse(ProfileDetail customer, int storeId) {
         if (customer == null) {
             return null;
         }

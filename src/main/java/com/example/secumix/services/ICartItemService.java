@@ -3,13 +3,14 @@ package com.example.secumix.services;
 import com.example.secumix.entities.CartItem;
 import com.example.secumix.payload.request.CartItemRequest;
 import com.example.secumix.payload.response.CartItemResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ICartItemService {
     List<CartItemResponse> findByProduct(int productid);
-    List<CartItemResponse> findByUser(int page,int size);
+    Page<CartItem> findByUser(int page, int size);
     Optional<CartItemResponse> finfByProductandUser(int productid);
     void Insert(CartItemRequest cartItemRequest);
 

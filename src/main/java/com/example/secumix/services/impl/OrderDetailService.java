@@ -54,8 +54,7 @@ public class OrderDetailService implements IOrderDetailService {
 
 
     @Override
-    public List<OrderDetailResponse> GetAllByUser(int page, int size, String orderStatus) {
-
+    public Page<OrderDetail> GetAllByUser(int page, int size, String orderStatus) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
@@ -77,23 +76,7 @@ public class OrderDetailService implements IOrderDetailService {
             }
         }
 
-
-        return pageTuts.getContent().stream().map(
-                orderDetail -> {
-                    Store store = orderDetail.getStore();
-                    Product product = productRepo.findById(orderDetail.getProduct().getProductId()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tim thay san pham"));
-                    OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
-                    orderDetailResponse.setOrderDetailId(orderDetail.getOrderDetailId());
-                    orderDetailResponse.setProductName(product.getProductName());
-                    orderDetailResponse.setOrderStatusName(orderDetail.getOrderStatus().getOrderStatusName());
-                    orderDetailResponse.setQuantity(orderDetail.getQuantity());
-                    orderDetailResponse.setProductImg(product.getAvatarProduct());
-                    orderDetailResponse.setAddress(detailRepository.findProfileDetailBy(orderDetail.getUser().getEmail()).get().getAddress());
-                    orderDetailResponse.setPriceTotal(orderDetail.getPriceTotal());
-                    orderDetailResponse.setStoreName(store.getStoreName());
-                    return orderDetailResponse;
-                }
-        ).collect(Collectors.toList());
+        return pageTuts;
     }
 
     @Override
@@ -288,7 +271,7 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
-    public List<OrderDetailResponse> getOrderDetailByShipperId(int id) {
+    public List<OrderDetailResponse> getOrderDetailByShipperId(int id, int page, int size, String keyword) {
         String email = userUtils.getUserEmail();
         List<OrderDetailResponse> orderDetailResponses = orderDetailRepo.getOrderDetailByShipperId(id).stream().map(
                 orderDetail -> {
@@ -308,49 +291,29 @@ public class OrderDetailService implements IOrderDetailService {
         ).collect(Collectors.toList());
         return orderDetailResponses;
     }
-
     @Override
-    public List<OrderDetailResponse> findAllOrderByCustomerAndStorePaginable(int storeid, int customerid) {
-        String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
-        List<OrderDetail> orderDetails = orderDetailRepo.findAllOrderByCustomerAndStorePaginable(storeName, customerid);
-        List<OrderDetailResponse> orderDetailResponses = orderDetails
-                .stream()
-                .map(this::convertToOrderDetailResponse)
-                .collect(Collectors.toList());
-        return orderDetailResponses;
+    public Page<OrderDetail> findAllOrderByCustomerAndStorePaginable(int storeId, int customerId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        String storeName = storeRepo.findById(storeId).orElseThrow(() -> new RuntimeException("Store not found")).getStoreName();
+        return orderDetailRepo.findAllOrderByCustomerAndStorePaginable(storeName, customerId, paging);
     }
-
     @Override
-    public List<OrderDetailResponse> findOrderByTitleContainingIgnoreCase(String keyword, int storeid, int customerid) {
-        String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
-        List<OrderDetail> orderDetails = orderDetailRepo.findOrderByTitleContainingIgnoreCase(keyword, storeName, customerid);
-        List<OrderDetailResponse> orderDetailResponses = orderDetails
-                .stream()
-                .map(this::convertToOrderDetailResponse)
-                .collect(Collectors.toList());
-        return orderDetailResponses;
+    public Page<OrderDetail> findOrderByTitleContainingIgnoreCase(String keyword, int storeId, int customerId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        String storeName = storeRepo.findById(storeId).orElseThrow(() -> new RuntimeException("Store not found")).getStoreName();
+        return orderDetailRepo.findOrderByTitleContainingIgnoreCase(keyword, storeName, customerId, paging);
     }
-
     @Override
-    public List<OrderDetailResponse> findAllOrderPaginable(int storeId) {
-        List<OrderDetail> orderDetails = orderDetailRepo.getAllByStoreWithPagination(storeId);
-        List<OrderDetailResponse> orderDetailResponses = orderDetails
-                .stream()
-                .map(this::convertToOrderDetailResponse)
-                .toList();
-
-        return orderDetailResponses;
+    public Page<OrderDetail> findAllOrderPaginable(int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        storeId = userUtils.getStoreId();
+        return orderDetailRepo.getAllByStoreWithPagination(storeId, paging);
     }
-
     @Override
-    public List<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword, int storeId) {
-        List<OrderDetail> orderDetails = orderDetailRepo.findByTitleContainingIgnoreCase(storeId, keyword);
-        List<OrderDetailResponse> orderDetailResponses = orderDetails
-                .stream()
-                .map(this::convertToOrderDetailResponse)
-                .toList();
-
-        return orderDetailResponses;
+    public Page<OrderDetail> findByTitleContainingIgnoreCase(String keyword, int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        storeId = userUtils.getStoreId();
+        return orderDetailRepo.findByTitleContainingIgnoreCase(storeId, keyword, paging);
     }
 
     @Override
@@ -363,32 +326,37 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
-    public List<OrderDetailResponse> findOrderNotShipped() {
-        return orderDetailRepo.findOrderNotShipped().stream().map(
-                this::convertToOrderDetailResponse
-        ).toList();
+    public Page<OrderDetail> findOrderNotShipped(int page, int size, String keyword) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        if (keyword == null || keyword.isEmpty()) {
+            return orderDetailRepo.findOrderNotShipped(paging);
+        } else {
+            return orderDetailRepo.findOrderNotShippedContainKey(keyword, paging);
+        }
     }
 
     @Override
-    public List<OrderDetailResponse> findOrderReadyToShip(int shipperId) {
-        return orderDetailRepo.findOrderReadyToShip(shipperId).stream().map(
-                this::convertToOrderDetailResponse
-        ).toList();
-
-
+    public Page<OrderDetail> findOrderReadyToShip(int shipperId, int page, int size, String keyword) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        if (keyword == null || keyword.isEmpty()) {
+            return orderDetailRepo.findOrderReadyToShip(shipperId, paging);
+        } else {
+            return orderDetailRepo.findOrderReadyToShipContainKey(shipperId, keyword, paging);
+        }
     }
 
     @Override
-    public List<OrderDetailResponse> findOrderShipped(int shipperId) {
-        return orderDetailRepo.findOrderReadyToShip(shipperId).stream().map(
-                this::convertToOrderDetailResponse
-        ).toList();
-
-
+    public Page<OrderDetail> findOrderShipped(int shipperId, int page, int size, String keyword) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        if (keyword == null || keyword.isEmpty()) {
+            return orderDetailRepo.findOrderShipped(shipperId, paging);
+        } else {
+            return orderDetailRepo.findOrderShippedContainKey(shipperId, keyword, paging);
+        }
     }
 
 
-    private OrderDetailResponse convertToOrderDetailResponse(OrderDetail orderDetail) {
+    public OrderDetailResponse convertToOrderDetailResponse(OrderDetail orderDetail) {
         OrderDetailResponse response = new OrderDetailResponse();
         String storeName = orderDetail.getStore().getStoreName();
         Product product = orderDetail.getProduct();

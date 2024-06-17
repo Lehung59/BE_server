@@ -1,6 +1,7 @@
 package com.example.secumix.Utils.DtoMapper;
 
 import com.example.secumix.entities.*;
+import com.example.secumix.payload.response.OrderDetailResponse;
 import com.example.secumix.repository.*;
 import com.example.secumix.exception.CustomException;
 import com.example.secumix.payload.dtos.OrderDetailDto;
@@ -32,6 +33,27 @@ public class OrderDetailMapper {
     private ProfileDetailRepo profileDetailRepo;
     @Autowired
     private StoreRepo storeRepo;
+
+    public OrderDetailResponse convertToOrderDetailResponse(OrderDetail orderDetail) {
+        OrderDetailResponse response = new OrderDetailResponse();
+        String storeName = orderDetail.getStore().getStoreName();
+        Product product = orderDetail.getProduct();
+        ProfileDetail profileDetail = profileDetailRepo.findByUserId(orderDetail.getUser().getId());
+        response.setOrderDetailId(orderDetail.getOrderDetailId());
+        response.setQuantity(orderDetail.getQuantity());
+        response.setProductName(product.getProductName());
+        response.setPriceTotal(orderDetail.getPriceTotal());
+
+        // Assuming orderStatus is not null and contains order status name
+        response.setOrderStatusName(orderDetail.getOrderStatus().getOrderStatusName());
+
+        // Assuming other properties are directly mapped
+        response.setAddress(profileDetail.getAddress());
+        response.setProductImg(product.getAvatarProduct());
+        response.setStoreName(storeName);
+
+        return response;
+    }
 
     public OrderDetailDto toDto(OrderDetail orderDetail) {
         if (orderDetail == null) {

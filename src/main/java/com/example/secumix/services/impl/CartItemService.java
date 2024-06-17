@@ -52,28 +52,11 @@ public class CartItemService implements ICartItemService {
     }
 
     @Override
-    public List<CartItemResponse> findByUser(int page, int size) {
+    public Page<CartItem> findByUser(int page, int size) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
         Pageable paging = PageRequest.of(page - 1, size);
-        Page<CartItem> pageTuts = cartItemRepo.findByUser(email,paging);
-
-
-        return pageTuts.getContent().stream().map(
-                cartItem -> {
-                    Product product= cartItem.getProduct();
-                    long realPrice = product.getPrice();
-                    if(product.getDiscount()!=0) realPrice-=product.getDiscount()*product.getPrice()/100;
-                    CartItemResponse cartItemResponse= new CartItemResponse();
-                    cartItemResponse.setCartItemId(cartItem.getCartItemId());
-                    cartItemResponse.setProductName(product.getProductName());
-                    cartItemResponse.setProductImg(product.getAvatarProduct());
-                    cartItemResponse.setQuantity(cartItem.getQuantity());
-                    cartItemResponse.setStoreName(product.getStore().getStoreName());
-                    cartItemResponse.setPriceTotal(realPrice*cartItem.getQuantity());
-                    return cartItemResponse;
-                }
-        ).collect(Collectors.toList());
+        return cartItemRepo.findByUser(email, paging);
     }
 
     @Override

@@ -51,7 +51,8 @@ public class StoreControllerManager {
 
     @GetMapping(value = "/store/revenue")
     ResponseEntity<ResponseObject> RevenueByStore(@RequestParam int storeid) {
-        long revenue = orderDetailRepo.RevenueByStore(storeid);
+        Long revenue = orderDetailRepo.RevenueByStore(storeid);
+        if(revenue==null) revenue= 0L;
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
                 "OK", "Doanh thu ", revenue
         ));

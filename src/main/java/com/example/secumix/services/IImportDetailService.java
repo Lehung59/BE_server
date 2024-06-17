@@ -15,9 +15,9 @@ public interface IImportDetailService {
 
     List<ImportDetail> findByStoreandProduct(int storeid, String productname);
 
-    List<ImportResponse> findAllImportPaginable( int storeid);
+    Page<ImportDetail> findAllImportPaginable( int storeid,int page, int size);
 
-    List<ImportResponse> findImportByTitleContainingIgnoreCase(String keyword, int storeid);
+    Page<ImportDetail> findImportByTitleContainingIgnoreCase(String keyword,int page, int size, int storeid);
 
     ImportResponse updateImport(ImportEditRequest importEditRequest) throws CustomException;
 }

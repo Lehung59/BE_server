@@ -1,5 +1,6 @@
 package com.example.secumix.services;
 
+import com.example.secumix.entities.Product;
 import com.example.secumix.entities.Store;
 import com.example.secumix.payload.request.StoreInfoEditRequest;
 import com.example.secumix.payload.request.StoreViewResponse;
@@ -29,9 +30,9 @@ public interface IStoreService {
 
     void addStoreToFavor(int userId, int storeid);
 
-    List<StoreInfoView> findFavorStore(int userId, String keyword,int page, int size);
+    Page<Store> findFavorStore(int userId, String keyword,int page, int size);
 
     void removeStoreFromFavorList(int storeid, int userId);
 
-    List<ProductResponse> findSellingProduct(int storeid, String keyword);
+    Page<Product> findSellingProduct(int storeid, String keyword, int page, int size);
 }

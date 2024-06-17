@@ -20,6 +20,7 @@ import com.example.secumix.repository.ProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -195,27 +196,16 @@ public class ProductService implements IProductService {
         System.out.println(newObj.getAvatarProduct()+newObj.getProductName());
         productRepo.save(newObj);
     }
-
     @Override
-    public List<ProductResponse> findAllProductPaginable(int storeId) {
-        List<Product> products = productRepo.getAllByStoreWithPagination(storeId);
-        List<ProductResponse> productResponseList = products
-                .stream()
-                .map(ProductService::convertToProductResponse)
-                .collect(Collectors.toList());
-
-        return productResponseList;
+    public Page<Product> findAllProductPaginable(int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        return productRepo.getAllByStoreWithPagination(storeId, paging);
     }
 
     @Override
-    public List<ProductResponse> findByTitleContainingIgnoreCase(String keyword,  int storeId) {
-        List<Product> products = productRepo.findByTitleContainingIgnoreCase(storeId, keyword);
-        List<ProductResponse> productResponseList = products
-                .stream()
-                .map(ProductService::convertToProductResponse)
-                .collect(Collectors.toList());
-
-        return productResponseList;
+    public Page<Product> findByTitleContainingIgnoreCase(String keyword, int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        return productRepo.findByTitleContainingIgnoreCase(storeId, keyword, paging);
     }
 
     @Override

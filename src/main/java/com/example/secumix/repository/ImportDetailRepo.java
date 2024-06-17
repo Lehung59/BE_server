@@ -24,9 +24,9 @@ public interface ImportDetailRepo extends JpaRepository<ImportDetail, Integer> {
     @Query("select o from importdt o where  o.product.store.storeId=:storeid and o.product.productName=:productname")
     List<ImportDetail> findByStoreandProduct(int storeid, String productname);
     @Query("SELECT i FROM importdt i WHERE i.product.store.storeId = :storeId")
-    List<ImportDetail> getAllImportByStoreWithPagination(int storeId);
+    Page<ImportDetail> getAllImportByStoreWithPagination(int storeId, Pageable pageable);
 
     @Query("SELECT i FROM importdt i WHERE i.product.store.storeId = :storeId AND " +
             "LOWER(i.product.productName) LIKE LOWER(CONCAT('%', :keyword, '%')) ")
-    List<ImportDetail> findImportByTitleContainingIgnoreCase(int storeId, String keyword);
+    Page<ImportDetail> findImportByTitleContainingIgnoreCase(int storeId,Pageable pageable, String keyword);
 }

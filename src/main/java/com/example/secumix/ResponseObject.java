@@ -1,44 +1,50 @@
 package com.example.secumix;
 
+import com.example.secumix.payload.Pagination;
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
+import lombok.Setter;
 
 @Data
 public class ResponseObject {
+    @Setter
     @SerializedName("status")
     private String status;
+    @Setter
     @SerializedName("message")
     private String message;
+    @Setter
     @SerializedName("data")
     private Object data;
+    @SerializedName("pagination")
+    private Pagination pagination;
+
+
+    public Pagination getPagination() {
+        return pagination;
+    }
 
     public String getStatus() {
         return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public Object getData() {
         return data;
-    }
-
-    public void setData(Object data) {
-        this.data = data;
     }
 
     public ResponseObject(String status, String message, Object data) {
         this.status = status;
         this.message = message;
         this.data = data;
+    }
+    public ResponseObject(String status, String message, Object data, Pagination pagination) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+        this.pagination = pagination;
     }
 }

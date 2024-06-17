@@ -83,13 +83,13 @@ public class StoreService implements IStoreService {
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Store không tồn tại"));
 
         // Cập nhật thông tin store
-        if(storeInfoEditRequest.getPhonumber() != null)
+        if (storeInfoEditRequest.getPhonumber() != null)
             newObject.setPhoneNumber(storeInfoEditRequest.getPhonumber());
-        if(storeInfoEditRequest.getStoreName() != null)
+        if (storeInfoEditRequest.getStoreName() != null)
             newObject.setStoreName(storeInfoEditRequest.getStoreName());
-        if(storeInfoEditRequest.getAddress() != null)
+        if (storeInfoEditRequest.getAddress() != null)
             newObject.setAddress(storeInfoEditRequest.getAddress());
-        if(storeInfoEditRequest.getAvatar() != null)
+        if (storeInfoEditRequest.getAvatar() != null)
             newObject.setImage(storeInfoEditRequest.getAvatar());
 
         // Lưu đối tượng store đã cập nhật
@@ -120,7 +120,7 @@ public class StoreService implements IStoreService {
 
     @Override
     public StoreInfoView getInfo(int storeid) {
-        Store store = storeRepo.findStoreById(storeid).orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND,"Không tồn tại cửa hàng này"));
+        Store store = storeRepo.findStoreById(storeid).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Không tồn tại cửa hàng này"));
         List<String> productName = store.getProductList().stream().map(Product::getProductName).toList();
         List<String> productTypeName = store.getProductType().stream().map(ProductType::getProductTypeName).toList();
         StoreInfoView storeInfoView = StoreInfoView.builder()
@@ -140,84 +140,45 @@ public class StoreService implements IStoreService {
 
     @Override
     public void addStoreToFavor(int userId, int storeid) {
-        Store store = storeRepo.findStoreById(storeid).orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND,"Khong ton tai cua hang nay!"));
-        if(!storeRepo.checkFavor(userId, storeid).isEmpty()){
-            throw new CustomException(HttpStatus.NOT_IMPLEMENTED,"Da ton tai cua hang nay trong phan ua thich cua ban!");
+        Store store = storeRepo.findStoreById(storeid).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong ton tai cua hang nay!"));
+        if (!storeRepo.checkFavor(userId, storeid).isEmpty()) {
+            throw new CustomException(HttpStatus.NOT_IMPLEMENTED, "Da ton tai cua hang nay trong phan ua thich cua ban!");
         }
-        storeRepo.saveToFavor(userId,storeid);
+        storeRepo.saveToFavor(userId, storeid);
 
     }
-    @Override
-    public List<ProductResponse> findSellingProduct(int storeid, String keyword) {
-        int userId = userUtils.getUserId();
-
-        List<Product> products;
-        if(keyword == null || keyword.isEmpty()){
-            products = productRepo.findSellingProduct(storeid);
-
-        } else products = productRepo.findSellingProductKeyword(storeid,keyword);
-        List<ProductResponse> productResponseList = products.stream().map(product -> {
-            ProductResponse productResponse = new ProductResponse();
-            productResponse.setProductId(product.getProductId());
-            productResponse.setAvatarProduct(product.getAvatarProduct());
-            productResponse.setProductName(product.getProductName());
-            productResponse.setProductType(product.getProductType().getProductTypeName());
-            productResponse.setQuantity(product.getQuantity());
-            productResponse.setStoreName(product.getStore().getStoreName());
-            productResponse.setDescription(product.getDescription());
-            productResponse.setPrice(product.getPrice());
-            productResponse.setStatus(product.isStatus());
-            productResponse.setStoreId(product.getStore().getStoreId());
-            productResponse.setProductTypeId(product.getProductType().getProductTypeId());
-            productResponse.setDiscount(product.getDiscount());
-            productResponse.setView(product.getView());
-            return productResponse;
-        }).toList();
-
-
-        return productResponseList;    }
-
 
     @Override
-    public List<StoreInfoView> findFavorStore(int userId, String keyword, int page, int size) {
-
+    public Page<Product> findSellingProduct(int storeid, String keyword, int page, int size) {
         Pageable paging = PageRequest.of(page - 1, size);
 
-        Page<Store> stores;
-        if(keyword == null || keyword.isEmpty()){
-            stores = storeRepo.findStoreFavor(userId,paging);
+        int userId = userUtils.getUserId();
 
-        } else stores = storeRepo.findStoreFavorKeyword(userId, keyword,paging);
-
-        List<StoreInfoView> listStores = stores.getContent().stream().map(store -> {
-            List<String> productName = store.getProductList().stream().map(Product::getProductName).toList();
-            List<String> productTypeName = store.getProductType().stream().map(ProductType::getProductTypeName).toList();
-            return StoreInfoView.builder()
-                    .storeId(store.getStoreId())
-                    .image(store.getImage())
-                    .storeName(store.getStoreName())
-                    .address(store.getAddress())
-                    .phoneNumber(store.getPhoneNumber())
-                    .rate(store.getRate())
-                    .productTypeName(productTypeName)
-                    .productListName(productName)
-                    .emailmanager(store.getEmailmanager())
-                    .storeType(store.getStoreType().getStoreTypeName())
-                    .build();
-        }).toList();
+        if (keyword == null || keyword.isEmpty()) {
+            return productRepo.findSellingProduct(storeid, paging);
+        } else {
+            return productRepo.findSellingProductKeyword(storeid, keyword, paging);
+        }
+    }
 
 
-        return listStores;
+    @Override
+    public Page<Store> findFavorStore(int userId, String keyword, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        if (keyword == null || keyword.isEmpty()) {
+            return storeRepo.findStoreFavor(userId, paging);
+        } else {
+            return storeRepo.findStoreFavorKeyword(userId, keyword, paging);
+        }
     }
 
     @Override
     public void removeStoreFromFavorList(int storeid, int userId) {
 
-        if(storeRepo.checkFavor(userId,storeid).isEmpty())
-            throw new CustomException(HttpStatus.NOT_FOUND,"Khong co cua hang nay trong pha nyeu thich cua ban");
-        storeRepo.deleteStoreFavor(storeid,userId);
+        if (storeRepo.checkFavor(userId, storeid).isEmpty())
+            throw new CustomException(HttpStatus.NOT_FOUND, "Khong co cua hang nay trong pha nyeu thich cua ban");
+        storeRepo.deleteStoreFavor(storeid, userId);
     }
-
 
 
 }

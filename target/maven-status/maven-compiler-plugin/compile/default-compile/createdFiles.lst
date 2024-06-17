@@ -72,6 +72,7 @@ com\example\secumix\entities\OrderDetail.class
 com\example\secumix\entities\ProductImage$ProductImageBuilder.class
 com\example\secumix\services\IStoreTypeService.class
 com\example\secumix\services\impl\ImportDetailService.class
+com\example\secumix\payload\Pagination.class
 com\example\secumix\Utils\DtoMapper\ProductMapper.class
 com\example\secumix\controller\customer\OrderControllerCustomer.class
 com\example\secumix\payload\response\StoreFavorRespone$StoreFavorResponeBuilder.class
@@ -88,6 +89,7 @@ com\example\secumix\services\impl\StoreService.class
 com\example\secumix\controller\StoreTypeController.class
 com\example\secumix\socket\dto\Message.class
 com\example\secumix\notify\Notify.class
+com\example\secumix\Utils\DtoMapper\CartItemMapper.class
 com\example\secumix\controller\OrderStatusController.class
 com\example\secumix\entities\Cart$CartBuilder.class
 com\example\secumix\repository\CartItemRepo.class

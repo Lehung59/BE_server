@@ -11,6 +11,7 @@ import com.example.secumix.entities.ProductType;
 import com.example.secumix.entities.Store;
 import com.example.secumix.entities.StoreType;
 import com.example.secumix.payload.request.StoreViewResponse;
+import com.example.secumix.payload.response.StoreInfoView;
 import com.example.secumix.repository.ProductRepo;
 import com.example.secumix.repository.ProductTypeRepo;
 import com.example.secumix.repository.StoreRepo;
@@ -59,7 +60,22 @@ public class StoreMapper {
 
         return storeDto;
     }
-
+    public StoreInfoView convertToStoreInfoView(Store store) {
+        List<String> productName = store.getProductList().stream().map(Product::getProductName).toList();
+        List<String> productTypeName = store.getProductType().stream().map(ProductType::getProductTypeName).toList();
+        return StoreInfoView.builder()
+                .storeId(store.getStoreId())
+                .image(store.getImage())
+                .storeName(store.getStoreName())
+                .address(store.getAddress())
+                .phoneNumber(store.getPhoneNumber())
+                .rate(store.getRate())
+                .productTypeName(productTypeName)
+                .productListName(productName)
+                .emailmanager(store.getEmailmanager())
+                .storeType(store.getStoreType().getStoreTypeName())
+                .build();
+    }
     public Store toEntity(StoreDto storeDto) {
         if (storeDto == null) {
             return null;

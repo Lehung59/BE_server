@@ -11,6 +11,7 @@ import com.example.secumix.services.IImportDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,27 +37,17 @@ public class ImportDetailService implements IImportDetailService {
     }
 
     @Override
-    public List<ImportResponse> findAllImportPaginable( int storeid) {
-        List<ImportDetail> importDetails = importDetailRepo.getAllImportByStoreWithPagination(storeid);
-        String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
-        List<ImportResponse> importResponses = importDetails
-                .stream()
-                .map(importDetail -> convertToImportResponse(importDetail, storeName))
-                .collect(Collectors.toList());
-
-        return importResponses;
+    public Page<ImportDetail> findAllImportPaginable(int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        storeId = userUtils.getStoreId();
+        return importDetailRepo.getAllImportByStoreWithPagination(storeId, paging);
     }
 
     @Override
-    public List<ImportResponse> findImportByTitleContainingIgnoreCase(String keyword, int storeid) {
-        List<ImportDetail> importDetails = importDetailRepo.findImportByTitleContainingIgnoreCase(storeid, keyword);
-        String storeName = storeRepo.findStoreById(storeid).get().getStoreName();
-        List<ImportResponse> importResponses = importDetails
-                .stream()
-                .map(importDetail -> convertToImportResponse(importDetail, storeName))
-                .collect(Collectors.toList());
-
-        return importResponses;
+    public Page<ImportDetail> findImportByTitleContainingIgnoreCase(String keyword, int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        storeId = userUtils.getStoreId();
+        return importDetailRepo.findImportByTitleContainingIgnoreCase(storeId, paging, keyword);
     }
 
     @Override

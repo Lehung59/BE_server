@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IOrderDetailService {
-    List<OrderDetailResponse> GetAllByUser(int page, int size, String orderStatus);
+    Page<OrderDetail> GetAllByUser(int page, int size, String orderStatus);
     Optional<OrderDetail> findByIDandUser(int orderdetailid);
 
     void Insert(OrderDetailRequest orderDatailRequest);
@@ -31,21 +31,21 @@ public interface IOrderDetailService {
 
     Optional<OrderDetailResponse> GetInfoOrder(int orderdetailid);
 
-    List<OrderDetailResponse> getOrderDetailByShipperId(int id);
+    List<OrderDetailResponse> getOrderDetailByShipperId(int id,int page, int size, String keyword);
 
-    List<OrderDetailResponse> findAllOrderByCustomerAndStorePaginable( int storeid, int customerid);
+    Page<OrderDetail> findAllOrderByCustomerAndStorePaginable( int storeid, int customerid, int page, int size);
 
-    List<OrderDetailResponse> findOrderByTitleContainingIgnoreCase(String keyword,  int storeid, int customerid);
+    Page<OrderDetail> findOrderByTitleContainingIgnoreCase(String keyword,  int storeid, int customerid, int page, int size);
 
-    List<OrderDetailResponse> findAllOrderPaginable( int storeid);
+    Page<OrderDetail> findAllOrderPaginable( int storeid, int page, int size);
 
-    List<OrderDetailResponse> findByTitleContainingIgnoreCase(String keyword,  int storeid);
+    Page<OrderDetail> findByTitleContainingIgnoreCase(String keyword,  int storeid, int page, int size);
 
     OrderDetailDto findDtoById(int orderDetailId);
 
-    List<OrderDetailResponse> findOrderNotShipped();
+    Page<OrderDetail> findOrderNotShipped(int page, int size, String keyword);
 
-    List<OrderDetailResponse> findOrderReadyToShip(int shipperId);
+    Page<OrderDetail> findOrderReadyToShip(int shipperId,int page, int size, String keyword);
 
-    List<OrderDetailResponse> findOrderShipped(int shipperId);
+    Page<OrderDetail> findOrderShipped(int shipperId,int page, int size, String keyword);
 }

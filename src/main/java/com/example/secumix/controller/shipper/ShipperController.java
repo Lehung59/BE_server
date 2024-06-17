@@ -1,15 +1,20 @@
 package com.example.secumix.controller.shipper;
 
+import com.example.secumix.Utils.DtoMapper.OrderDetailMapper;
+import com.example.secumix.constants.Constants;
 import com.example.secumix.exception.CustomException;
 import com.example.secumix.ResponseObject;
 import com.example.secumix.Utils.UserUtils;
 import com.example.secumix.entities.OrderDetail;
+import com.example.secumix.payload.Pagination;
 import com.example.secumix.payload.response.OrderDetailResponse;
 import com.example.secumix.services.IOrderDetailService;
 import com.example.secumix.repository.OrderDetailRepo;
 import com.example.secumix.entities.User;
 import com.example.secumix.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,15 +26,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1/shipper")
+@RequiredArgsConstructor
 public class ShipperController {
-    @Autowired
-    private IOrderDetailService orderService;
-    @Autowired
-    private OrderDetailRepo orderDetailRepo;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserUtils userUtils;
+    private final IOrderDetailService orderService;
+    private final  OrderDetailRepo orderDetailRepo;
+    private final  UserRepository userRepository;
+    private final  UserUtils userUtils;
+    private  final OrderDetailMapper orderDetailMapper;
+
 
     @GetMapping(value = "/orderdetail")
     ResponseEntity<ResponseObject> viewOrderDetail(@RequestParam(name = "orderid") int orderId){
@@ -89,48 +93,105 @@ public class ShipperController {
         );
     }
     @GetMapping(value = "/orderlist/view")
-    ResponseEntity<ResponseObject> orderlistview(){
-        var listOrderNotShipped = orderService.findOrderNotShipped();
-        if(listOrderNotShipped.isEmpty())
+    public ResponseEntity<ResponseObject> orderlistview(@RequestParam(defaultValue = Constants.PAGE) int page,
+                                                        @RequestParam(defaultValue = Constants.SIZE) int size,
+                                                        @RequestParam(required = false) String keyword) {
+        Page<OrderDetail> orderDetails = orderService.findOrderNotShipped(page, size, keyword);
+
+        List<OrderDetailResponse> listOrderNotShipped = orderDetails.getContent().stream()
+                .map(orderDetailMapper::convertToOrderDetailResponse)
+                .toList();
+
+        if (listOrderNotShipped.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK","Hien khong co don hang nao ",""
-                    )
+                    new ResponseObject("OK", "Hiện không có đơn hàng nào", "", null)
             );
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Danh sach cac don hang chua duoc giao",listOrderNotShipped
-                )
+        }
+
+        Pagination pagination = new Pagination(
+                orderDetails.getTotalElements(),
+                orderDetails.getTotalPages(),
+                orderDetails.getNumber() + 1,
+                orderDetails.getSize()
         );
+
+        ResponseObject responseObject = new ResponseObject(
+                "OK",
+                "Danh sách các đơn hàng chưa được giao",
+                listOrderNotShipped,
+                pagination
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
     @GetMapping(value = "/orderlist/taken")
-    ResponseEntity<ResponseObject> orderlisttaken(){
+    public ResponseEntity<ResponseObject> orderlisttaken(@RequestParam(defaultValue = Constants.PAGE) int page,
+                                                         @RequestParam(defaultValue = Constants.SIZE) int size,
+                                                         @RequestParam(required = false) String keyword) {
         int shipperId = userUtils.getUserId();
-        List<OrderDetailResponse> listOrder = orderService.findOrderReadyToShip(shipperId);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Danh sach cac don hang ban da nhan",listOrder
-                )
+        Page<OrderDetail> orderDetails = orderService.findOrderReadyToShip(shipperId, page, size, keyword);
+
+        List<OrderDetailResponse> listOrder = orderDetails.getContent().stream()
+                .map(orderDetailMapper::convertToOrderDetailResponse)
+                .toList();
+
+        Pagination pagination = new Pagination(
+                orderDetails.getTotalElements(),
+                orderDetails.getTotalPages(),
+                orderDetails.getNumber() + 1,
+                orderDetails.getSize()
         );
+
+        ResponseObject responseObject = new ResponseObject(
+                "OK",
+                "Danh sách các đơn hàng bạn đã nhận",
+                listOrder,
+                pagination
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
 
     @GetMapping(value = "/orderlist/shipped")
-    ResponseEntity<ResponseObject> orderlistshipped(){
+    ResponseEntity<ResponseObject> orderlistshipped(@RequestParam(defaultValue = Constants.PAGE) int page,
+                                                    @RequestParam(defaultValue = Constants.SIZE) int size,
+                                                    @RequestParam(required = false) String keyword){
         int shipperId = userUtils.getUserId();
-        List<OrderDetailResponse> listOrder = orderService.findOrderShipped(shipperId);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Danh sach cac don hang ban da giao",listOrder
-                )
+        Page<OrderDetail> orderDetails = orderService.findOrderShipped(shipperId, page, size, keyword);
+
+        List<OrderDetailResponse> listOrder = orderDetails.getContent().stream()
+                .map(orderDetailMapper::convertToOrderDetailResponse)
+                .toList();
+
+        Pagination pagination = new Pagination(
+                orderDetails.getTotalElements(),
+                orderDetails.getTotalPages(),
+                orderDetails.getNumber() + 1,
+                orderDetails.getSize()
         );
+
+        ResponseObject responseObject = new ResponseObject(
+                "OK",
+                "Danh sách các đơn hàng bạn đã giao",
+                listOrder,
+                pagination
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
 
 
 
 
-    @GetMapping(value = "/getallorder")
-    ResponseEntity<ResponseObject> GetAllOrder(){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User shipper = userRepository.findByEmail(auth.getName()).get();
-        List<OrderDetailResponse> orderDetailResponses= orderService.getOrderDetailByShipperId(shipper.getId());
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Khong tim thay",orderDetailResponses)
-        );
-    }
+//    @GetMapping(value = "/getallorder")
+//    ResponseEntity<ResponseObject> GetAllOrder(@RequestParam(defaultValue = Constants.PAGE) int page,
+//                                               @RequestParam(defaultValue = Constants.SIZE) int size,
+//                                               @RequestParam(required = false) String keyword){
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        User shipper = userRepository.findByEmail(auth.getName()).get();
+//        List<OrderDetailResponse> orderDetailResponses= orderService.getOrderDetailByShipperId(shipper.getId(),page,size,keyword);
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                new ResponseObject("OK","Khong tim thay",orderDetailResponses)
+//        );
+//    }
 }

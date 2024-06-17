@@ -1,6 +1,12 @@
 package com.example.secumix.controller.manager;
 
 import com.example.secumix.ResponseObject;
+import com.example.secumix.Utils.DtoMapper.CustomerMapper;
+import com.example.secumix.Utils.DtoMapper.OrderDetailMapper;
+import com.example.secumix.constants.Constants;
+import com.example.secumix.entities.OrderDetail;
+import com.example.secumix.entities.ProfileDetail;
+import com.example.secumix.payload.Pagination;
 import com.example.secumix.payload.response.OrderDetailResponse;
 import com.example.secumix.payload.response.StoreCustomerRespone;
 import com.example.secumix.services.ICustomerService;
@@ -15,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/v1/management")
@@ -22,43 +29,78 @@ import java.util.List;
 public class CustomerControllerManager {
     private final IOrderDetailService orderDetailService;
     private final ICustomerService customerService;
+    private final OrderDetailMapper orderDetailMapper;
+    private final CustomerMapper customerMapper;
 
 
 
 
     @GetMapping(value = "/{storeid}/customer/view")
-    ResponseEntity<ResponseObject> viewCustomerByStore(@PathVariable("storeid") int storeid,
-                                                       @RequestParam(required = false) String keyword
-    ) {
-        List<StoreCustomerRespone> storeCustomerRespones = new ArrayList<StoreCustomerRespone>();
-
-
-        if (keyword == null) {
-            storeCustomerRespones = customerService.findAllCustomerPaginable(storeid);
+    public ResponseEntity<ResponseObject> viewCustomerByStore(@PathVariable("storeid") int storeid,
+                                                              @RequestParam(required = false) String keyword,
+                                                              @RequestParam(defaultValue = Constants.PAGE) int page,
+                                                              @RequestParam(defaultValue = Constants.SIZE) int size) {
+        Page<ProfileDetail> customers;
+        if (keyword == null || keyword.isEmpty()) {
+            customers = customerService.findAllCustomerPaginable(storeid, page, size);
         } else {
-            storeCustomerRespones = customerService.findCustomerByTitleContainingIgnoreCase(keyword, storeid);
+            customers = customerService.findCustomerByTitleContainingIgnoreCase(keyword, page, size, storeid);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Cac khach hang cua ban.", storeCustomerRespones)
+        List<StoreCustomerRespone> storeCustomerRespones = customers.getContent().stream()
+                .map(customer -> customerMapper.convertToCustomerResponse(customer, storeid))
+                .collect(Collectors.toList());
+
+        Pagination pagination = new Pagination(
+                customers.getTotalElements(),
+                customers.getTotalPages(),
+                customers.getNumber() + 1,
+                customers.getSize()
         );
+
+        ResponseObject responseObject = new ResponseObject(
+                "OK",
+                "Các khách hàng của bạn.",
+                storeCustomerRespones,
+                pagination
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
 
-    @GetMapping(value = "/{storeid}/customer/{customerid}/detail")
-    ResponseEntity<ResponseObject> viewCustomerOrderListByStore(@PathVariable("storeid") int storeid,
-                                                                @PathVariable("customerid") int customerid,
-                                                                @RequestParam(required = false) String keyword) {
-        List<OrderDetailResponse> orderDetailResponses = new ArrayList<OrderDetailResponse>();
 
+    @GetMapping(value = "/{storeid}/customer/{customerid}/detail")
+    public ResponseEntity<ResponseObject> viewCustomerOrderListByStore(@PathVariable("storeid") int storeid,
+                                                                       @PathVariable("customerid") int customerid,
+                                                                       @RequestParam(required = false) String keyword,
+                                                                       @RequestParam(defaultValue = Constants.PAGE) int page,
+                                                                       @RequestParam(defaultValue = Constants.SIZE) int size) {
+        Page<OrderDetail> orderDetails;
         if (keyword == null) {
-            orderDetailResponses = orderDetailService.findAllOrderByCustomerAndStorePaginable(storeid,customerid);
+            orderDetails = orderDetailService.findAllOrderByCustomerAndStorePaginable(storeid, customerid, page, size);
         } else {
-            orderDetailResponses = orderDetailService.findOrderByTitleContainingIgnoreCase(keyword, storeid,customerid);
+            orderDetails = orderDetailService.findOrderByTitleContainingIgnoreCase(keyword, storeid, customerid, page, size);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Các đơn hàng của khách "+customerid, orderDetailResponses)
+        List<OrderDetailResponse> orderDetailResponses = orderDetails.getContent().stream()
+                .map(orderDetailMapper::convertToOrderDetailResponse)
+                .collect(Collectors.toList());
+
+        Pagination pagination = new Pagination(
+                orderDetails.getTotalElements(),
+                orderDetails.getTotalPages(),
+                orderDetails.getNumber() + 1,
+                orderDetails.getSize()
         );
+
+        ResponseObject responseObject = new ResponseObject(
+                "OK",
+                "Các đơn hàng của khách " + customerid,
+                orderDetailResponses,
+                pagination
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseObject);
     }
 
 }

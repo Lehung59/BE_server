@@ -13,17 +13,17 @@ import java.util.Optional;
 @Repository
 public interface ProfileDetailRepo extends JpaRepository<ProfileDetail, Integer> {
     @Query("SELECT p FROM profile p JOIN p.user u JOIN u.stores s WHERE s.storeId = :storeid")
-    List<ProfileDetail> getAllCustomerByStoreWithPagination(int storeid);
+    Page<ProfileDetail> getAllCustomerByStoreWithPagination(int storeid, Pageable pageable);
 
 //
 //    @Query("SELECT p FROM profile p JOIN p.user u JOIN u.stores s WHERE s.storeId = :storeid")
 //    List<ProfileDetail> getAllCustomerByStoreWithPagination(int storeid);
 
-    @Query(" SELECT DISTINCT p FROM profile p JOIN p.user.stores s WHERE s.storeId = :storeid AND p.user.role = 'USER' AND " +
+    @Query(" SELECT DISTINCT p FROM profile p JOIN p.user.stores s WHERE s.storeId = :storeid AND p.user.role = 'USER' AND ( " +
             " CONCAT(LOWER(p.firstname), ' ', LOWER(p.lastname)) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "p.phoneNumber LIKE %:keyword%"
+            "p.phoneNumber LIKE %:keyword%)"
     )
-    List<ProfileDetail> findCustomerByTitleContainingIgnoreCase(int storeid, String keyword);
+    Page<ProfileDetail> findCustomerByTitleContainingIgnoreCase(int storeid, String keyword, Pageable pageable);
 
     @Query(" select p from profile p where p.user.id=:id")
     ProfileDetail findByUserId(Integer id);

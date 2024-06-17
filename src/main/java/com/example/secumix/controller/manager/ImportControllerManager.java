@@ -1,15 +1,16 @@
 package com.example.secumix.controller.manager;
 
 
+import com.example.secumix.Utils.DtoMapper.ImportDetailMapper;
+import com.example.secumix.constants.Constants;
+import com.example.secumix.entities.*;
 import com.example.secumix.exception.CustomException;
 import com.example.secumix.ResponseObject;
 import com.example.secumix.Utils.UserUtils;
-import com.example.secumix.entities.ImportDetail;
-import com.example.secumix.entities.Product;
-import com.example.secumix.entities.ProductType;
-import com.example.secumix.entities.Store;
+import com.example.secumix.payload.Pagination;
 import com.example.secumix.payload.request.ImportEditRequest;
 import com.example.secumix.payload.response.ImportResponse;
+import com.example.secumix.payload.response.OrderDetailResponse;
 import com.example.secumix.repository.ImportDetailRepo;
 import com.example.secumix.repository.ProductRepo;
 import com.example.secumix.repository.ProductTypeRepo;
@@ -29,11 +30,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/v1/management")
 @RequiredArgsConstructor
 public class ImportControllerManager {
+    private final ImportDetailMapper importDetailMapper;
     @Value("${default_avt}")
     private String defaultAvt;
 
@@ -44,32 +47,51 @@ public class ImportControllerManager {
     private final ProductTypeRepo productTypeRepo;
 
     @GetMapping(value = "/{storeid}/import/view")
-    ResponseEntity<ResponseObject> getAllImport(@PathVariable int storeid,
-                                                @RequestParam(required = false) String keyword){
-        try{
+    public ResponseEntity<ResponseObject> getAllImport(
+            @PathVariable int storeid,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = Constants.PAGE) int page,
+            @RequestParam(defaultValue = Constants.SIZE) int size) {
+
+        try {
             storeService.checkStoreAuthen(storeid);
-            List<ImportResponse> importResponses = new ArrayList<ImportResponse>();
+            Page<ImportDetail> importDetails;
+
             if (keyword == null) {
-                importResponses = importDetailService.findAllImportPaginable(storeid);
+                importDetails = importDetailService.findAllImportPaginable(storeid, page, size);
             } else {
-                importResponses = importDetailService.findImportByTitleContainingIgnoreCase(keyword,  storeid);
+                importDetails = importDetailService.findImportByTitleContainingIgnoreCase(keyword, storeid, page, size);
             }
 
+            List<ImportResponse> importResponses = importDetails.getContent().stream()
+                    .map(importDetailMapper::convertToImportResponse)
+                    .collect(Collectors.toList());
 
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK","Các hóa đơn nhập hàng của bạn",importResponses)
+            Pagination pagination = new Pagination(
+                    importDetails.getTotalElements(),
+                    importDetails.getTotalPages(),
+                    importDetails.getNumber() + 1,
+                    importDetails.getSize()
             );
 
+            ResponseObject responseObject = new ResponseObject(
+                    "OK",
+                    "Các hóa đơn nhập hàng của bạn",
+                    importResponses,
+                    pagination
+            );
 
-        }catch (CustomException ex) {
+            return ResponseEntity.status(HttpStatus.OK).body(responseObject);
+
+        } catch (CustomException ex) {
             return ResponseEntity.status(ex.getStatus())
                     .body(new ResponseObject("FAILED", ex.getMessage(), ""));
         }
-
     }
 
     @PutMapping(value = "/{storeid}/import/edit/{importid}")
     ResponseEntity<ResponseObject> importEdit(@PathVariable int importid,
+                                              @PathVariable int storeid,
                                               @ModelAttribute ImportEditRequest importEditRequest){
         try{
             importEditRequest.setImportDetailId(importid);

@@ -1,5 +1,6 @@
 package com.example.secumix.services;
 
+import com.example.secumix.entities.ProfileDetail;
 import com.example.secumix.payload.response.StoreCustomerRespone;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,7 +8,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface ICustomerService {
-    List<StoreCustomerRespone> findAllCustomerPaginable(int storeid);
+    Page<ProfileDetail> findAllCustomerPaginable(int storeid, int page, int size);
 
-    List<StoreCustomerRespone> findCustomerByTitleContainingIgnoreCase(String keyword,  int storeid);
+    Page<ProfileDetail> findCustomerByTitleContainingIgnoreCase(String keyword,int page, int size,  int storeid);
+
 }
