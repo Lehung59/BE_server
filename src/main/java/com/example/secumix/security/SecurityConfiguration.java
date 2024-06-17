@@ -56,7 +56,7 @@ public class SecurityConfiguration {
                     "/notification/**",
                     "/ws/**",
                     "/socket.io/**",
-
+                    "/oauth2/**"
             };
 
     private final JwtAuthenticationFilter jwtAuthFilter;

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface ICartItemService {
     List<CartItemResponse> findByProduct(int productid);
-    List<CartItemResponse> findByUser();
+    List<CartItemResponse> findByUser(int page,int size);
     Optional<CartItemResponse> finfByProductandUser(int productid);
     void Insert(CartItemRequest cartItemRequest);
 

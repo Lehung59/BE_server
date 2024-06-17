@@ -1,6 +1,7 @@
 package com.example.secumix.controller.customer;
 
 import com.example.secumix.ResponseObject;
+import com.example.secumix.constants.Constants;
 import com.example.secumix.entities.CartItem;
 import com.example.secumix.entities.Product;
 import com.example.secumix.payload.request.CartItemRequest;
@@ -23,9 +24,13 @@ public class CartItemController {
     private final ProductRepo productRepo;
     private final UserService userService;
     @GetMapping("/cartitem/view")
-    ResponseEntity<ResponseObject> getAllItemByUser(){
+    ResponseEntity<ResponseObject> getAllItemByUser(@RequestParam(defaultValue = Constants.PAGE) int page,
+                                                    @RequestParam(defaultValue = Constants.SIZE) int size
+                                                    ){
+
+
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK","Get All" , cartItemService.findByUser())
+                new ResponseObject("OK","Get All" , cartItemService.findByUser(page,size))
         );
     }
 

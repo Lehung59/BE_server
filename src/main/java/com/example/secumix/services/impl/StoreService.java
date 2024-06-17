@@ -167,6 +167,8 @@ public class StoreService implements IStoreService {
             productResponse.setDescription(product.getDescription());
             productResponse.setPrice(product.getPrice());
             productResponse.setStatus(product.isStatus());
+            productResponse.setStoreId(product.getStore().getStoreId());
+            productResponse.setProductTypeId(product.getProductType().getProductTypeId());
             productResponse.setDiscount(product.getDiscount());
             productResponse.setView(product.getView());
             return productResponse;
@@ -177,14 +179,17 @@ public class StoreService implements IStoreService {
 
 
     @Override
-    public List<StoreInfoView> findFavorStore(int userId, String keyword) {
-        List<Store> stores;
+    public List<StoreInfoView> findFavorStore(int userId, String keyword, int page, int size) {
+
+        Pageable paging = PageRequest.of(page - 1, size);
+
+        Page<Store> stores;
         if(keyword == null || keyword.isEmpty()){
-            stores = storeRepo.findStoreFavor(userId);
+            stores = storeRepo.findStoreFavor(userId,paging);
 
-        } else stores = storeRepo.findStoreFavorKeyword(userId, keyword);
+        } else stores = storeRepo.findStoreFavorKeyword(userId, keyword,paging);
 
-        List<StoreInfoView> listStores = stores.stream().map(store -> {
+        List<StoreInfoView> listStores = stores.getContent().stream().map(store -> {
             List<String> productName = store.getProductList().stream().map(Product::getProductName).toList();
             List<String> productTypeName = store.getProductType().stream().map(ProductType::getProductTypeName).toList();
             return StoreInfoView.builder()

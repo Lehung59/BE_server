@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IOrderDetailService {
-    List<OrderDetailResponse> GetAllByUser();
+    List<OrderDetailResponse> GetAllByUser(int page, int size, String orderStatus);
     Optional<OrderDetail> findByIDandUser(int orderdetailid);
 
     void Insert(OrderDetailRequest orderDatailRequest);

@@ -159,7 +159,7 @@ public class ProductControllerManager {
         try{
             storeService.checkStoreAuthen(storeid);
             Optional<Product> product = productService.findById(productId);
-            if (product.isEmpty() || product.get().getStore().getStoreId() != storeid) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+            if (product.isEmpty() || product.get().getStore().getStoreId() != storeid) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new ResponseObject("FAILED", "Khong tim thay san pham trong cua hang", "")
             );
             String avrUrl = product.get().getAvatarProduct();

@@ -18,8 +18,10 @@ import com.example.secumix.repository.UserRepository;
 import com.example.secumix.entities.ProfileDetail;
 import com.example.secumix.repository.ProfileDetailRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.criterion.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -52,13 +54,34 @@ public class OrderDetailService implements IOrderDetailService {
 
 
     @Override
-    public List<OrderDetailResponse> GetAllByUser() {
+    public List<OrderDetailResponse> GetAllByUser(int page, int size, String orderStatus) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
-        return orderDetailRepo.getAllByUser(email).stream().map(
+
+        Pageable paging = PageRequest.of(page - 1, size);
+        Page<OrderDetail> pageTuts = orderDetailRepo.getAllByUser(email, paging);
+
+        if (orderStatus != null) {
+            if (orderStatus.equalsIgnoreCase("Đặt hàng thành công")) {
+                pageTuts = orderDetailRepo.getAllByUserSuccess(email, paging);
+            }
+            if (orderStatus.equalsIgnoreCase("Đang vận chuyển")) {
+                pageTuts = orderDetailRepo.getAllByUserDelvery(email, paging);
+            }
+            if (orderStatus.equalsIgnoreCase("Đã giao hàng")) {
+                pageTuts = orderDetailRepo.getAllByUserShipped(email, paging);
+            }
+            if (orderStatus.equalsIgnoreCase("Đơn đã hủy")) {
+                pageTuts = orderDetailRepo.getAllByUserCancel(email, paging);
+            }
+        }
+
+
+        return pageTuts.getContent().stream().map(
                 orderDetail -> {
                     Store store = orderDetail.getStore();
-                    Product product = productRepo.findById(orderDetail.getProduct().getProductId()).orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay san pham"));
+                    Product product = productRepo.findById(orderDetail.getProduct().getProductId()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tim thay san pham"));
                     OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
                     orderDetailResponse.setOrderDetailId(orderDetail.getOrderDetailId());
                     orderDetailResponse.setProductName(product.getProductName());
@@ -90,7 +113,7 @@ public class OrderDetailService implements IOrderDetailService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new CustomException(HttpStatus.NOT_IMPLEMENTED, "Khong ton tai nguoi dung nay"));
         OrderStatus orderStatus = orderStatusRepo.findById(1).get();
         long realPrice = product.getPrice();
-        if(product.getDiscount()!=0) realPrice-=product.getDiscount()*product.getPrice()/100;
+        if (product.getDiscount() != 0) realPrice -= product.getDiscount() * product.getPrice() / 100;
         OrderDetail orderDetail = OrderDetail.builder()
                 .orderStatus(orderStatus)
                 .quantity(orderDetailRequest.getQuantity())
@@ -187,9 +210,11 @@ public class OrderDetailService implements IOrderDetailService {
         String email = auth.getName();
 
         OrderStatus orderStatus = orderStatusRepo.findById(4).get();
-        OrderDetail orderDetail = orderDetailRepo.findByIDandUser(orderdetailid, email).orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay order"));
-        if(orderDetail.getOrderStatus().getOrderStatusId() == 4) throw new CustomException(HttpStatus.NOT_IMPLEMENTED,"Don hang da bi huy truoc do");
-        if(orderDetail.getOrderStatus().getOrderStatusId() == 2 || orderDetail.getOrderStatus().getOrderStatusId() == 3 ) throw new CustomException(HttpStatus.NOT_IMPLEMENTED,"Khong the huy, don hang da duoc giao");
+        OrderDetail orderDetail = orderDetailRepo.findByIDandUser(orderdetailid, email).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tim thay order"));
+        if (orderDetail.getOrderStatus().getOrderStatusId() == 4)
+            throw new CustomException(HttpStatus.NOT_IMPLEMENTED, "Don hang da bi huy truoc do");
+        if (orderDetail.getOrderStatus().getOrderStatusId() == 2 || orderDetail.getOrderStatus().getOrderStatusId() == 3)
+            throw new CustomException(HttpStatus.NOT_IMPLEMENTED, "Khong the huy, don hang da duoc giao");
         User customer = orderDetail.getUser();
         orderDetail.setOrderStatus(orderStatus);
         orderDetail.setUpdatedAt(UserUtils.getCurrentDay());
@@ -220,7 +245,7 @@ public class OrderDetailService implements IOrderDetailService {
         Cart cart = cartRepo.findByEmail(email);
         OrderStatus orderStatus = orderStatusRepo.findById(1).get();
         long realPrice = product.getPrice();
-        if(product.getDiscount()!=0) realPrice-=product.getDiscount()*product.getPrice()/100;
+        if (product.getDiscount() != 0) realPrice -= product.getDiscount() * product.getPrice() / 100;
         OrderDetail orderDetail = OrderDetail.builder()
                 .orderStatus(orderStatus)
                 .cart(cart)
@@ -246,7 +271,7 @@ public class OrderDetailService implements IOrderDetailService {
         User user = userRepository.findByEmail(userUtils.getUserEmail()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong thay nguoi dung nao dang dang nhap hien tai"));
         return orderDetailRepo.findById(orderdetailid).map(
                 orderDetail -> {
-                    Store store = storeRepo.findStoreByName(orderDetail.getStore().getStoreName()).orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay cua hang"));
+                    Store store = storeRepo.findStoreByName(orderDetail.getStore().getStoreName()).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tim thay cua hang"));
                     Product product = orderDetail.getProduct();
                     OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
                     orderDetailResponse.setOrderDetailId(orderDetail.getOrderDetailId());
@@ -307,7 +332,7 @@ public class OrderDetailService implements IOrderDetailService {
     }
 
     @Override
-    public List<OrderDetailResponse> findAllOrderPaginable( int storeId) {
+    public List<OrderDetailResponse> findAllOrderPaginable(int storeId) {
         List<OrderDetail> orderDetails = orderDetailRepo.getAllByStoreWithPagination(storeId);
         List<OrderDetailResponse> orderDetailResponses = orderDetails
                 .stream()
@@ -330,9 +355,9 @@ public class OrderDetailService implements IOrderDetailService {
 
     @Override
     public OrderDetailDto findDtoById(int orderDetailId) {
-        OrderDetail orderDetail = orderDetailRepo.findById(orderDetailId).orElseThrow(()->new CustomException(HttpStatus.NOT_FOUND,"Khong ton tai order nay"));
+        OrderDetail orderDetail = orderDetailRepo.findById(orderDetailId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong ton tai order nay"));
         Store store = orderDetail.getStore();
-        if(!userUtils.getRole().contains("ROLE_SHIPPER"))
+        if (!userUtils.getRole().contains("ROLE_SHIPPER"))
             storeService.checkStoreAuthen(store.getStoreId());
         return orderDetailMapper.toDto(orderDetail);
     }
@@ -352,6 +377,7 @@ public class OrderDetailService implements IOrderDetailService {
 
 
     }
+
     @Override
     public List<OrderDetailResponse> findOrderShipped(int shipperId) {
         return orderDetailRepo.findOrderReadyToShip(shipperId).stream().map(

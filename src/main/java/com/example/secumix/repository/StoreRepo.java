@@ -56,13 +56,13 @@ public interface StoreRepo extends JpaRepository<Store, Integer> {
     void saveToFavor(@Param("userId") int userId, @Param("storeId") int storeId);
 
     @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId)", nativeQuery = true)
-    List<Store> findStoreFavor(@Param("userId") int userId);
+    Page<Store> findStoreFavor(@Param("userId") int userId, Pageable pageable);
 
 
     @Query(value = "SELECT * FROM store s WHERE s.store_id IN (SELECT store_id FROM users_stores u WHERE u.user_id = :userId) " +
             "AND (s.storename LIKE %:keyword% )",
             nativeQuery = true)
-    List<Store> findStoreFavorKeyword(@Param("userId") int userId, @Param("keyword") String keyword);
+    Page<Store> findStoreFavorKeyword(@Param("userId") int userId, @Param("keyword") String keyword, Pageable pageable);
 
     @Modifying
     @Transactional

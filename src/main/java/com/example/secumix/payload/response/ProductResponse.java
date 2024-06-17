@@ -17,6 +17,8 @@ public class ProductResponse {
     private String description;
     private int view;
     private String storeName;
+    private int storeId;
+    private int productTypeId;
     private String productType;
 
 }

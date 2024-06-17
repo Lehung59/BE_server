@@ -1,5 +1,6 @@
 package com.example.secumix.controller.customer;
 
+import com.example.secumix.constants.Constants;
 import com.example.secumix.exception.CustomException;
 import com.example.secumix.ResponseObject;
 import com.example.secumix.Utils.UserUtils;
@@ -39,12 +40,14 @@ public class StoreControllerCustomer {
     }
 
     @GetMapping(value = "/favor/view")
-    ResponseEntity<ResponseObject> viewFavor(@RequestParam(required = false) String keyword
+    ResponseEntity<ResponseObject> viewFavor(@RequestParam(required = false) String keyword,
+                                             @RequestParam(defaultValue = Constants.PAGE) int page,
+                                             @RequestParam(defaultValue = Constants.SIZE) int size
                                              ){
         try{
             int userId = userUtils.getUserId();
 
-            List<StoreInfoView> storeFavorRespones = storeService.findFavorStore(userId,keyword);
+            List<StoreInfoView> storeFavorRespones = storeService.findFavorStore(userId,keyword,page,size);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject(
                     "OK", "Cac cua hang yeu thich cua ban", storeFavorRespones
             ));

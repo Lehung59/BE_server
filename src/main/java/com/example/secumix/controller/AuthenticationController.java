@@ -4,6 +4,7 @@ package com.example.secumix.controller;
 import com.example.secumix.exception.UserAlreadyExistsException;
 import com.example.secumix.ResponseObject;
 import com.example.secumix.payload.request.AuthenticationRequest;
+import com.example.secumix.payload.response.AuthenticationResponse;
 import com.example.secumix.services.impl.AuthenticationService;
 import com.example.secumix.payload.request.RegisterRequest;
 import com.example.secumix.entities.Token;
@@ -140,6 +141,26 @@ public class AuthenticationController {
         }
     }
 
+    @GetMapping("/validtoken")
+    public  boolean checkToken(@RequestParam("token") String token) {
+
+        Optional<Token> verificationToken = service.getVerificationToken(token);
+        if (verificationToken == null) {
+            return false;
+
+        } else if (verificationToken.get().expired == true) {
+
+            return false;
+
+        } else {
+            User user = verificationToken.get().getUser();
+            user.setEnabled(true);
+            return true;
+
+
+        }
+    }
+
 
 //    @PostMapping("/oauth2")
 //    public ResponseEntity<AuthenticationResponse> oauth2(@RequestBody AuthenticationRequest request) {
@@ -185,7 +206,23 @@ public class AuthenticationController {
 
 //    @PostMapping("/")
 
+    @GetMapping("/getUserFromToken")
+    public ResponseEntity<?> getUserFromToken(@RequestParam String token) {
+        Optional<Token> verificationToken = service.getVerificationToken(token);
+        User user = verificationToken.get().getUser();
+        AuthenticationResponse authenticationResponse =  AuthenticationResponse.builder()
+                .userId(user.getId())
+                .storeId(null)
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .role(user.getRole())
+                .email(user.getEmail())
+                .accessToken(token)
+                .refreshToken(token)
+                .build();
 
+        return ResponseEntity.ok(authenticationResponse);
+    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(

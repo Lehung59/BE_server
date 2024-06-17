@@ -1,5 +1,6 @@
 package com.example.secumix.controller.customer;
 
+import com.example.secumix.constants.Constants;
 import com.example.secumix.exception.CustomException;
 import com.example.secumix.ResponseObject;
 import com.example.secumix.entities.CartItem;
@@ -35,9 +36,12 @@ public class OrderControllerCustomer {
     UserRepository userRepository;
     OrderDetailRepo orderDetailRepo;
     @GetMapping(value = "/orderdetail/view")
-    ResponseEntity<ResponseObject> getAllByUSer() {
+    ResponseEntity<ResponseObject> getAllByUSer(@RequestParam(defaultValue = Constants.PAGE) int page,
+                                                @RequestParam(defaultValue = Constants.SIZE) int size,
+                                                @RequestParam(required = false) String orderStatus
+                                                ) {
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject("OK", "Lay ra thanh cong", orderService.GetAllByUser())
+                new ResponseObject("OK", "Lay ra thanh cong", orderService.GetAllByUser(page,size,orderStatus))
         );
     }
     @GetMapping(value = "/customer/orderdetail/view/{orderdetailid}")

@@ -14,6 +14,7 @@ com\example\secumix\payload\request\OrderDetailRequest.class
 com\example\secumix\services\IImportDetailService.class
 com\example\secumix\controller\customer\StoreControllerCustomer.class
 com\example\secumix\entities\Pay$PayBuilder.class
+com\example\secumix\payload\dtos\PagingDto.class
 com\example\secumix\payload\response\AuthenticationResponse$AuthenticationResponseBuilder.class
 com\example\secumix\payload\response\ProductResponse.class
 com\example\secumix\services\ICustomerService.class
@@ -107,6 +108,7 @@ com\example\secumix\payload\request\AuthenticationRequest$AuthenticationRequestB
 com\example\secumix\security\HttpsToHttpFilter.class
 com\example\secumix\entities\ImportDetail$ImportDetailBuilder.class
 com\example\secumix\repository\ProfileDetailRepo.class
+com\example\secumix\constants\Constants.class
 com\example\secumix\payload\dtos\CustomerDto.class
 com\example\secumix\controller\manager\ProductControllerManager.class
 com\example\secumix\Oauth2\CustomOAuth2UserService.class

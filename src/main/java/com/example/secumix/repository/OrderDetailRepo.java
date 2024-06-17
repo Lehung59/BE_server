@@ -15,7 +15,12 @@ import java.util.Optional;
 @Repository
 public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
     @Query("select o from orderdetail o where o.user.email=:email")
-    List<OrderDetail> getAllByUser(String email);
+    Page<OrderDetail> getAllByUser(String email, Pageable pageable);
+
+    @Query("select o from orderdetail o where o.user.email=:email and o.orderStatus.orderStatusId=1")
+    Page<OrderDetail> getAllByUserSuccess(String email, Pageable paging);
+
+
 
     @Query("select o from orderdetail o where o.user.id=:userId")
     List<OrderDetail> getAllByUser(int userId);
@@ -35,10 +40,10 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
     Long RevenueByStoreAndUser(int userId, int storeId);
 
 
-    @Query("select count(o) from orderdetail o where o.orderStatus.orderStatusId=3 and o.user.id=:userId and o.store.storeId=:storeId")
+    @Query("select count(o) from orderdetail o where  o.user.id=:userId and o.store.storeId=:storeId")
     int totalOrderByStoreAndUser(int userId, int storeId);
 
-    @Query("select o from orderdetail o where o.orderStatus.orderStatusId=3 and o.user.id=:userId and o.store.storeId=:storeId")
+    @Query("select o from orderdetail o where  o.user.id=:userId and o.store.storeId=:storeId")
     List<OrderDetail> listOrderByStoreAndUser(int userId, int storeId);
 
 
@@ -71,4 +76,11 @@ public interface OrderDetailRepo extends JpaRepository<OrderDetail, Integer> {
 
     @Query("select o from orderdetail o where o.shipperid=:shipperId and o.orderStatus=3 ")
     List<OrderDetail> findOrderShipped(int shipperId);
+    @Query("select o from orderdetail o where o.user.email=:email and o.orderStatus.orderStatusId=2")
+    Page<OrderDetail> getAllByUserDelvery(String email, Pageable paging);
+    @Query("select o from orderdetail o where o.user.email=:email and o.orderStatus.orderStatusId=3")
+    Page<OrderDetail> getAllByUserShipped(String email, Pageable paging);
+    @Query("select o from orderdetail o where o.user.email=:email and o.orderStatus.orderStatusId=4")
+
+    Page<OrderDetail> getAllByUserCancel(String email, Pageable paging);
 }

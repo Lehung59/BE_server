@@ -29,7 +29,7 @@ public interface IStoreService {
 
     void addStoreToFavor(int userId, int storeid);
 
-    List<StoreInfoView> findFavorStore(int userId, String keyword);
+    List<StoreInfoView> findFavorStore(int userId, String keyword,int page, int size);
 
     void removeStoreFromFavorList(int storeid, int userId);
 

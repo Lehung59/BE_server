@@ -59,6 +59,8 @@ public class ProductService implements IProductService {
                     productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
+                    productResponse.setStoreId(product.getStore().getStoreId());
+                    productResponse.setProductTypeId(product.getProductType().getProductTypeId());
                     return productResponse;
                 }
         ).collect(Collectors.toList());
@@ -81,6 +83,8 @@ public class ProductService implements IProductService {
                     productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
+                    productResponse.setStoreId(product.getStore().getStoreId());
+                    productResponse.setProductTypeId(product.getProductType().getProductTypeId());
                     return productResponse;
                 }
         ).collect(Collectors.toList());
@@ -109,6 +113,8 @@ public class ProductService implements IProductService {
                     productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
+                    productResponse.setStoreId(product.getStore().getStoreId());
+                    productResponse.setProductTypeId(product.getProductType().getProductTypeId());
                     return productResponse;
                 }
         );
@@ -129,6 +135,8 @@ public class ProductService implements IProductService {
                     productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
+                    productResponse.setStoreId(product.getStore().getStoreId());
+                    productResponse.setProductTypeId(product.getProductType().getProductTypeId());
                     return productResponse;
                 }
         ).collect(Collectors.toList());
@@ -148,6 +156,8 @@ public class ProductService implements IProductService {
                     productResponse.setPrice(product.getPrice());
                     productResponse.setStatus(product.isStatus());
                     productResponse.setDiscount(product.getDiscount());
+                    productResponse.setStoreId(product.getStore().getStoreId());
+                    productResponse.setProductTypeId(product.getProductType().getProductTypeId());
                     productResponse.setView(product.getView());
                     return productResponse;
                 }
@@ -212,26 +222,18 @@ public class ProductService implements IProductService {
     public void updateProduct(ProductRequest productRequest) {
         Optional<Product> checkName = productRepo.findByName(productRequest.getStoreId(), productRequest.getProductName());
         if (checkName.isPresent() && !Objects.equals(checkName.get().getProductName(), productRequest.getProductName())) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Tên sản phẩm đã tồn tại");
+            throw new CustomException(HttpStatus.NOT_IMPLEMENTED, "Tên sản phẩm đã tồn tại");
         }
 
-        Product product = checkName.get();
+        Product product = productRepo.findById(productRequest.getProductId()).get();
 
-        if(productRequest.isStatus() != product.isStatus())
             product.setStatus(productRequest.isStatus());
-        if(productRequest.getDiscount() != product.getDiscount())
             product.setDiscount(productRequest.getDiscount());
-        if(productRequest.getPrice() != product.getPrice())
             product.setPrice(productRequest.getPrice());
-        if(product.getProductName() != productRequest.getProductName())
             product.setProductName(productRequest.getProductName());
-        if(productRequest.getDescription() != productRequest.getDescription())
             product.setDescription(productRequest.getDescription());
-        if(productRequest.getProductTypeId() != product.getProductType().getProductTypeId())
             product.setProductId(productRequest.getProductTypeId());
-        if (productRequest.getAvatar() != product.getAvatarProduct())
             product.setAvatarProduct(productRequest.getAvatar());
-        if(productRequest.getQuantity() != product.getQuantity())
             product.setQuantity(productRequest.getQuantity());
 
         product.setUpdatedAt(UserUtils.getCurrentDay());
@@ -255,6 +257,8 @@ public class ProductService implements IProductService {
         response.setQuantity(product.getQuantity());
         response.setStatus(product.isStatus());
         response.setDescription(product.getDescription());
+        response.setStoreId(product.getStore().getStoreId());
+        response.setProductTypeId(product.getProductType().getProductTypeId());
         response.setView(product.getView());
         // Lấy tên của cửa hàng từ đối tượng Store
         if (product.getStore() != null) {

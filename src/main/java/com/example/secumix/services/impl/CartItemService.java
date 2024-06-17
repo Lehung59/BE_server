@@ -13,6 +13,10 @@ import com.example.secumix.repository.CartItemRepo;
 import com.example.secumix.repository.CartRepo;
 import com.example.secumix.repository.ProductRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -48,12 +52,14 @@ public class CartItemService implements ICartItemService {
     }
 
     @Override
-    public List<CartItemResponse> findByUser() {
+    public List<CartItemResponse> findByUser(int page, int size) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
+        Pageable paging = PageRequest.of(page - 1, size);
+        Page<CartItem> pageTuts = cartItemRepo.findByUser(email,paging);
 
 
-        return cartItemRepo.findByUser(email).stream().map(
+        return pageTuts.getContent().stream().map(
                 cartItem -> {
                     Product product= cartItem.getProduct();
                     long realPrice = product.getPrice();
