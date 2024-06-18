@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 public class ProductControllerManager {
     private final StoreRepo storeRepo;
     private final ProductMapper productMapper;
+    private final ProductRepo productRepo;
     @Value("${default_avt}")
     private String defaultAvt;
     private final ImageUpload imageUpload;
@@ -173,54 +174,71 @@ public class ProductControllerManager {
         }
     }
 
+    @GetMapping(value = "/{storeid}/product/delete")
+    ResponseEntity<ResponseObject> deleteProductByStore(@PathVariable int storeid,
+                                                        @RequestParam int productId) {
+        try {
+            storeService.checkStoreAuthen(storeid);
+            Optional<Product> product = productRepo.findById(productId);
+            if (product.isEmpty() || product.get().getStore().getStoreId() != storeid)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ResponseObject("FAILED", "Khong tim thay san pham trong cua hang", "")
+                );
+            productService.deleteProduct(productId);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseObject("OK", "Xoa thanh cong.", "")
+            );
+
+
+        } catch (CustomException ex) {
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
+
+    }
 
     @PutMapping(value = "/{storeid}/product/edit")
-    ResponseEntity<ResponseObject>editProduct(@PathVariable int storeid,
-                                              @RequestParam int productId,
-                                              @RequestParam(required = false) MultipartFile avatar,
-                                              @RequestParam(required = false) String name,
-                                              @RequestParam(required = false) String description,
-                                              @RequestParam(required = false) Integer productTypeId ,
-                                              @RequestParam(required = false) Long price,
-                                              @RequestParam(required = false) Integer discount,
-                                              @RequestParam(required = false) Boolean status,
-                                              @RequestParam(required = false) Integer quantity
-    ){
+    ResponseEntity<ResponseObject> editProduct(@PathVariable int storeid,
+                                               @RequestParam int productId,
+                                               @RequestParam(required = false) MultipartFile avatar,
+                                               @RequestParam(required = false) String name,
+                                               @RequestParam(required = false) String description,
+                                               @RequestParam(required = false) Integer productTypeId,
+                                               @RequestParam(required = false) Long price,
+                                               @RequestParam(required = false) Integer discount,
+                                               @RequestParam(required = false) Boolean status,
+                                               @RequestParam(required = false) Integer quantity
+    ) {
 
-        try{
+        try {
             storeService.checkStoreAuthen(storeid);
             Optional<Product> product = productService.findById(productId);
-            if (product.isEmpty() || product.get().getStore().getStoreId() != storeid) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new ResponseObject("FAILED", "Khong tim thay san pham trong cua hang", "")
-            );
+            if (product.isEmpty() || product.get().getStore().getStoreId() != storeid)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ResponseObject("FAILED", "Khong tim thay san pham trong cua hang", "")
+                );
             String avrUrl = product.get().getAvatarProduct();
-            if(avatar!=null){
-                 avrUrl = imageUpload.upload(avatar);
+            if (avatar != null) {
+                avrUrl = imageUpload.upload(avatar);
             }
             ProductRequest productRequest = productMapper.toProductRequest(product.get());
-            if(name!=null) productRequest.setProductName(name);
-            if(description!=null) productRequest.setDescription(description);
-            if(productTypeId!=null) productRequest.setProductTypeId(productTypeId);
-            if(quantity!=null) productRequest.setQuantity(quantity);
-            if(price!=null) productRequest.setPrice(price);
-            if(discount!=null) productRequest.setDiscount(discount);
-            if(avrUrl!=null) productRequest.setAvatar(avrUrl);
-            if(status!=null) productRequest.setStatus(status);
+            if (name != null) productRequest.setProductName(name);
+            if (description != null) productRequest.setDescription(description);
+            if (productTypeId != null) productRequest.setProductTypeId(productTypeId);
+            if (quantity != null) productRequest.setQuantity(quantity);
+            if (price != null) productRequest.setPrice(price);
+            if (discount != null) productRequest.setDiscount(discount);
+            if (avrUrl != null) productRequest.setAvatar(avrUrl);
+            if (status != null) productRequest.setStatus(status);
             productService.updateProduct(productRequest);
 
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK","Sua thanh cong.","")
+                    new ResponseObject("OK", "Sua thanh cong.", "")
             );
-        }
-
-
-        catch (CustomException ex) {
+        } catch (CustomException ex) {
             return ResponseEntity.status(ex.getStatus())
                     .body(new ResponseObject("FAILED", ex.getMessage(), ""));
         }
     }
-
-
 
 
 }

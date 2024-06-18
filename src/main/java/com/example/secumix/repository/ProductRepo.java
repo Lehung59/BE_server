@@ -2,6 +2,7 @@ package com.example.secumix.repository;
 
 import com.example.secumix.entities.Product;
 import com.example.secumix.entities.ProfileDetail;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,39 +17,42 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Integer> {
-    @Query("select o from product o where o.store.storeId=:storeid and o.productName=:name")
+    @Query("select o from product o where o.store.storeId=:storeid and o.productName=:name and o.deleted=false")
     Optional<Product> findByName(int storeid, String name);
 
 
 
-    @Query("select o from product o where o.productName=:name")
+    @Query("select o from product o where o.productName=:name and o.deleted=false")
     List<Product> findByProductName( String name);
-    @Query("select o from product o where o.store.emailmanager=:email")
+    @Query("select o from product o where o.store.emailmanager=:email and o.deleted=false")
     List<Product> getAllByStore(String email);
-    @Query("select o from product o where o.productName like %:key%")
+    @Query("select o from product o where o.productName like %:key% and o.deleted=false")
     List<Product> SearchByKey(String key);
-    @Query("select o from product o where o.productType.productTypeId=:producttypeid")
+    @Query("select o from product o where o.productType.productTypeId=:producttypeid and o.deleted=false")
     List<Product> findByProductType(int producttypeid);
-    @Query("SELECT DISTINCT p FROM product p WHERE p.store.storeId = :storeId AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT DISTINCT p FROM product p WHERE p.store.storeId = :storeId and p.deleted=false AND LOWER(p.productName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Product> findByTitleContainingIgnoreCase(int storeId, String keyword, Pageable pageable);
 
-    @Query("SELECT p FROM product p WHERE p.store.storeId = :storeId")
+    @Query("SELECT p FROM product p WHERE p.store.storeId = :storeId and p.deleted=false")
     Page<Product> getAllByStoreWithPagination(int storeId, Pageable pageable);
     @Query("SELECT o FROM profile o WHERE o.user.id=:customerid")
     ProfileDetail findByUserId(int customerid);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select p from product p where p.productId = :productId")
+    @Query("select p from product p where p.productId = :productId and p.deleted=false")
     Product findProductForUpdate(@Param("productId") int productId);
 
 
-    @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true")
+    @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true and p.deleted=false")
     Page<Product> findSellingProduct(int storeid, Pageable pageable);
 
 
-    @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true " +
+    @Query(value = "SELECT p FROM product p WHERE p.store.storeId=:storeid AND p.status=true and p.deleted=false " +
             "AND (p.productName LIKE %:keyword% )" +
             "OR (p.description LIKE %:keyword% )"
     )
     Page<Product> findSellingProductKeyword(int storeid, String keyword, Pageable pageable);
+
+    @Query(value = "SELECT p from product p WHERE p.productId= :productId AND p.deleted=false")
+    Optional<Product> findById(int productId);
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StoreTypeController {
     private final IStoreTypeService storeTypeService;
     @PreAuthorize("permitAll()")
-    @GetMapping("storetype/view")
+    @GetMapping("/auth/storetype/view")
     ResponseEntity<ResponseObject> getAllStoreType() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(

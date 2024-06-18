@@ -30,4 +30,6 @@ public interface IProductService {
 
 
     void updateProduct(ProductRequest productRequest);
+
+    void deleteProduct(int productId);
 }

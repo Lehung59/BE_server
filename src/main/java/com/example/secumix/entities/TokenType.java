@@ -1,5 +1,6 @@
 package com.example.secumix.entities;
 
 public enum TokenType {
-  BEARER
+  BEARER,
+  RESETPASSWORD
 }

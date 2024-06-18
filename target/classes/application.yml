@@ -32,7 +32,7 @@ spring:
     url: jdbc:mysql://viaduct.proxy.rlwy.net:58538/railway
     username: root
     password: ySMsGDMdCtEhPPsztCXfjCgilxDXrhpl
-#
+
 
     driver-class-name: com.mysql.cj.jdbc.Driver
   main:

@@ -185,6 +185,7 @@ public class ProductService implements IProductService {
                 .store(store)
                 .view(0)
                 .status(false)
+                .deleted(false)
                 .productType(productType)
                 .createdAt(UserUtils.getCurrentDay())
                 .updatedAt(UserUtils.getCurrentDay())
@@ -234,6 +235,14 @@ public class ProductService implements IProductService {
 
 
 
+    }
+
+    @Override
+    public void deleteProduct(int productId) {
+        Product product = productRepo.findById(productId).orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay san pham"));
+        product.setDeleted(true);
+        product.setStatus(false);
+        productRepo.save(product);
     }
 
 

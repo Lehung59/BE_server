@@ -3,6 +3,7 @@ package com.example.secumix.services.impl;
 
 import com.example.secumix.Utils.EmailMix;
 import com.example.secumix.Utils.UserUtils;
+import com.example.secumix.exception.CustomException;
 import com.example.secumix.notify.Notify;
 import com.example.secumix.notify.NotifyRepository;
 import com.example.secumix.entities.Cart;
@@ -29,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +40,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -49,15 +53,16 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final ProfileDetailRepository profileDetailRepository;
+    private final EmailMix e;
     @Value("${default_avt}")
     private String defaultAvt;
 
-    @Autowired
-    private CartRepo cartRepo;
-
+    private final CartRepo cartRepo;
+    private final UserUtils userUtils;
     private final NotifyRepository notifyRepository;
-    @Autowired
-    private StoreRepo storeRepo;
+    private final StoreRepo storeRepo;
+
+
 
     public Optional<Token> getVerificationToken(String token) {
         Optional<Token> result = tokenRepository.findByToken(token);
@@ -108,9 +113,13 @@ public class AuthenticationService {
                 = "https://charismatic-friendship-production.up.railway.app/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
         String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
-        EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
-        e.sendContentToVer2(recipientAddress, subject, message);
+        e.sendContent(recipientAddress, subject, message);
         return AuthenticationResponse.builder()
+                .userId(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .role(user.getRole())
+                .email(user.getEmail())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -155,9 +164,13 @@ public class AuthenticationService {
                 = "https://charismatic-friendship-production.up.railway.app/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
         String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
-        EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
-        e.sendContentToVer2(recipientAddress, subject, message);
+        e.sendContent(recipientAddress, subject, message);
         return AuthenticationResponse.builder()
+                .userId(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .role(user.getRole())
+                .email(user.getEmail())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -203,9 +216,13 @@ public class AuthenticationService {
                 = "https://charismatic-friendship-production.up.railway.app/api/v1/auth/registrationConfirm.html?token=" + jwtToken;
         String message = "Tài khoản được khởi tạo từ Admin. Tên tài khoản email : " + recipientAddress + " .Nhấp vào liên kết sau để xác nhận đăng ký tài khoản:\n" + confirmationUrl;
 
-        EmailMix e = new EmailMix("nguyenlehungsc1@gmail.com", "xcsslxxwycaillbg", 0);
-        e.sendContentToVer2(recipientAddress, subject, message);
+        e.sendContent(recipientAddress, subject, message);
         return AuthenticationResponse.builder()
+                .userId(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .role(user.getRole())
+                .email(user.getEmail())
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -274,6 +291,22 @@ public class AuthenticationService {
                 .build();
     }
 
+    public void createForgetPassToken(String email){
+        User user = repository.findByEmail(email).orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND,"Khong ton tai mail nay"));
+        String newToken = UUID.randomUUID().toString().substring(0,8).toUpperCase();
+
+        var token = Token.builder()
+                .user(user)
+                .tokenType(TokenType.RESETPASSWORD)
+                .token(newToken)
+                .expired(false)
+                .revoked(false)
+                .created_at(UserUtils.getCurrentDay())
+                .build();
+        tokenRepository.save(token);
+    }
+
+
     public void saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
@@ -281,6 +314,7 @@ public class AuthenticationService {
                 .tokenType(TokenType.BEARER)
                 .expired(false)
                 .revoked(false)
+                .created_at(UserUtils.getCurrentDay())
                 .build();
         tokenRepository.save(token);
     }
@@ -294,7 +328,9 @@ public class AuthenticationService {
             token.setRevoked(true);
         });
         // Cân nhắc xóa đi hoặc dùng để tính thời gian không hoạt động
-        tokenRepository.saveAll(validUserTokens);
+        validUserTokens.forEach(token -> {
+            tokenRepository.delete(token);
+        });
     }
 
     public void refreshToken(
@@ -317,6 +353,11 @@ public class AuthenticationService {
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()
+                        .userId(user.getId())
+                        .firstname(user.getFirstname())
+                        .lastname(user.getLastname())
+                        .role(user.getRole())
+                        .email(user.getEmail())
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();

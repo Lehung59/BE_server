@@ -43,6 +43,8 @@ public class Product {
 
     @Column(name = "status")
     private boolean status;
+    @Column(name = "deleted")
+    private boolean deleted;
 
     @Column(name = "description")
     private String description;

@@ -33,6 +33,21 @@ public class StoreControllerCustomer {
     private final ProductMapper productMapper;
     private final StoreMapper storeMapper;
 
+
+    @GetMapping(value = "/{storeid}/info/view")
+    public ResponseEntity<ResponseObject> viewStoreInfo(@PathVariable int storeid) {
+        try{
+            StoreInfoView storeInfoView = storeService.getInfo(storeid);
+
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject("OK", "Success", storeInfoView)
+            );
+        } catch (CustomException ex){
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
+        }
+    }
+
     @GetMapping(value = "/store/view/{storeid}")
     public ResponseEntity<ResponseObject> viewProduct(@RequestParam(required = false) String keyword,
                                                       @PathVariable int storeid,

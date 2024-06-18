@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Data
@@ -29,6 +31,8 @@ public class Token {
   public boolean revoked;
 
   public boolean expired;
+
+  public Date created_at;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")

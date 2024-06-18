@@ -20,7 +20,6 @@ com\example\secumix\payload\response\ProductResponse.class
 com\example\secumix\services\ICustomerService.class
 com\example\secumix\services\impl\ProductTypeService.class
 com\example\secumix\payload\request\ProductTypeRequest.class
-com\example\secumix\Utils\EmailMix$2.class
 com\example\secumix\payload\response\StoreCustomerRespone.class
 com\example\secumix\security\WebConfig.class
 com\example\secumix\exception\ImageUploadException.class
