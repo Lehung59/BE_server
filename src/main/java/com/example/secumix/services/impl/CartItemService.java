@@ -34,22 +34,7 @@ public class CartItemService implements ICartItemService {
     private final NotifyRepository notifyRepository;
     private final UserUtils userUtils;
 
-    @Override
-    public List<CartItemResponse> findByProduct(int productid) {
-        return cartItemRepo.findByProduct(productid).stream().map(
-                cartItem -> {
-                    Product product= cartItem.getProduct();
-                    CartItemResponse cartItemResponse= new CartItemResponse();
-                    cartItemResponse.setCartItemId(cartItem.getCartItemId());
-                    cartItemResponse.setProductName(product.getProductName());
-                    cartItemResponse.setProductImg(product.getAvatarProduct());
-                    cartItemResponse.setQuantity(cartItem.getQuantity());
-                    cartItemResponse.setStoreName(product.getStore().getStoreName());
-                    cartItemResponse.setPriceTotal(product.getPrice()*cartItem.getQuantity());
-                    return cartItemResponse;
-                }
-        ).collect(Collectors.toList());
-    }
+
 
     @Override
     public Page<CartItem> findByUser(int page, int size) {
@@ -59,28 +44,17 @@ public class CartItemService implements ICartItemService {
         return cartItemRepo.findByUser(email, paging);
     }
 
-    @Override
-    public Optional<CartItemResponse> finfByProductandUser(int productid) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-        return cartItemRepo.finfByProductandUser(productid, email).map(
-                cartItem -> {
-                    Product product= cartItem.getProduct();
-                    CartItemResponse cartItemResponse= new CartItemResponse();
-                    cartItemResponse.setCartItemId(cartItem.getCartItemId());
-                    cartItemResponse.setProductName(product.getProductName());
-                    cartItemResponse.setProductImg(product.getAvatarProduct());
-                    cartItemResponse.setQuantity(cartItem.getQuantity());
-                    cartItemResponse.setStoreName(product.getStore().getStoreName());
-                    cartItemResponse.setPriceTotal(product.getPrice()*cartItem.getQuantity());
-                    return cartItemResponse;
-                }
-        );
-    }
+
     @Override
     public void Insert(CartItemRequest cartItemRequest) {
         String email = userUtils.getUserEmail();
         Product product= productRepo.findById(cartItemRequest.getProductid()).get();
+
+        long realPrice = product.getPrice();
+        if (product.getDiscount() != 0) {
+            realPrice -= product.getDiscount() * product.getPrice() / 100;
+        }
+
         Cart cart= cartRepo.findByEmail(email);
         Optional<CartItem> rscartItem= cartItemRepo.finfByProductandUser(cartItemRequest.getProductid(), email);
         if (rscartItem.isEmpty()){
@@ -89,7 +63,7 @@ public class CartItemService implements ICartItemService {
                     .createAt(UserUtils.getCurrentDay())
                     .updatedAt(UserUtils.getCurrentDay())
                     .cart(cart)
-                    .pricetotal(product.getPrice()* cartItemRequest.getQuantity())
+                    .pricetotal(realPrice * cartItemRequest.getQuantity())
                     .product(product)
                     .build();
             cartItemRepo.save(cartItem);
@@ -97,7 +71,7 @@ public class CartItemService implements ICartItemService {
 //            productRepo.save(product);
         } else {
             rscartItem.get().setQuantity(rscartItem.get().getQuantity()+ cartItemRequest.getQuantity());
-            rscartItem.get().setPricetotal(product.getPrice()*rscartItem.get().getQuantity());
+            rscartItem.get().setPricetotal(realPrice*rscartItem.get().getQuantity());
             cartItemRepo.save(rscartItem.get());
 //            product.setQuantity(product.getQuantity()- cartItemRequest.getQuantity());
 //            productRepo.save(product);
@@ -138,9 +112,19 @@ public class CartItemService implements ICartItemService {
 
     @Override
     public void updateCartItem(int cartItemId, int quantity) {
+
+
         CartItem cartItem = cartItemRepo.findById(cartItemId).get();
+Product product = cartItem.getProduct();
+
+        long realPrice = product.getPrice();
+        if (product.getDiscount() != 0) {
+            realPrice -= product.getDiscount() * product.getPrice() / 100;
+        }
+
+
         cartItem.setQuantity(quantity);
-        cartItem.setPricetotal(cartItem.getProduct().getPrice()*quantity);
+        cartItem.setPricetotal(realPrice*quantity);
         cartItem.setUpdatedAt(UserUtils.getCurrentDay());
         cartItemRepo.save(cartItem);
     }

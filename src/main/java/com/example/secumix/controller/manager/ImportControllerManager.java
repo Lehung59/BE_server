@@ -158,7 +158,7 @@ public class ImportControllerManager {
                     .productType(productType)
                     .store(store)
                     .view(0)
-                    .status(false)
+                    .status(Product.ChannelStatus.UNSELL.getValue())
                     .price(priceOut)
                     .createdAt(UserUtils.getCurrentDay())
                     .updatedAt(UserUtils.getCurrentDay())

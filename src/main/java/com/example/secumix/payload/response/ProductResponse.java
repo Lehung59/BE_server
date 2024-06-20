@@ -13,8 +13,9 @@ public class ProductResponse {
     private long price;
     private String productName;
     private int quantity;
-    private boolean status;
+    private int status;
     private String description;
+    private String banReason;
     private int view;
     private String storeName;
     private int storeId;

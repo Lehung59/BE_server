@@ -52,8 +52,6 @@ public class StoreControllerAdmin {
             return ResponseEntity.status(ex.getStatus())
                     .body(new ResponseObject("FAILED", ex.getMessage(), ""));
         }
-
-
     }
 
 

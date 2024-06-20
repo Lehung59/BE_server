@@ -18,8 +18,9 @@ public class ProductDto {
     private long price;
     private String productName;
     private int quantity;
-    private boolean status;
+    private Integer status;
     private String description;
+    private String banReason;
     private Date updatedAt;
     private int view;
     private int storeId;

@@ -16,7 +16,7 @@ public class ProductRequest {
     private long price;
     private int discount;
     private int quantity;
-    private boolean status; // Optional, depending on whether you want the client to set this
+    private int status; // Optional, depending on whether you want the client to set this
     private String avatar; // Sử dụng MultipartFile để upload ảnh
     private int storeId; // Store ID if needed to associate the product
     private int productTypeId; // ProductType ID for associating with the product type

@@ -58,24 +58,12 @@ spring:
     oauth2:
       client:
         registration:
-          github:
-            clientId: Iv1.731596c579d3b990
-            clientSecret: 1a16900f622b3b74d6d2e1efa40c53a63ad8705d
-            scope:
-              - email
-              - profile
           google:
             clientId: 443598481657-mdgnmebmg14jjbp4f1enoufho4tclioj.apps.googleusercontent.com
             clientSecret: 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
             scope:
               - email
               - profile
-          facebook:
-            clientId: 1096220391374810
-            clientSecret: 511c1cce66db75b519fc74752441d7e0
-            scope:
-              - email
-              - public_profile
 application:
   security:
     jwt:

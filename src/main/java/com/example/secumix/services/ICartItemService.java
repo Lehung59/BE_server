@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ICartItemService {
-    List<CartItemResponse> findByProduct(int productid);
     Page<CartItem> findByUser(int page, int size);
-    Optional<CartItemResponse> finfByProductandUser(int productid);
     void Insert(CartItemRequest cartItemRequest);
 
     void Save(CartItem cartItem);

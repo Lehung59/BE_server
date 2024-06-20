@@ -1,18 +1,21 @@
 package com.example.secumix.services.impl;
 
 
-
+import com.example.secumix.entities.User;
 import com.example.secumix.exception.CustomException;
 import com.example.secumix.Utils.UserUtils;
 import com.example.secumix.entities.Product;
 import com.example.secumix.entities.ProductType;
 import com.example.secumix.entities.Store;
+import com.example.secumix.notify.Notify;
+import com.example.secumix.notify.NotifyRepository;
 import com.example.secumix.payload.request.AddProductRequest;
 import com.example.secumix.payload.request.ProductRequest;
 import com.example.secumix.payload.response.ProductResponse;
 
 import com.example.secumix.repository.ProductTypeRepo;
 import com.example.secumix.repository.StoreRepo;
+import com.example.secumix.repository.UserRepository;
 import com.example.secumix.services.IProductService;
 import com.example.secumix.repository.ProductRepo;
 
@@ -32,6 +35,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.secumix.entities.Product.ChannelStatus.FORBIDDEN;
+import static com.example.secumix.entities.Product.ChannelStatus.UNSELL;
 import static com.example.secumix.entities.Role.CUSTOMER;
 
 @Service
@@ -45,6 +50,11 @@ public class ProductService implements IProductService {
     @Autowired
     private UserUtils userUtils;
 
+    @Autowired
+    private NotifyRepository notifyRepository;
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public List<ProductResponse> getAllProduct() {
         return productRepo.findAll().stream().map(
@@ -57,7 +67,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.isStatus());
+                    productResponse.setStatus(product.getStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     productResponse.setStoreId(product.getStore().getStoreId());
@@ -81,7 +91,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.isStatus());
+                    productResponse.setStatus(product.getStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     productResponse.setStoreId(product.getStore().getStoreId());
@@ -92,33 +102,38 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Optional<ProductResponse> findbyId(int id) {
+    public Product findById(int id) {
+        Product product = productRepo.findById(id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND,"Khong tim thay san pham"));
+        return product;
+    }
 
-        return productRepo.findById(id).map(
-                product -> {
-                    userUtils.getRole();
-                    if(userUtils.getRole().contains("ROLE_USER")){
-                        product.setView(product.getView()+1);
-                        productRepo.save(product);
-                    }
+    @Override
+    public ProductResponse findbyId(int id) {
 
-                    ProductResponse productResponse = new ProductResponse();
-                    productResponse.setProductId(product.getProductId());
-                    productResponse.setAvatarProduct(product.getAvatarProduct());
-                    productResponse.setProductName(product.getProductName());
-                    productResponse.setProductType(product.getProductType().getProductTypeName());
-                    productResponse.setQuantity(product.getQuantity());
-                    productResponse.setStoreName(product.getStore().getStoreName());
-                    productResponse.setDescription(product.getDescription());
-                    productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.isStatus());
-                    productResponse.setDiscount(product.getDiscount());
-                    productResponse.setView(product.getView());
-                    productResponse.setStoreId(product.getStore().getStoreId());
-                    productResponse.setProductTypeId(product.getProductType().getProductTypeId());
-                    return productResponse;
-                }
-        );
+        Product product = productRepo.findById(id).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tim thay san pham"));
+        String role = userUtils.getRole();
+        if (userUtils.getRole().contains("USER")) {
+            product.setView(product.getView() + 1);
+            product = productRepo.save(product);
+        }
+
+        ProductResponse productResponse = new ProductResponse();
+        productResponse.setProductId(product.getProductId());
+        productResponse.setAvatarProduct(product.getAvatarProduct());
+        productResponse.setProductName(product.getProductName());
+        productResponse.setProductType(product.getProductType().getProductTypeName());
+        productResponse.setQuantity(product.getQuantity());
+        productResponse.setStoreName(product.getStore().getStoreName());
+        productResponse.setDescription(product.getDescription());
+        productResponse.setPrice(product.getPrice());
+        productResponse.setStatus(product.getStatus());
+        productResponse.setDiscount(product.getDiscount());
+        productResponse.setView(product.getView());
+        productResponse.setStoreId(product.getStore().getStoreId());
+        productResponse.setProductTypeId(product.getProductType().getProductTypeId());
+        return productResponse;
+
+
     }
 
     @Override
@@ -133,7 +148,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.isStatus());
+                    productResponse.setStatus(product.getStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setView(product.getView());
                     productResponse.setStoreId(product.getStore().getStoreId());
@@ -155,7 +170,7 @@ public class ProductService implements IProductService {
                     productResponse.setStoreName(product.getStore().getStoreName());
                     productResponse.setDescription(product.getDescription());
                     productResponse.setPrice(product.getPrice());
-                    productResponse.setStatus(product.isStatus());
+                    productResponse.setStatus(product.getStatus());
                     productResponse.setDiscount(product.getDiscount());
                     productResponse.setStoreId(product.getStore().getStoreId());
                     productResponse.setProductTypeId(product.getProductType().getProductTypeId());
@@ -165,10 +180,6 @@ public class ProductService implements IProductService {
         ).collect(Collectors.toList());
     }
 
-    @Override
-    public Optional<Product> findById(int productid) {
-        return productRepo.findById(productid);
-    }
 
     @Override
     public Optional<Product> findByName(int storeid, String name) {
@@ -184,7 +195,7 @@ public class ProductService implements IProductService {
                 .discount(0)
                 .store(store)
                 .view(0)
-                .status(false)
+                .status(UNSELL.getValue())
                 .deleted(false)
                 .productType(productType)
                 .createdAt(UserUtils.getCurrentDay())
@@ -194,9 +205,10 @@ public class ProductService implements IProductService {
                 .price(addProductRequest.getPrice())
                 .quantity(0)
                 .build();
-        System.out.println(newObj.getAvatarProduct()+newObj.getProductName());
+        System.out.println(newObj.getAvatarProduct() + newObj.getProductName());
         productRepo.save(newObj);
     }
+
     @Override
     public Page<Product> findAllProductPaginable(int storeId, int page, int size) {
         Pageable paging = PageRequest.of(page - 1, size);
@@ -210,39 +222,99 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    public Page<Product> findAllProductPaginableAdmin(int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        return productRepo.getAllByStoreWithPaginationAdmin(storeId, paging);
+    }
+
+    @Override
+    public Page<Product> findByTitleContainingIgnoreCaseAdmin(String keyword, int storeId, int page, int size) {
+        Pageable paging = PageRequest.of(page - 1, size);
+        return productRepo.findByTitleContainingIgnoreCaseAdmin(storeId, keyword, paging);
+    }
+
+    @Override
     public void updateProduct(ProductRequest productRequest) {
         Optional<Product> checkName = productRepo.findByName(productRequest.getStoreId(), productRequest.getProductName());
         if (checkName.isPresent() && !Objects.equals(checkName.get().getProductName(), productRequest.getProductName())) {
             throw new CustomException(HttpStatus.NOT_IMPLEMENTED, "Tên sản phẩm đã tồn tại");
         }
-
+        ProductType productType = productTypeRepo.findById(productRequest.getProductTypeId()).get();
         Product product = productRepo.findById(productRequest.getProductId()).get();
 
-            product.setStatus(productRequest.isStatus());
-            product.setDiscount(productRequest.getDiscount());
-            product.setPrice(productRequest.getPrice());
-            product.setProductName(productRequest.getProductName());
-            product.setDescription(productRequest.getDescription());
-            product.setProductId(productRequest.getProductTypeId());
-            product.setAvatarProduct(productRequest.getAvatar());
-            product.setQuantity(productRequest.getQuantity());
+        product.setStatus(productRequest.getStatus());
+        product.setDiscount(productRequest.getDiscount());
+        product.setPrice(productRequest.getPrice());
+        product.setProductName(productRequest.getProductName());
+        product.setDescription(productRequest.getDescription());
+        product.setProductType(productType);
+        product.setAvatarProduct(productRequest.getAvatar());
+        product.setQuantity(productRequest.getQuantity());
 
         product.setUpdatedAt(UserUtils.getCurrentDay());
         productRepo.save(product);
-
-
-
-
 
 
     }
 
     @Override
     public void deleteProduct(int productId) {
-        Product product = productRepo.findById(productId).orElseThrow(()-> new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay san pham"));
+        Product product = productRepo.findById(productId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay san pham"));
         product.setDeleted(true);
-        product.setStatus(false);
+        product.setStatus(Product.ChannelStatus.UNSELL.getValue());
         productRepo.save(product);
+    }
+
+    @Override
+    public void banProduct(int productId, String banReason) {
+        Product product = productRepo.findByIdAdmin(productId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay san pham"));
+        product.setBanReason(banReason);
+        product.setStatus(FORBIDDEN.getValue());
+        productRepo.save(product);
+        String emailmanager = product.getStore().getEmailmanager();
+        User storeManager = userRepository.findByEmail(emailmanager).get();
+
+        Notify notify = Notify.builder()
+                .description("Sản phẩm ".concat(product.getProductName()) + "đã bị khóa. Lí do vì " + banReason + ". Hãy liên hệ với Admin để được hỗ trợ") //Truyền link đến store đó
+                .user(storeManager)
+                .build();
+        notifyRepository.save(notify);
+    }
+
+    @Override
+    public void unBanProduct(int productId) {
+        Product product = productRepo.findByIdAdmin(productId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay san pham"));
+        product.setStatus(UNSELL.getValue());
+        product.setBanReason(null);
+        productRepo.save(product);
+        String emailmanager = product.getStore().getEmailmanager();
+        User storeManager = userRepository.findByEmail(emailmanager).get();
+
+        Notify notify = Notify.builder()
+                .description("Sản phẩm ".concat(product.getProductName()) + " được mở.") //Truyền link đến store đó
+                .user(storeManager)
+                .build();
+        notifyRepository.save(notify);
+    }
+
+    @Override
+    public void deleteProductAdmin(int productId) {
+        Product product = productRepo.findByIdAdmin(productId).orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Khong tin thay san pham"));
+        String emailmanager = product.getStore().getEmailmanager();
+/////
+
+        productRepo.deleteProductAdmin(productId);
+
+        /////
+        User storeManager = userRepository.findByEmail(emailmanager).get();
+
+        Notify notify = Notify.builder()
+                .description("Sản phẩm ".concat(product.getProductName()) + " đã bị xóa khỏi hệ thống.") //Truyền link đến store đó
+                .user(storeManager)
+                .build();
+        notifyRepository.save(notify);
+
+
     }
 
 
@@ -254,7 +326,7 @@ public class ProductService implements IProductService {
         response.setPrice(product.getPrice());
         response.setProductName(product.getProductName());
         response.setQuantity(product.getQuantity());
-        response.setStatus(product.isStatus());
+        response.setStatus(product.getStatus());
         response.setDescription(product.getDescription());
         response.setStoreId(product.getStore().getStoreId());
         response.setProductTypeId(product.getProductType().getProductTypeId());

@@ -4,6 +4,7 @@ import com.example.secumix.Utils.DtoMapper.NotifiMapper;
 import com.example.secumix.payload.dtos.NotifiDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,8 @@ public class NotificationService {
     private SimpMessagingTemplate messagingTemplate;
     @Autowired
     private NotifiMapper notifiMapper;
+    @Autowired
+    private WebSocketController notificationController;
 
     public Notify addNotification(Notify notification) {
         Notify savedNotification = notificationRepository.save(notification);
@@ -39,4 +42,10 @@ public class NotificationService {
         List<NotifiDto> notifies= notificationRepository.findNotifiesByEmail(email).stream().map(notifiMapper::toDto).toList();
         return notifies;
     }
+
+    @Async
+    public void notifyCustomer(Long customerId, String message) {
+        notificationController.notifyClient(customerId, message);
+    }
+
 }

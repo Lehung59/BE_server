@@ -42,12 +42,15 @@ public class Product {
     private int quantity;
 
     @Column(name = "status")
-    private boolean status;
+    private Integer status;
     @Column(name = "deleted")
     private boolean deleted;
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "ban_reason")
+    private String banReason;
 
     @Column(name = "updated_at")
     private Date updatedAt;
@@ -65,18 +68,34 @@ public class Product {
     private ProductType productType;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<ProductImage> productImages;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<OrderDetail> orderDetails;
 
     @JsonIgnore
-    @OneToMany
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Set<ImportDetail> importDetails;
+
+    public enum ChannelStatus {
+        UNSELL(0),
+        SELL(1),
+        FORBIDDEN(2);
+        private int value;
+        ChannelStatus(int value){
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+
 
 }

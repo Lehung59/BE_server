@@ -109,17 +109,15 @@ public class ProductControllerManager {
         try {
             storeService.checkStoreAuthen(storeid);
 
-            Optional<Product> product = productService.findById(productId);
-            if (product.isEmpty()) return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ResponseObject("FAILED", "Cannot find product", "")
-            );
+            Product product = productService.findById(productId);
+
 
             String avtUrl = image != null ? imageUpload.upload(image) : defaultAvt;
             ProductImage productImage = ProductImage.builder()
                     .imageProduct(avtUrl)
                     .status(Integer.parseInt(status))
                     .title(title)
-                    .product(product.get())
+                    .product(product)
                     .build();
             productImageRepo.save(productImage);
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -211,16 +209,16 @@ public class ProductControllerManager {
 
         try {
             storeService.checkStoreAuthen(storeid);
-            Optional<Product> product = productService.findById(productId);
-            if (product.isEmpty() || product.get().getStore().getStoreId() != storeid)
+            Product product = productService.findById(productId);
+            if (product.getStore().getStoreId() != storeid)
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                         new ResponseObject("FAILED", "Khong tim thay san pham trong cua hang", "")
                 );
-            String avrUrl = product.get().getAvatarProduct();
+            String avrUrl = product.getAvatarProduct();
             if (avatar != null) {
                 avrUrl = imageUpload.upload(avatar);
             }
-            ProductRequest productRequest = productMapper.toProductRequest(product.get());
+            ProductRequest productRequest = productMapper.toProductRequest(product);
             if (name != null) productRequest.setProductName(name);
             if (description != null) productRequest.setDescription(description);
             if (productTypeId != null) productRequest.setProductTypeId(productTypeId);
@@ -228,7 +226,13 @@ public class ProductControllerManager {
             if (price != null) productRequest.setPrice(price);
             if (discount != null) productRequest.setDiscount(discount);
             if (avrUrl != null) productRequest.setAvatar(avrUrl);
-            if (status != null) productRequest.setStatus(status);
+            if (status != null)
+            {
+                if(status){
+                    productRequest.setStatus(Product.ChannelStatus.SELL.getValue());
+                } else productRequest.setStatus(Product.ChannelStatus.UNSELL.getValue());
+
+            }
             productService.updateProduct(productRequest);
 
             return ResponseEntity.status(HttpStatus.OK).body(

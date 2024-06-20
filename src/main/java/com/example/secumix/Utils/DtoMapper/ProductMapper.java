@@ -36,7 +36,8 @@ public class ProductMapper {
         productDto.setPrice(product.getPrice());
         productDto.setProductName(product.getProductName());
         productDto.setQuantity(product.getQuantity());
-        productDto.setStatus(product.isStatus());
+        productDto.setBanReason(product.getBanReason());
+        productDto.setStatus(product.getStatus());
         productDto.setDescription(product.getDescription());
         productDto.setUpdatedAt(product.getUpdatedAt());
         productDto.setView(product.getView());
@@ -59,7 +60,8 @@ public class ProductMapper {
         productResponse.setStoreName(product.getStore().getStoreName());
         productResponse.setDescription(product.getDescription());
         productResponse.setPrice(product.getPrice());
-        productResponse.setStatus(product.isStatus());
+        productResponse.setBanReason(product.getBanReason());
+        productResponse.setStatus(product.getStatus());
         productResponse.setStoreId(product.getStore().getStoreId());
         productResponse.setProductTypeId(product.getProductType().getProductTypeId());
         productResponse.setDiscount(product.getDiscount());
@@ -80,7 +82,7 @@ public class ProductMapper {
         productRequest.setPrice(product.getPrice());
         productRequest.setProductName(product.getProductName());
         productRequest.setQuantity(product.getQuantity());
-        productRequest.setStatus(product.isStatus());
+        productRequest.setStatus(product.getStatus());
         productRequest.setStoreId(product.getStore().getStoreId());
         productRequest.setProductTypeId(product.getProductType().getProductTypeId());
         return productRequest;
@@ -99,7 +101,7 @@ public class ProductMapper {
         product.setPrice(productDto.getPrice());
         product.setProductName(productDto.getProductName());
         product.setQuantity(productDto.getQuantity());
-        product.setStatus(productDto.isStatus());
+        product.setStatus(productDto.getStatus());
         product.setDescription(productDto.getDescription());
         product.setUpdatedAt(productDto.getUpdatedAt());
         product.setView(productDto.getView());

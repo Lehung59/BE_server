@@ -14,11 +14,10 @@ public interface IProductService {
     List<ProductResponse> getAllProduct();
     List<ProductResponse>GetAllByStore();
 
-    Optional<ProductResponse> findbyId(int id);
+    Product findById(int id);
+    ProductResponse findbyId(int id);
     List<ProductResponse> SearchByKey(String keyword);
     List<ProductResponse> findByProductType(int producttypeid);
-
-    Optional<Product> findById(int productid);
 
     Optional<Product> findByName(int storeid, String name);
 
@@ -28,8 +27,18 @@ public interface IProductService {
 
     Page<Product> findByTitleContainingIgnoreCase(String keyword, int storeid, int page, int size);
 
+    Page<Product> findAllProductPaginableAdmin(int storeId, int page, int size);
+
+    Page<Product> findByTitleContainingIgnoreCaseAdmin(String keyword, int storeid, int page, int size);
+
 
     void updateProduct(ProductRequest productRequest);
 
     void deleteProduct(int productId);
+
+    void banProduct(int productId, String banReason);
+
+    void unBanProduct(int productId);
+
+    void deleteProductAdmin(int productId);
 }

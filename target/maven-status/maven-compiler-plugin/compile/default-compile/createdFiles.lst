@@ -20,6 +20,7 @@ com\example\secumix\payload\response\ProductResponse.class
 com\example\secumix\services\ICustomerService.class
 com\example\secumix\services\impl\ProductTypeService.class
 com\example\secumix\payload\request\ProductTypeRequest.class
+com\example\secumix\entities\Product$ChannelStatus.class
 com\example\secumix\payload\response\StoreCustomerRespone.class
 com\example\secumix\security\WebConfig.class
 com\example\secumix\exception\ImageUploadException.class
@@ -29,6 +30,7 @@ com\example\secumix\controller\manager\StoreControllerManager.class
 com\example\secumix\validation\PasswordMatchesValidator.class
 com\example\secumix\notify\Notify$NotifyBuilder.class
 com\example\secumix\repository\ProductImageRepo.class
+com\example\secumix\notify\SalesCouponGenerator.class
 com\example\secumix\validation\EmailValidator.class
 com\example\secumix\payload\dtos\ProductImageDto.class
 com\example\secumix\payload\request\ProfileRequest$ProfileRequestBuilder.class
@@ -53,6 +55,7 @@ com\example\secumix\notify\NotifyRepository.class
 com\example\secumix\payload\request\ChangePasswordRequest.class
 com\example\secumix\auditing\ApplicationAuditAware.class
 com\example\secumix\Utils\EmailMix.class
+com\example\secumix\controller\admin\ProductControllerAdmin.class
 com\example\secumix\entities\CartItem.class
 com\example\secumix\entities\User$UserBuilder.class
 com\example\secumix\notify\WebSocketController.class
@@ -96,11 +99,13 @@ com\example\secumix\payload\request\ProductRequest.class
 com\example\secumix\payload\dtos\NotifiDto.class
 com\example\secumix\payload\dtos\UserDto.class
 com\example\secumix\services\ICartItemService.class
+com\example\secumix\notify\DeliveryController.class
 com\example\secumix\services\IProductService.class
 com\example\secumix\entities\OrderStatus.class
 com\example\secumix\services\impl\CartItemService.class
 com\example\secumix\Utils\DtoMapper\StoreMapper.class
 com\example\secumix\repository\ProfileDetailRepository.class
+com\example\secumix\notify\SalesStreamManager.class
 com\example\secumix\payload\response\OrderDetailResponse.class
 com\example\secumix\repository\PayRepo.class
 com\example\secumix\payload\request\RegisterRequest$RegisterRequestBuilder.class
@@ -144,6 +149,7 @@ com\example\secumix\services\IStoreService.class
 com\example\secumix\services\IProductTypeService.class
 com\example\secumix\notify\NotificationWebSocketHandler.class
 com\example\secumix\Oauth2\OAuthLoginSuccessHandler.class
+com\example\secumix\notify\SalesController.class
 com\example\secumix\entities\Store.class
 com\example\secumix\payload\dtos\StoreDto.class
 com\example\secumix\socket\WSController.class

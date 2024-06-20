@@ -1,6 +1,8 @@
 package com.example.secumix.controller;
 
 import com.example.secumix.entities.Product;
+import com.example.secumix.exception.CustomException;
+import com.example.secumix.payload.response.ProductResponse;
 import com.example.secumix.repository.ImportDetailRepo;
 import com.example.secumix.repository.ProductImageRepo;
 import com.example.secumix.repository.ProductTypeRepo;
@@ -53,16 +55,18 @@ public class ProductController {
 
     @GetMapping(value = "/product/info/{productid}")
     ResponseEntity<ResponseObject> GetInfoProduct(@PathVariable int productid) {
-        Optional<Product> product = productService.findById(productid);
-        if (product.isPresent()) {
+
+        try{
+
+            ProductResponse product = productService.findbyId(productid);
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject("OK", "Thành Công", productService.findbyId(productid))
+                    new ResponseObject("OK", "Thành Công", product)
             );
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    new ResponseObject("FAILED", "Không tồn tại sản phẩm trên", "")
-            );
+        }catch (CustomException ex) {
+            return ResponseEntity.status(ex.getStatus())
+                    .body(new ResponseObject("FAILED", ex.getMessage(), ""));
         }
+
     }
 
 
